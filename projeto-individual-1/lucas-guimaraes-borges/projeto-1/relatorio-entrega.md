@@ -237,4 +237,4 @@ _Marque os diferenciais que foram implementados:_
 - [x] Código funcional no repositório
 - [x] Relatório de entrega preenchido
 - [x] Demonstração gravada (scrape → sync/Pinecone → chat sobre próximos eventos) anexada ou enviada conforme regras da disciplina
-- [ ] Pull Request aberto _(preencher pelo aluno após envio ao repositório remoto)_
+- [x] Pull Request aberto _(preencher pelo aluno após envio ao repositório remoto)_
