@@ -79,27 +79,32 @@ Entrada → [etapa 1] → [etapa 2] → ... → Saída
 
 ## 7. Arquitetura do Sistema
 
-_Descreva a arquitetura escolhida para o agente. Responda:_
-
-- **Tipo de agente:** (ex: RAG, tool-using, pipeline sequencial, multi-agente)
-- **LLM utilizado:** (ex: GPT-4, Ollama/Llama3, etc.)
+- **Tipo de agente:** (Pipeline sequencial com uso de ferramentas)
+- **LLM utilizado:** (Gemini)
 - **Componentes principais:**
-  - [ ] Módulo de entrada
-  - [ ] Processamento / LLM
-  - [ ] Ferramentas externas (tools)
+  - [x] Módulo de entrada
+    - Interface CLI
+    - Coleta do diff via comando Git `git diff --staged`
+  - [x] Processamento / LLM
+    - Pré-processamento do diff (remoção de ruído, limitação de tamanho)
+    - Construção do prompt
+    - Chamada ao modelo LLM
+  - [x] **Ferramentas externas (tools)**
+    - Git (leitura de diff e execução de commit)
+    - API de LLM ou modelo local
   - [ ] Memória
   - [ ] Módulo de saída
-- **Diagrama de arquitetura:** _(opcional, mas recomendado)_
+    - Exibição da mensagem gerada no terminal
+    - Integração com editor do Git para edição
+    - Execução do commit final
 
 ---
 
 ## 8. Estratégia de Avaliação
 
-_Descreva como você pretende avaliar o agente:_
-
-- **Métricas definidas:** (precisão, relevância, latência, custo, etc.)
-- **Conjunto de testes:** (quantos exemplos, de onde vêm os dados)
-- **Método de avaliação:** (manual, automático, comparativo)
+- **Métricas definidas:** (coerência com o diff informado)
+- **Conjunto de testes:** (mensagens de commits do repositório)
+- **Método de avaliação:** (manual)
 
 ---
 
