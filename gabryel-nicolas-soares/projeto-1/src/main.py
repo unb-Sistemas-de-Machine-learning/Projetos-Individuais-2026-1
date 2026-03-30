@@ -148,8 +148,7 @@ def agente():
         intencao = classificar_intencao(msg)
 
         if intencao == "encerramento":
-            print("\n🤖 Atendimento encerrado. Os dados desta sessão foram descartados.")
-            print("   Para novo atendimento, reinicie o programa. Até logo! 👋\n")
+            print("\n🤖 Atendimento encerrado. Até logo! 👋\n")
             break
 
         elif intencao == "triagem":

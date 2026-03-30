@@ -1,20 +1,12 @@
 import json
 import requests
 
-# ─────────────────────────────────────────────
-# CHAMADA LLM (OLLAMA LOCAL)
-# ─────────────────────────────────────────────
-
 def chamar_llm(prompt: str, modelo: str = "llama3") -> str:
-    """
-    Chama o modelo LLM via Ollama (local).
-    Tratamento de erros específico por tipo de falha.
-    """
     try:
         response = requests.post(
             "http://localhost:11434/api/generate",
             json={"model": modelo, "prompt": prompt, "stream": False},
-            timeout=30
+            timeout=60
         )
         response.raise_for_status()
         return response.json().get("response", "Sem resposta do modelo.")
@@ -29,12 +21,7 @@ def chamar_llm(prompt: str, modelo: str = "llama3") -> str:
     except Exception as e:
         return f"[ERRO inesperado] {e}"
 
-
-# ─────────────────────────────────────────────
-# MOTOR DE ELEGIBILIDADE
 # Regras baseadas em lei + LLM para explicação
-# ─────────────────────────────────────────────
-
 SALARIO_MINIMO = 1412
 
 REFERENCIAS_LEGAIS = {
@@ -48,10 +35,6 @@ REFERENCIAS_LEGAIS = {
 
 
 def verificar_elegibilidade(dados: dict) -> dict:
-    """
-    Verifica elegibilidade com base em regras legais.
-    Retorna dicionário com benefícios aprovados e motivos.
-    """
     aprovados = []
     motivos = {}
     nao_aprovados = []
@@ -102,10 +85,6 @@ def verificar_elegibilidade(dados: dict) -> dict:
 
 
 def motor_elegibilidade(dados: dict, sessao: dict) -> str:
-    """
-    Executa o motor de elegibilidade e usa o LLM
-    apenas para formatar a resposta explicativa.
-    """
     resultado = verificar_elegibilidade(dados)
     sessao["elegibilidade"] = resultado
 
