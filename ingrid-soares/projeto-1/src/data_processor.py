@@ -1,3 +1,4 @@
+from typing import Optional
 from src.config import Config
 
 class DataProcessor:
@@ -16,7 +17,7 @@ class DataProcessor:
                 processed_data.append(processed_repo)
         return processed_data
 
-    def _extract_and_validate_fields(self, repo: dict) -> dict | None:
+    def _extract_and_validate_fields(self, repo: dict) -> Optional[dict]:
         """
         Extrai os campos definidos e realiza validações básicas para LGPD.
         Retorna um dicionário com os campos processados ou None se houver problema.
