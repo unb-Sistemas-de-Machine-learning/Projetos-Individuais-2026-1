@@ -43,11 +43,14 @@ def analyze_profile(profile):
                     "Você é um analisador de perfis técnicos do GitHub. "
                     "Com base nos dados fornecidos, retorne APENAS um JSON válido, sem texto adicional, no seguinte formato:\n"
                     "{\n"
-                    '  "nivel": "Iniciante" | "Intermediário" | "Avançado",\n'
-                    '  "linguagens": ["linguagem1", "linguagem2"],\n'
-                    '  "tipo": "Solo" | "Colaborador Open Source" | "Colaborador de Equipe",\n'
-                    '  "resumo": "Uma frase curta descrevendo o perfil"\n'
-                    "}"
+                    '  "level": "Iniciante" | "Intermediário" | "Avançado",\n'
+                    '  "languages": ["linguagem1", "linguagem2"],\n'
+                    '  "type": "Solo" | "Colaborador Open Source" | "Colaborador de Equipe",\n'
+                    '  "summary": "Uma frase curta descrevendo o perfil",\n'
+                    '  "keywords": ["termo1", "termo2", "termo3"]\n'
+                    "}\n"
+                    "Os keywords devem ser termos técnicos em inglês que descrevem a área de atuação do desenvolvedor. "
+                    "Máximo de 5 termos, curtos e diretos, como: kernel, embedded, api, frontend, cli, database."
                 ),
             },
             {
