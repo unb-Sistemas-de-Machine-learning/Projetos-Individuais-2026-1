@@ -1,24 +1,28 @@
 # Relatório de Entrega — Projeto Individual 1
 
-> **Aluno(a):** [Seu nome completo]
-> **Matrícula:** [Sua matrícula]
-> **Data de entrega:** [DD/MM/AAAA]
+> **Aluno(a):** Gabryel Nicolas Soares de Sousa
+> **Matrícula:** 221022570
+> **Data de entrega:** 30/03/2026
 
 ---
 
 ## 1. Resumo do Projeto
 
-_Apresente um resumo executivo do projeto (máx. 200 palavras): qual o problema, qual o agente construído e qual o principal resultado obtido._
+O Brasil possui milhões de famílias elegíveis a benefícios sociais que deixam de recebê-los por falta de informação ou dificuldade de acesso. Este projeto propõe um agente conversacional de IA voltado à assistência social, capaz de orientar cidadãos em situação de vulnerabilidade sobre seus direitos a programas como Bolsa Família, BPC (Benefício de Prestação Continuada), Auxílio Gás, Tarifa Social de Energia e ID Jovem.
+
+O agente coleta dados do usuário via diálogo, aplica regras legais para determinar elegibilidade e usa um modelo de linguagem local (Llama 3 via Ollama) para formatar respostas explicativas em linguagem acessível. Um módulo RAG permite responder perguntas específicas com base em documentos indexados sobre os programas sociais.
+
+O principal resultado é um protótipo funcional que separa a lógica de decisão (regras baseadas em lei) da geração de linguagem (LLM), garantindo explicabilidade total e conformidade com a LGPD — sem armazenamento de dados entre sessões e sem uso de APIs externas pagas.
 
 ---
 
 ## 2. Combinação Atribuída
 
 | Item | Valor |
-|------|-------|
-| **Domínio** | |
-| **Função do agente** | |
-| **Restrição obrigatória** | |
+|---|---|
+| **Domínio** | Assistência Social |
+| **Função do agente** | Mediação/Conversação |
+| **Restrição obrigatória** | Explicabilidade Obrigatória |
 
 ---
 
@@ -26,23 +30,66 @@ _Apresente um resumo executivo do projeto (máx. 200 palavras): qual o problema,
 
 ### 3.1 Entrada (Input)
 
-_Descreva o tipo de dado que o agente recebe como entrada._
+O agente recebe dois tipos de entrada:
+
+- **Texto livre** digitado pelo usuário no terminal (ex: "quero verificar meus benefícios", "quais documentos preciso para o BPC?")
+- **Dados estruturados** coletados interativamente durante a triagem: renda familiar mensal (float), número de pessoas na família (int), idade (int) e presença de membro com deficiência (booleano)
 
 ### 3.2 Processamento (Pipeline)
 
-_Descreva as etapas do pipeline do agente. Inclua diagrama se possível._
-
 ```
-Entrada → [etapa 1] → [etapa 2] → ... → Saída
+Usuário
+   │
+   ▼
+Classificador de Intenção
+(palavras-chave → triagem / pergunta / encerramento)
+   │
+   ├─── [triagem] ──► Coleta de Dados (validada)
+   │                        │
+   │                        ▼
+   │                  Motor de Elegibilidade
+   │                  (regras legais — sem LLM)
+   │                        │
+   │                        ▼
+   │                  LLM formata resposta explicativa
+   │
+   ├─── [pergunta] ──► Busca RAG (base de conhecimento)
+   │                        │
+   │                        ▼
+   │                  LLM gera resposta com contexto RAG
+   │
+   └─── [encerramento] ──► Descarta sessão e encerra
+                                 │
+                                 ▼
+                          Memória de Sessão
+                          (armazena contexto entre turnos)
+                                 │
+                                 ▼
+                           Saída ao Usuário
 ```
 
 ### 3.3 Decisão
 
-_Explique como o agente "pensa" — qual a lógica de decisão, como o LLM é usado, quais prompts são aplicados._
+O agente opera em duas camadas de raciocínio:
+
+**Camada de regras (determinística):** A elegibilidade é decidida por regras codificadas com base na legislação vigente. O LLM **não decide** quem tem direito — apenas formata a explicação.
+
+| Benefício | Critério | Base Legal |
+|---|---|---|
+| Bolsa Família | Renda per capita ≤ R$ 218,00 | Lei nº 14.284/2021 |
+| BPC (Idoso) | Idade ≥ 65 anos e renda per capita ≤ 1/4 salário mínimo | LOAS, Art. 20 |
+| BPC (Deficiência) | Deficiência de longo prazo e renda per capita ≤ 1/4 salário mínimo | LOAS, Art. 20 §2º |
+| Auxílio Gás | Renda per capita ≤ 1/2 salário mínimo | Lei nº 14.237/2021 |
+| Tarifa Social de Energia | Renda per capita ≤ 1/2 salário mínimo | Lei nº 12.212/2010 |
+| ID Jovem | Idade 15–29 anos e renda per capita ≤ 2 salários mínimos | Decreto nº 8.537/2015 |
+
+**Camada de linguagem (LLM):** O Llama 3 recebe um prompt estruturado com o resultado da triagem, os motivos legais e restrições explícitas ("não invente benefícios", "cite a fonte", "use linguagem simples"). Para perguntas livres, o prompt inclui os documentos recuperados pelo RAG.
 
 ### 3.4 Saída (Output)
 
-_Descreva o formato e conteúdo da saída do agente._
+- **Triagem:** lista de benefícios aprovados ou negados, motivo legal para cada um, documentos necessários e orientação de onde se cadastrar
+- **Pergunta:** resposta em linguagem natural com citação da fonte legal consultada
+- **Erro:** mensagem de orientação ao usuário sem exposição de detalhes técnicos
 
 ---
 
@@ -51,39 +98,55 @@ _Descreva o formato e conteúdo da saída do agente._
 ### 4.1 Tecnologias utilizadas
 
 | Tecnologia | Versão | Finalidade |
-|------------|--------|------------|
-| Python | | Linguagem principal |
-| | | |
-| | | |
+|---|---|---|
+| Python | 3.11+ | Linguagem principal |
+| Ollama | latest | Servidor local para o LLM |
+| Llama 3 | 8B | Modelo de linguagem para geração de respostas |
+| requests | 2.31+ | Chamadas HTTP à API do Ollama |
+| RAG manual | — | Busca por sobreposição de termos (sem dependências externas) |
 
 ### 4.2 Estrutura do código
 
 ```
 projeto-1/
 ├── src/
-│   ├── ...
-├── data/
-│   ├── ...
-├── tests/
-│   ├── ...
-├── requirements.txt
-└── README.md
+│   ├── main.py            # Loop principal, classificador e coleta de dados
+│   ├── rag.py             # Base de conhecimento e busca RAG
+│   └── elegibilidade.py   # Regras legais, motor de elegibilidade e LLM
+├── docs/
+│   ├── documento-engenharia
+│   ├── relatorio-entrega
+└── requirements.txt
 ```
 
 ### 4.3 Como executar
 
-_Instruções passo a passo para rodar o projeto:_
-
+**Passo 1 — Instalar dependências Python**
 ```bash
-# 1. Instalar dependências
 pip install -r requirements.txt
-
-# 2. Configurar variáveis de ambiente (se necessário)
-export API_KEY=...
-
-# 3. Executar
-python src/main.py
 ```
+
+**Passo 2 — Instalar o Ollama**
+
+Acesse https://ollama.com, baixe e instale o Ollama para o seu sistema operacional. Após a instalação, o Ollama inicia automaticamente em segundo plano.
+
+Para verificar se está funcionando:
+```bash
+ollama list
+```
+
+**Passo 3 — Baixar o modelo Llama 3 (apenas na primeira vez)**
+```bash
+ollama pull llama3
+```
+> ⚠️ O download é de aproximadamente 4GB. Aguarde até concluir.
+
+**Passo 4 — Executar o agente**
+```bash
+python main.py
+```
+
+> **Nota:** O projeto não requer chave de API nem conexão com serviços externos. Tudo roda localmente.
 
 ---
 
@@ -91,63 +154,60 @@ python src/main.py
 
 ### 5.1 Métricas definidas
 
-| Métrica | Descrição | Resultado obtido |
-|---------|-----------|------------------|
-| | | |
-| | | |
+| Métrica | Descrição | Meta | Resultado obtido |
+|---|---|---|---|
+| Precisão de elegibilidade | % de perfis com resultado correto vs. gabarito legal | ≥ 85% | A preencher |
+| Qualidade da explicação | Nota de 1 a 5 por avaliador | ≥ 4/5 | A preencher |
+| Latência | Tempo de resposta excluindo geração do LLM | ≤ 5s | A preencher |
+| Cobertura RAG | % de perguntas com ao menos 1 doc relevante recuperado | ≥ 80% | A preencher |
 
 ### 5.2 Exemplos de teste
 
-#### Teste 1
 
-- **Entrada:**
-- **Saída esperada:**
-- **Saída obtida:**
-- **Resultado:** Sucesso / Falha
-
-#### Teste 2
-
-- **Entrada:**
-- **Saída esperada:**
-- **Saída obtida:**
-- **Resultado:** Sucesso / Falha
-
-### 5.3 Análise dos resultados
-
-_Discuta os resultados obtidos. O agente atingiu os objetivos? Quais foram os pontos fortes e fracos?_
-
----
 
 ## 6. Diferenciais implementados
 
-_Marque os diferenciais que foram implementados:_
-
-- [ ] RAG com base externa
+- [x] RAG com base local
 - [ ] Múltiplos agentes
 - [ ] Uso de ferramentas (tools)
 - [ ] Memória persistente
-- [ ] Explicabilidade
-- [ ] Análise crítica de limitações
+- [x] Explicabilidade
+- [x] Análise crítica de limitações
 
 ---
 
 ## 7. Limitações e Trabalhos Futuros
 
-_Descreva as limitações encontradas e o que poderia ser melhorado em iterações futuras._
+**Limitações atuais:**
+- RAG por palavras-chave sem embeddings semânticos — perguntas com vocabulário diferente do índice podem não recuperar documentos relevantes
+- Classificador de intenção baseado em lista de palavras-chave — sentenças ambíguas podem ser classificadas incorretamente
+- Critério de deficiência por autodeclaração — a avaliação real exige laudo médico e perícia do INSS
+
+**Trabalhos futuros:**
+- Ampliar base de conhecimento com mais programas sociais municipais e estaduais
+- Implementar interface web acessível
+- Integrar com a API do CadÚnico para verificação automática de cadastro
 
 ---
 
 ## 8. Referências
 
-1. 
-2. 
-3. 
+1. Lei Orgânica da Assistência Social (LOAS) — Lei nº 8.742/1993
+2. Lei nº 14.284/2021 — Programa Auxílio Brasil (base do Bolsa Família atual)
+3. Decreto nº 11.150/2022 — Regulamentação do Bolsa Família
+4. Decreto nº 6.135/2007 — Cadastro Único para Programas Sociais
+5. Lei nº 14.237/2021 — Auxílio Gás
+6. Lei nº 12.212/2010 — Tarifa Social de Energia Elétrica
+7. Decreto nº 8.537/2015 — ID Jovem
+8. Política Nacional de Assistência Social (PNAS/2004) — MDS
+9. Lewis et al. — Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (NeurIPS 2020)
+10. Ollama — Documentação oficial — https://ollama.com
 
 ---
 
 ## 9. Checklist de entrega
 
-- [ ] Documento de engenharia preenchido
-- [ ] Código funcional no repositório
+- [x] Documento de engenharia preenchido
+- [x] Código funcional no repositório
 - [ ] Relatório de entrega preenchido
 - [ ] Pull Request aberto

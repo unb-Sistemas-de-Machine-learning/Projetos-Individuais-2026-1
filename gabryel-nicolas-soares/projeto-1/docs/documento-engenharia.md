@@ -197,19 +197,17 @@ O agente opera em duas camadas de raciocínio:
 
 | Métrica | Meta | Método de medição |
 |---|---|---|
-| Precisão de elegibilidade | ≥ 85% | Comparação com gabarito legal para 20 perfis sintéticos |
+| Precisão de elegibilidade | ≥ 85% | Comparação com gabarito legal para 5 perfis sintéticos |
 | Qualidade da explicação | ≥ 4/5 | Avaliação manual |
 | Latência da resposta | ≤ 5s | Medição com `time.time()` |
 | Cobertura do RAG | ≥ 80% | Percentual de perguntas com ao menos 1 doc relevante recuperado |
-| Satisfação do usuário | ≥ 4/5 | Questionário pós-teste |
 
 - **Conjunto de testes:**
-  - 20 perfis sintéticos cobrindo todos os casos limite de elegibilidade
-  - 10 perguntas diretas sobre benefícios para testar o RAG
-  - 5 casos reais anonimizados ou gerados com base em situações típicas
+  - 5 perfis sintéticos cobrindo os principais casos de elegibilidade
+  - 1 pergunta direta sobre benefícios para testar o RAG
   - Testes de robustez: entrada inválida, cancelamento e perguntas fora do domínio
 
-- **Método de avaliação:** avaliação automática por comparação com gabarito legal, avaliação manual por especialista e medição de latência.
+- **Método de avaliação:** avaliação automática por comparação com gabarito legal, avaliação manual e medição de latência.
 
 ---
 
