@@ -104,12 +104,17 @@ Análise dos gastos de [Deputado]:
 | Tecnologia | Versão | Finalidade |
 |------------|--------|------------|
 | Python | 3.12 | Linguagem principal |
-| LangChain | Última | Orquestração de agentes e chains |
-| Google Generative AI | Última | Gemini 2.5 Flash (LLM) |
-| ChromaDB | Última | Vector Store para RAG |
-| HuggingFace Embeddings | all-MiniLM-L6-v2 | Geração de embeddings local |
-| Requests | 2.x | Integração com API externa |
-| Python-dotenv | Última | Gerenciamento de variáveis de ambiente |
+| LangChain | 1.2.13 | Orquestração de agentes e chains |
+| LangChain-Community | 0.4.1 | Carregadores de PDFs (PyPDFLoader) |
+| LangChain-Core | 1.2.23 | Núcleo (PromptTemplate, OutputParser, Runnables) |
+| LangChain-Chroma | 1.1.0 | Integração com ChromaDB para RAG |
+| LangChain-Google-GenAI | 4.2.1 | Integração com Google Gemini 2.5 Flash |
+| LangChain-HuggingFace | 1.2.1 | Embeddings locais (all-MiniLM-L6-v2) |
+| LangChain-Text-Splitters | 1.1.1 | Divisão de documentos em chunks |
+| ChromaDB | 1.5.5 | Vector Store para persistência de embeddings |
+| Sentence-Transformers | 5.3.0 | Modelo de embeddings all-MiniLM-L6-v2 |
+| Requests | 2.33.1 | Integração com API da Câmara dos Deputados |
+| Python-dotenv | >=1.0.0 | Gerenciamento de variáveis de ambiente |
 
 ### 4.2 Estrutura do código
 
@@ -300,4 +305,4 @@ _Marque os diferenciais que foram implementados:_
 - [x] Documento de engenharia preenchido
 - [x] Código funcional no repositório
 - [x] Relatório de entrega preenchido
-- [ ] Pull Request aberto
+- [x] Pull Request aberto
