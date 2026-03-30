@@ -1,4 +1,3 @@
-import json
 import os
 import ollama
 import requests
@@ -38,7 +37,7 @@ class Agent:
         query = _build_rag_query(read_context)
 
         candidates = self._catalog.search_similar(query, k=k * 3, titles_to_remove=read_books)
-        candidates = _enrich_candidates(candidates)
+        # candidates = _enrich_candidates(candidates)
 
         candidates_with_price = []
         for book in candidates:
@@ -62,59 +61,35 @@ class Agent:
             f"- {m.title} ({', '.join(m.authors)}) — {', '.join(m.categories)}"
             for m in read_context
         )
-        candidates_text = "\n".join(
-            f"- {c['title']} ({c['authors']}) — {c['categories']} "
-            f"[Minimum price: R$ {c['minimum_price']:.2f} in {c['offers'][0].store}]"
-            if c["minimum_price"] else
-            f"- {c['title']} ({c['authors']}) — {c['categories']} [Price not found]"
-            for c in candidates
-        )
 
-        prompt = f"""You are a literary recommendation agent.
-Based on the books the user has already read,
-select and rank the {k} best books from the candidate list to recommend.
-Write the justification field in Brazilian Portuguese (pt-BR).
-
-**Books already read by the user:**
-{read_books_text}
-
-**Available candidates:**
-{candidates_text}
-
-Return ONLY a valid JSON array (no markdown, no extra explanation) with exactly {k} items in this format:
-[
-  {{
-    "title": "exact candidate title",
-    "justification": "1-2 sentences explaining why this book is recommended"
-  }}
-]
-Every item in the array must have a justification. Do not leave any item without one."""
-
-        response = ollama.chat(
-            model=MODEL,
-            messages=[{"role": "user", "content": prompt}],
-        )
-
-        text = response.message.content.strip()
-        if "```" in text:
-            text = text.split("```")[1]
-            if text.startswith("json"):
-                text = text[4:]
-
-        ranked = json.loads(text)
-
-        candidates_map = {c["title"]: c for c in candidates}
         result = []
-        for rec in ranked:
-            candidate = candidates_map.get(rec["title"], {})
+        for candidate in candidates[:k]:
+            justification = self._justify(candidate, read_books_text)
+            print(justification)
             result.append({
-                "title": rec["title"],
-                "justification": rec.get("justification", ""),
+                "title": candidate["title"],
+                "justification": justification,
                 "minimum_price": candidate.get("minimum_price"),
                 "cheapest_store": candidate["offers"][0].store if candidate.get("offers") else "",
                 "offers": candidate.get("offers", []),
             })
         return result
+
+    def _justify(self, candidate: dict, read_books_text: str) -> str:
+        prompt = f"""You are a literary recommendation agent.
+A user who has read the following books:
+{read_books_text}
+
+...is being recommended: "{candidate['title']}" by {candidate['authors']} (genres: {candidate['categories']}).
+
+Write 1-2 sentences in Brazilian Portuguese explaining why this book is a good recommendation for this user.
+Reply with only the justification text, nothing else."""
+
+        response = ollama.chat(
+            model=MODEL,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return response.message.content.strip()
 
 
 def _build_rag_query(read_context: list[Book]) -> str:
