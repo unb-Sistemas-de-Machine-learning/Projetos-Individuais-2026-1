@@ -85,9 +85,10 @@ Return ONLY a valid JSON array (no markdown, no extra explanation) with exactly 
 [
   {{
     "title": "exact candidate title",
-    "justification": "2-3 sentences explaining why this book is recommended based on the reading history"
+    "justification": "1-2 sentences explaining why this book is recommended"
   }}
-]"""
+]
+Every item in the array must have a justification. Do not leave any item without one."""
 
         response = ollama.chat(
             model=MODEL,
