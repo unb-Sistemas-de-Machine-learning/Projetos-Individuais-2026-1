@@ -88,10 +88,17 @@ Return ONLY a bash script (NO markdown, must be directly runnable) that will app
     ├── .gitignore
     ├── main.py
     ├── modules_plan.sh
-    ├── __pycache__
-    │   ├── ai_client.cpython-312.pyc
-    │   └── discovery.cpython-312.pyc
-    └── requirements.txt
+    ├── requirements.txt
+    └── test1
+        ├── output
+        │   ├── modules_plan.sh
+        │   └── test1
+        │       ├── __init__.py
+        │       ├── main.py
+        │       ├── parser.py
+        │       ├── tokenizer.py
+        │       └── tokens.py
+        └── parser.py
 ```
 
 ### 4.3 Como executar
@@ -122,19 +129,19 @@ python src/main.py --help
 
 ### 5.2 Exemplos de teste
 
-#### Teste 1
+#### Teste 0
 
 - **Entrada:** Este próprio projeto
 - **Saída esperada:** Um projeto modularizado sem alterações em comportamento após a execução do script
 - **Saída obtida:** Projeto modularizado com mesmo comportamento
 - **Resultado:** Sucesso
 
-#### Teste 2
+#### Teste 1
 
-- **Entrada:**
-- **Saída esperada:**
-- **Saída obtida:**
-- **Resultado:** Sucesso / Falha
+- **Entrada:** Analisador sintático recursivo descendente (de minha autoria) de pré requisitos do sigaa
+- **Saída esperada:** Um Analisador sintático dividido em módulos com o mesmo comportamento
+- **Saída obtida:** Um analisador sintático em um pacote dividido em vários módulos
+- **Resultado:** Sucesso
 
 ### 5.3 Análise dos resultados
 
