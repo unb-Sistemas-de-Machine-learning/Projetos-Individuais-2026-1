@@ -7,19 +7,34 @@ import time
 PALAVRAS_TRIAGEM = [
     "beneficio", "benefício", "direito", "direitos", "renda", "família",
     "cadastro", "bolsa", "bpc", "cras", "auxilio", "auxílio", "programa",
-    "vulnerabilidade", "pobreza", "ajuda", "amparo", "elegivel", "elegível"
+    "vulnerabilidade", "pobreza", "ajuda", "amparo", "elegivel", "elegível",
+    "tarifa", "gas", "gás", "id jovem", "idoso", "deficiencia", "deficiência"
 ]
 
 PALAVRAS_ENCERRAMENTO = ["sair", "exit", "tchau", "encerrar", "finalizar", "fim"]
 
+PALAVRAS_INTERROGATIVAS = [
+    "quais", "qual", "como", "onde", "quando", "o que", "quanto",
+    "quem", "por que", "porque", "me explica", "me fala", "explica",
+    "o que é", "preciso saber"
+]
+
 
 def classificar_intencao(mensagem: str) -> str:
+    """Classifica a intenção do usuário em: triagem, pergunta ou encerramento."""
     msg = mensagem.lower().strip()
+
     if msg in PALAVRAS_ENCERRAMENTO:
         return "encerramento"
+
+    for palavra in PALAVRAS_INTERROGATIVAS:
+        if msg.startswith(palavra):
+            return "pergunta"
+
     for palavra in PALAVRAS_TRIAGEM:
         if palavra in msg:
             return "triagem"
+
     return "pergunta"
 
 def entrada_numerica(prompt_texto: str, tipo: type = float, minimo: float = 0) -> Optional[float]:
