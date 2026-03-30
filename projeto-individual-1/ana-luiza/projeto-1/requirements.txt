@@ -1,0 +1,10 @@
+langchain
+langchain-community
+langchain-chroma
+pandas
+requests
+pypdf
+ollama
+langchain-google-genai
+langchain-huggingface
+sentence-transformers
