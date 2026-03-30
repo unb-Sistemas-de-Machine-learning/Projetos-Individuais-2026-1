@@ -156,10 +156,10 @@ python main.py
 
 | Métrica | Descrição | Meta | Resultado obtido |
 |---|---|---|---|
-| Precisão de elegibilidade | % de perfis com resultado correto vs. gabarito legal | ≥ 85% | A preencher |
-| Qualidade da explicação | Nota de 1 a 5 por avaliador | ≥ 4/5 | A preencher |
-| Latência | Tempo de resposta excluindo geração do LLM | ≤ 5s | A preencher |
-| Cobertura RAG | % de perguntas com ao menos 1 doc relevante recuperado | ≥ 80% | A preencher |
+| Precisão de elegibilidade | % de perfis com resultado correto vs. gabarito legal | ≥ 85% | 100% (5/5 testes corretos) |
+| Qualidade da explicação | Nota de 1 a 5 por avaliador | ≥ 4/5 | 4/5 |
+| Latência | Tempo de resposta excluindo geração do LLM | ≤ 5s | 0,00s (sem LLM) / 17–47s (com LLM) |
+| Cobertura RAG | % de perguntas com ao menos 1 doc relevante recuperado | ≥ 80% | 100% (1/1 pergunta com doc relevante) |
 
 ### 5.2 Exemplos de teste
 
