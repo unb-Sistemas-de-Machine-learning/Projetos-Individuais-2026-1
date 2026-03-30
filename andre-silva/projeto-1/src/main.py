@@ -1,71 +1,8 @@
-import json
 import sys
 from pathlib import Path
-import subprocess
-from google import genai
 import argparse
-
-client = genai.Client()
-
-
-def load_project(root):
-    print("Searching for Python files in the project...")
-    project_files = []
-    for path in Path(root).rglob("*.py"):
-        project_files.append(path)
-    return project_files
-
-
-def load_full_source(project_files):
-    print("Loading source code:")
-    data = {}
-    for file in project_files:
-        print("- " + str(file))
-        with open(file, "r") as f:
-            data[str(file)] = f.read()
-    return data
-
-
-def get_project_structure(root):
-    print("Analyzing project structure with 'tree' command...")
-    res = subprocess.run(
-        ["tree", "-J", root],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        check=True,
-    )
-    return res.stdout
-
-
-def llm_analyze(project_data):
-    print("Generating module split plan using LLM...")
-    prompt = f"""
-You are a senior Python software architect.
-
-Given these Python files:
-
-{json.dumps(project_data, indent=2)}
-
-Split them into multiple modules.
-
-Rules:
-- Each module must have a single responsibility
-- Keep behavior unchanged
-- DO NOT invent new logic
-- Only reorganize existing code
-- Include necessary imports
-- Output COMPLETE, runnable Python files
-
-Return ONLY a bash script (NO markdown, must be directly runnable) that will apply the required modifications
-"""
-
-    response = client.models.generate_content(
-        model="gemini-3-flash-preview",
-        contents=prompt,
-    )
-
-    return response.text
+from discovery import load_project, load_full_source, get_project_structure
+from ai_client import llm_analyze
 
 parser = argparse.ArgumentParser(description="Analyze and split a Python project into modules using an LLM.")
 parser.add_argument("-r", "--root", type=str, default=".", help="Root directory of the Python project")
@@ -96,5 +33,3 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         exit(1)
-
-

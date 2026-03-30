@@ -79,15 +79,19 @@ Return ONLY a bash script (NO markdown, must be directly runnable) that will app
 ### 4.2 Estrutura do código
 
 ```
-projeto-1/
-├── src/
-│   ├── main.py
-├── data/
-│   ├── ...
-├── tests/
-│   ├── ...
-├── requirements.txt
-└── README.md
+.
+├── documento-engenharia.md
+├── relatorio-entrega.md
+└── src
+    ├── ai_client.py
+    ├── discovery.py
+    ├── .gitignore
+    ├── main.py
+    ├── modules_plan.sh
+    ├── __pycache__
+    │   ├── ai_client.cpython-312.pyc
+    │   └── discovery.cpython-312.pyc
+    └── requirements.txt
 ```
 
 ### 4.3 Como executar
@@ -96,13 +100,13 @@ Para executar este projeto basta seguir os seguintes passos:
 
 ```bash
 # 1. Instalar dependências
-pip install -r requirements.txt
+pip install -r src/requirements.txt
 
 # 2. Configurar variáveis de ambiente
 export GEMINI_API_KEY=...
 
 # 3. Executar
-python src/main.py
+python src/main.py --help
 ```
 
 ---
@@ -120,10 +124,10 @@ python src/main.py
 
 #### Teste 1
 
-- **Entrada:**
-- **Saída esperada:**
-- **Saída obtida:**
-- **Resultado:** Sucesso / Falha
+- **Entrada:** Este próprio projeto
+- **Saída esperada:** Um projeto modularizado sem alterações em comportamento após a execução do script
+- **Saída obtida:** Projeto modularizado com mesmo comportamento
+- **Resultado:** Sucesso
 
 #### Teste 2
 
@@ -134,7 +138,9 @@ python src/main.py
 
 ### 5.3 Análise dos resultados
 
-_Discuta os resultados obtidos. O agente atingiu os objetivos? Quais foram os pontos fortes e fracos?_
+De acordo com os testes feitos a LLM ainda tem uma tendência de modificar um pouco o código,
+e é um pouco inconsistente no jeito de efetuar as alterações pelo script. Mas o script é legível
+e permite um preview das mudanças antes da confirmação, e a modularização é aceitável.
 
 ---
 
@@ -153,7 +159,11 @@ _Marque os diferenciais que foram implementados:_
 
 ## 7. Limitações e Trabalhos Futuros
 
-_Descreva as limitações encontradas e o que poderia ser melhorado em iterações futuras._
+As limitações deste trabalho são principalmente quanto e evitar a LLM de modificar o comportamento do código
+E limitações de tamanho do projeto. Como a LLM precisa do código fonte inteiro para poder corretamente colocar
+imports e dependências nos scripts separados o script fica muito limitado quando o projeto é de maior escala.
+Uma consideração possível seria gerar um grafo de dependências entre os scripts, apenas com os símbolos a fim
+de diminuir o tamanho do prompt.
 
 ---
 
