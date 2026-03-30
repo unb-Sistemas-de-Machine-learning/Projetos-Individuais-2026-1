@@ -16,6 +16,11 @@ def load_agent():
 agent = load_agent()
 wishlist = Wishlist()
 
+if "recommendations" not in st.session_state:
+    st.session_state.recommendations = []
+if "price_results" not in st.session_state:
+    st.session_state.price_results = {}
+
 st.title("📚 Agente Literário")
 st.caption("Recomendações personalizadas e ofertas nas principais livrarias brasileiras.")
 
@@ -41,31 +46,31 @@ with tab_rec:
         else:
             with st.spinner("Buscando recomendações e verificando preços..."):
                 try:
-                    recommendations = agent.recommend(books, k=k)
-                    st.success(f"{len(recommendations)} recomendações encontradas!")
-
-                    for i, rec in enumerate(recommendations, 1):
-                        with st.expander(f"📖 {i}. {rec['title']}", expanded=True):
-                            st.markdown(f"**Por que você vai gostar:**\n{rec['justification']}")
-
-                            if rec.get("minimum_price"):
-                                st.markdown(
-                                    f"💰 **Menor preço:** R$ {rec['minimum_price']:.2f}"
-                                    + (f" — {rec['cheapest_store']}" if rec.get("cheapest_store") else "")
-                                )
-                            if rec.get("offers"):
-                                st.markdown("**Preços por loja:**")
-                                for offer in rec["offers"]:
-                                    st.markdown(f"- [{offer.store}]({offer.url}) — R$ {offer.price:.2f}")
-                            else:
-                                st.info("Preço não encontrado nas lojas consultadas.")
-
-                            if st.button("➕ Adicionar à lista de desejos", key=f"add_{i}"):
-                                added = wishlist.add(rec["title"])
-                                st.success("Adicionado!" if added else "Já está na sua lista de desejos.")
-
+                    st.session_state.recommendations = agent.recommend(books, k=k)
                 except Exception as e:
                     st.error(f"Erro ao processar recomendações: {e}")
+
+    if st.session_state.recommendations:
+        st.success(f"{len(st.session_state.recommendations)} recomendações encontradas!")
+        for i, rec in enumerate(st.session_state.recommendations, 1):
+            with st.expander(f"📖 {i}. {rec['title']}", expanded=True):
+                st.markdown(f"**Por que você vai gostar:**\n{rec['justification']}")
+
+                if rec.get("minimum_price"):
+                    st.markdown(
+                        f"💰 **Menor preço:** R$ {rec['minimum_price']:.2f}"
+                        + (f" — {rec['cheapest_store']}" if rec.get("cheapest_store") else "")
+                    )
+                if rec.get("offers"):
+                    st.markdown("**Preços por loja:**")
+                    for offer in rec["offers"]:
+                        st.markdown(f"- [{offer.store}]({offer.url}) — R$ {offer.price:.2f}")
+                else:
+                    st.info("Preço não encontrado nas lojas consultadas.")
+
+                if st.button("➕ Adicionar à lista de desejos", key=f"add_{i}"):
+                    added = wishlist.add(rec["title"])
+                    st.success("Adicionado!" if added else "Já está na sua lista de desejos.")
 
 with tab_wish:
     st.header("Minha Lista de Desejos")
@@ -84,7 +89,10 @@ with tab_wish:
             with col_price:
                 if st.button("Verificar preço", key=f"price_{item.title}"):
                     with st.spinner("Buscando..."):
-                        offers = verify_price(item.title)
+                        st.session_state.price_results[item.title] = verify_price(item.title)
+
+                if item.title in st.session_state.price_results:
+                    offers = st.session_state.price_results[item.title]
                     if offers:
                         for o in offers:
                             st.write(f"[{o.store}]({o.url}): R$ {o.price:.2f}")
@@ -94,4 +102,5 @@ with tab_wish:
             with col_remove:
                 if st.button("🗑️", key=f"remove_{item.title}", help="Remover da lista"):
                     wishlist.remove(item.title)
+                    st.session_state.price_results.pop(item.title, None)
                     st.rerun()
