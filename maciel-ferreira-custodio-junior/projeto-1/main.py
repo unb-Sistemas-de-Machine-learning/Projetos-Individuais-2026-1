@@ -5,7 +5,7 @@ username = input("Digite o username do GitHub: ")
 profile = get_full_profile(username)
 
 if profile:
-    print(f"Nome: {profile['name']}")
+    print(f"\nNome: {profile['name']}")
     print(f"Conta criada em: {profile['created_at']}")
     print(f"Repositórios públicos: {profile['public_repos']}")
     print(f"Seguidores: {profile['followers']}")
@@ -18,4 +18,12 @@ if profile:
 
     print("\nAnalisando perfil com IA...\n")
     analysis = analyze_profile(profile)
-    print(analysis)
+
+    print("=" * 40)
+    print("        ANÁLISE DO PERFIL")
+    print("=" * 40)
+    print(f"Nível:     {analysis['nivel']}")
+    print(f"Tipo:      {analysis['tipo']}")
+    print(f"Linguagens: {', '.join(analysis['linguagens'])}")
+    print(f"Resumo:    {analysis['resumo']}")
+    print("=" * 40)

@@ -1,4 +1,5 @@
 import os
+import json
 
 from groq import Groq
 from dotenv import load_dotenv
@@ -56,4 +57,12 @@ def analyze_profile(profile):
         ],
     )
 
-    return response.choices[0].message.content
+    content = response.choices[0].message.content.strip()
+
+    if content.startswith("```"):
+        content = content.split("```")[1]
+        if content.startswith("json"):
+            content = content[4:]
+        content = content.strip()
+
+    return json.loads(content)
