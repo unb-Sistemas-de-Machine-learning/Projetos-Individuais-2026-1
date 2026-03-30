@@ -8,7 +8,7 @@ from price_checker import verify_price
 
 load_dotenv()
 
-MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
+MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:7b")
 DB_PATH = "data/chroma_db"
 WORKS_URL = "https://openlibrary.org{work_key}.json"
 
