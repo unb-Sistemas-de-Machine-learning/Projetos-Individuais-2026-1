@@ -1,6 +1,9 @@
 # Projeto 1 — Agente de recomendação de estudo (explicabilidade obrigatória)
-
-**Domínio:** Educação · **Função:** Recomendação · **Restrição:** Explicabilidade obrigatória  
+> **Aluno(a):** Patricia Helena Macedo da Silva 
+> **Matrícula:** 221037993
+> **Domínio:** Educação [2]
+> **Função do agente:** Recomendação [2]
+> **Restrição obrigatória:** Explicabilidade obrigatória  [4]
 
 Protótipo em Python: **RAG leve** (TF-IDF sobre `data/kb/*.md`) + **LLM** com saída JSON validada (Pydantic). Cada recomendação inclui **justificativa** obrigatória.
 
