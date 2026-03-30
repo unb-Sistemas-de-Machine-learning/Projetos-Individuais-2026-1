@@ -28,7 +28,7 @@ Foco em minimização de dados, extração de metadados não pessoais, e revisã
 Licença: MIT. Diretrizes de contribuição serão definidas conforme avanço do projeto.
 
 ## Requisitos Gerais do Projeto
-- Criar uma pasta com seu nome e sobrenome (ex: `seu-nome-sobrenome/`) e, dentro dela, a subpasta `projeto-1/`.
+- Seu projeto está localizado na pasta `ingrid-soares/projeto-1/` dentro deste repositório.
 - Não fazer push direto para a branch principal; utilizar Pull Requests.
 - Detalhar requisitos, arquitetura e implementação.
 
