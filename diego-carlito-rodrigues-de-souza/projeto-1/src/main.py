@@ -6,10 +6,9 @@ from pathlib import Path
 
 import streamlit as st
 from dotenv import load_dotenv
-from google import genai
 
 from agents import DiagnosticoAgent, RecomendadorAgent, GeradorAgent, AvaliadorAgent, SessionContext
-from rag import seed_sample_data
+from rag import seed_sample_data, BANCAS, MATERIAS
 
 load_dotenv()
 
@@ -56,7 +55,7 @@ def salvar_log_sessao(ctx: SessionContext) -> None:
 
 def init_session_state() -> None:
     defaults = {
-        "etapa": "configuracao",  # configuracao → diagnostico → recomendacao → pratica → encerrado
+        "etapa": "configuracao",
         "ctx": None,
         "questoes_diagnostico": [],
         "questao_atual": None,
@@ -93,11 +92,8 @@ def main() -> None:
         with st.form("config_form"):
             st.subheader("Configure sua sessão de estudos")
             concurso = st.text_input("Concurso alvo", placeholder="Ex: SEFAZ-SP 2025, TRF 5ª Região")
-            materia = st.selectbox(
-                "Matéria",
-                ["Redes", "Banco de Dados", "Sistemas Operacionais", "Segurança da Informação", "Legislação de TI"],
-            )
-            banca = st.selectbox("Banca examinadora", ["CESPE", "FCC", "FGV", "VUNESP"])
+            materia = st.selectbox("Matéria", MATERIAS)
+            banca = st.selectbox("Banca examinadora", BANCAS)
             submitted = st.form_submit_button("Iniciar diagnóstico 🚀")
 
         if submitted and concurso:
@@ -160,7 +156,7 @@ def main() -> None:
 
             if "praticar" in cmd or "questão" in cmd or "questao" in cmd:
                 resposta = gerador_agent.run(ctx)
-                st.session_state.questao_atual = user_input
+                st.session_state.questao_atual = resposta
                 st.session_state.etapa = "pratica"
                 add_message("assistant", resposta)
                 add_message("assistant", "✍️ Digite sua resposta abaixo:")
