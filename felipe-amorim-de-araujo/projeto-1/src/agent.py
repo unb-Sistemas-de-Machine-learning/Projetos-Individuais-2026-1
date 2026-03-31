@@ -9,7 +9,7 @@ from price_checker import verify_price
 
 load_dotenv()
 
-MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite-preview")
 DB_PATH = "data/chroma_db"
 WORKS_URL = "https://openlibrary.org{work_key}.json"
 
@@ -75,10 +75,10 @@ class Agent:
             if len(diverse) == k:
                 break
 
+        justifications = self._justify_all(diverse, read_books_text)
+
         result = []
-        for candidate in diverse:
-            justification = self._justify(candidate, read_books_text)
-            print(justification)
+        for candidate, justification in zip(diverse, justifications):
             result.append({
                 "title": candidate["title"],
                 "justification": justification,
@@ -88,23 +88,40 @@ class Agent:
             })
         return result
 
-    def _justify(self, candidate: dict, read_books_text: str) -> str:
-        prompt = f"""Você é um agente de recomendação literária. Responda SOMENTE em português do Brasil (pt-BR). Não use inglês, chinês, nem qualquer outro idioma.
+    def _justify_all(self, candidates: list[dict], read_books_text: str) -> list[str]:
+        books_list = "\n".join(
+            f"{i+1}. \"{c['title']}\" de {c['authors']} (gêneros: {c['categories']})"
+            for i, c in enumerate(candidates)
+        )
+        prompt = f"""Você é um agente de recomendação literária. Responda SOMENTE em português do Brasil (pt-BR).
 
 O usuário leu os seguintes livros:
 {read_books_text}
 
-O livro recomendado é: "{candidate['title']}" de {candidate['authors']} (gêneros: {candidate['categories']}).
+Para cada livro recomendado abaixo, escreva 1 a 2 frases em português do Brasil explicando por que é uma boa recomendação para este usuário.
 
-Escreva 1 a 2 frases em português do Brasil explicando por que este livro é uma boa recomendação para este usuário.
-Responda apenas com o texto da justificativa, sem mais nada."""
+Livros recomendados:
+{books_list}
+
+Responda APENAS com as justificativas numeradas no formato:
+1. <justificativa>
+2. <justificativa>
+...
+
+Não inclua nenhum outro texto."""
 
         client = genai.Client()
-        response = client.models.generate_content(
-            model=MODEL,
-            contents=prompt
-        )
-        return response.text
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        lines = [l.strip() for l in response.text.strip().splitlines() if l.strip()]
+
+        justifications = []
+        for line in lines:
+            if line and line[0].isdigit() and ". " in line:
+                justifications.append(line.split(". ", 1)[1])
+
+        while len(justifications) < len(candidates):
+            justifications.append("")
+        return justifications[:len(candidates)]
 
 
 def _normalize_title(title: str) -> str:
