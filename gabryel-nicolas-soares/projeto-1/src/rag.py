@@ -1,5 +1,4 @@
-# BASE DE CONHECIMENTO (RAG SIMPLES)
-
+# rag simples
 BASE_CONHECIMENTO = [
     {
         "id": "bolsa_familia_criterio",

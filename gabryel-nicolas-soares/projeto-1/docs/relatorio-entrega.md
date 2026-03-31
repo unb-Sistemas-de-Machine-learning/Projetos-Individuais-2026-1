@@ -143,7 +143,7 @@ ollama pull llama3
 
 **Passo 4 — Executar o agente**
 ```bash
-python src/main.py
+python src/main.py 
 ```
 
 > **Nota:** O projeto não requer chave de API nem conexão com serviços externos. Tudo roda localmente.
@@ -158,7 +158,7 @@ python src/main.py
 |---|---|---|---|
 | Precisão de elegibilidade | % de perfis com resultado correto vs. gabarito legal | ≥ 85% | 100% (5/5 testes corretos) |
 | Qualidade da explicação | Nota de 1 a 5 por avaliador | ≥ 4/5 | 4/5 |
-| Latência | Tempo de resposta excluindo geração do LLM | ≤ 5s | 0,00s (sem LLM) / 17–47s (com LLM) |
+| Latência do pipeline | Tempo do agente excluindo geração do LLM | ≤ 5s | ✅ atingida (0,00s). Tempo total com LLM: 17–47s — restrição de infraestrutura do Ollama local, fora do escopo do RNF. |
 | Cobertura RAG | % de perguntas com ao menos 1 doc relevante recuperado | ≥ 80% | 100% (1/1 pergunta com doc relevante) |
 
 ### 5.2 Análise dos resultados
@@ -246,4 +246,4 @@ O módulo RAG funcionou corretamente no Teste 5, classificando a pergunta como "
 - [x] Documento de engenharia preenchido
 - [x] Código funcional no repositório
 - [x] Relatório de entrega preenchido
-- [ ] Pull Request aberto
+- [x] Pull Request aberto

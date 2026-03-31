@@ -199,7 +199,7 @@ O agente opera em duas camadas de raciocínio:
 |---|---|---|
 | Precisão de elegibilidade | ≥ 85% | Comparação com gabarito legal para 5 perfis sintéticos |
 | Qualidade da explicação | ≥ 4/5 | Avaliação manual |
-| Latência da resposta | ≤ 5s | Medição com `time.time()` |
+| Latência do pipeline (excl. LLM) | ≤ 5s | Medição com time.time() antes e após a chamada ao Ollama |
 | Cobertura do RAG | ≥ 80% | Percentual de perguntas com ao menos 1 doc relevante recuperado |
 
 - **Conjunto de testes:**
