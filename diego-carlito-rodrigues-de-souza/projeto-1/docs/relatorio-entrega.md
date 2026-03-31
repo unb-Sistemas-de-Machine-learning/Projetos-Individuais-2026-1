@@ -73,15 +73,15 @@ projeto-1/
 ├── docs/
 │   ├── documento-engenharia.md
 │   └── relatorio-entrega.md
+├── logs/              # Arquivos JSON de auditoria gerados por sessão
 ├── src/
 │   ├── __init__.py
 │   ├── agents.py      # Lógica de LLMs, Prompts e Parsing de JSON
 │   ├── main.py        # Interface Streamlit e orquestração de telas
 │   └── rag.py         # Ingestão de dados e busca vetorial
-├── logs/              # Arquivos JSON de auditoria gerados por sessão
 ├── .env.example
 ├── .gitignore
-└──  requirements.txt
+└── requirements.txt
 ```
 
 ### 4.3 Como executar
