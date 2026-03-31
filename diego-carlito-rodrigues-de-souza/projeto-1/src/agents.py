@@ -14,7 +14,7 @@ class SessionContext:
     concurso: str
     materia: str
     banca: str
-    nivel: str = "desconhecido"          # Iniciante | Intermediário | Avançado
+    nivel: str = "desconhecido"
     trilha: list[dict] = field(default_factory=list)
     historico_respostas: list[dict] = field(default_factory=list)
     sessao_encerrada: bool = False
@@ -22,13 +22,23 @@ class SessionContext:
 def _call_llm(prompt: str, system: str = "") -> str:
     client = genai.Client()
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         config=types.GenerateContentConfig(
             system_instruction=system or "Você é um assistente especializado em concursos públicos de TI.",
         ),
         contents=prompt,
     )
-    return response.text.strip()
+    
+    texto = response.text.strip()
+    if texto.startswith("```json"):
+        texto = texto[7:]
+    elif texto.startswith("```"):
+        texto = texto[3:]
+    
+    if texto.endswith("```"):
+        texto = texto[:-3]
+        
+    return texto.strip()
 
 class DiagnosticoAgent:
 
@@ -180,6 +190,9 @@ class GeradorAgent:
 
         prompt += (
             "\nA questão deve ser inédita. Inclua gabarito e justificativa.\n"
+            "MUITO IMPORTANTE: Se a banca for de múltipla escolha (ex: FCC, FGV, VUNESP), "
+            "você OBRIGATORIAMENTE deve digitar as alternativas (A, B, C, D, E) "
+            "dentro do texto do campo 'enunciado'.\n"
             "Responda APENAS em JSON:\n"
             '{"enunciado": "...", "gabarito": "...", "justificativa": "..."}'
         )
@@ -189,9 +202,7 @@ class GeradorAgent:
             data = json.loads(resposta)
             return (
                 f"❓ **Questão — {topico}** *(estilo {ctx.banca})*\n\n"
-                f"{data['enunciado']}\n\n"
-                f"||**Gabarito:** {data['gabarito']}||\n"
-                f"||💡 *{data['justificativa']}*||"
+                f"{data['enunciado']}"
             )
         except json.JSONDecodeError:
             return f"❓ **Questão sobre {topico}:**\n\n{resposta}"
@@ -228,6 +239,11 @@ class AvaliadorAgent:
         try:
             data = json.loads(resposta)
         except json.JSONDecodeError:
+            ctx.historico_respostas.append({
+                "topico": topico,
+                "acertou": False,  
+                "lacuna": "O agente não conseguiu formatar o laudo."
+            })
             return f"📝 **Avaliação:**\n\n{resposta}"
 
         ctx.historico_respostas.append({
