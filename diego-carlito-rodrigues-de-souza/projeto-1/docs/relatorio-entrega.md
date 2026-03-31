@@ -74,8 +74,9 @@ projeto-1/
 │   ├── documento-engenharia.md
 │   └── relatorio-entrega.md
 ├── src/
-│   ├── main.py        # Interface Streamlit e orquestração de telas
+│   ├── __init__.py
 │   ├── agents.py      # Lógica de LLMs, Prompts e Parsing de JSON
+│   ├── main.py        # Interface Streamlit e orquestração de telas
 │   └── rag.py         # Ingestão de dados e busca vetorial
 ├── logs/              # Arquivos JSON de auditoria gerados por sessão
 ├── .env.example
