@@ -18,6 +18,7 @@ cryptography==46.0.6
 cuda-bindings==13.2.0
 cuda-pathfinder==1.5.0
 cuda-toolkit==13.0.2
+distro==1.9.0
 dotenv==0.9.9
 durationpy==0.10
 filelock==3.25.2
@@ -30,6 +31,7 @@ google-api-core==2.30.1
 google-api-python-client==2.193.0
 google-auth==2.49.1
 google-auth-httplib2==0.3.1
+google-genai==1.69.0
 google-generativeai==0.8.6
 googleapis-common-protos==1.73.1
 grpcio==1.78.0
@@ -119,6 +121,7 @@ setuptools==81.0.0
 shellingham==1.5.4
 six==1.17.0
 smmap==5.0.3
+sniffio==1.3.1
 soupsieve==2.8.3
 streamlit==1.55.0
 sympy==1.14.0
