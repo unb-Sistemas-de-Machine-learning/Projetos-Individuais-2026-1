@@ -26,6 +26,7 @@ Projetos-Individuais-2026-1/
 | # | Projeto | Descrição |
 |---|---------|-----------|
 | 1 | [Agente de IA Orientado a Problema](projeto-individual-1/) | Projetar e implementar um agente de IA funcional com foco em requisitos, arquitetura e implementação |
+| 2 | [Sistema de ML com MLflow](projeto-individual-2/) | Desenvolver um sistema de ML end-to-end com MLflow para rastreamento, versionamento, deploy e observabilidade |
 
 ---
 
