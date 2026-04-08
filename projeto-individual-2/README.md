@@ -1,14 +1,8 @@
-# Projeto Individual 2
+# Projeto Individual 2: Sistema de ML com MLflow (ML Systems)
 
-Este é o README para o Projeto Individual 2.
+## Objetivo
+Desenvolver um sistema de machine learning end-to-end, com foco em ML Systems, utilizando a ferramenta MLflow para rastreamento de experimentos, versionamento, registro, deploy e observabilidade.
 
-As diretrizes para commits e a estrutura geral devem seguir o padrão do `projeto-individual-1`.
+O foco principal da atividade está na engenharia do pipeline, e não na construção de modelos do zero.
 
-## Estrutura
-
-Este projeto contém uma subpasta `templates` para arquivos de documentação.
-
-## Documentação
-
-- `documento-engenharia.md`: Documento de engenharia do projeto.
-- `relatorio-entrega.md`: Relatório de entrega do projeto.
+(Conteúdo completo das instruções da disciplina...)
