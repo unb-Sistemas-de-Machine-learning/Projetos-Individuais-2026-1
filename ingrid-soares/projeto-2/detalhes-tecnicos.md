@@ -14,8 +14,8 @@ O dataset `CICIDS2017` apresenta desafios de qualidade que impactam a estabilida
 ## 2. Modelagem (Módulos de Segurança)
 ### 2.1 Módulo IDS (Intrusion Detection System)
 *   **Status:** **Validado e Funcional**. O pipeline de treinamento está operacional (Ingestão -> Limpeza -> Treino -> Registro).
+*   **Instrumentação:** Adicionado logging de métricas (`n_anomalies` e `n_normal`) via `mlflow.log_metric`. Isso permite que o MLflow gere visualizações automáticas sobre a sensibilidade do modelo à contaminação de dados.
 *   **Abordagem:** *Unsupervised Anomaly Detection* via `IsolationForest`.
-*   **Seleção:** Eficaz na detecção de *Port Scanning* com datasets de alto volume.
 *   **Configuração:** Parâmetro `contamination` ajustado para isolar 1% do comportamento da rede como anômalo.
 
 ### 2.2 Módulo Phishing (NLP)
@@ -25,11 +25,11 @@ O dataset `CICIDS2017` apresenta desafios de qualidade que impactam a estabilida
 ## 3. Arquitetura de ML Systems (MLOps em Ação)
 O sistema foi estruturado para suportar o ciclo de vida completo de ML:
 
-*   **Rastreabilidade (MLflow Tracking):** Registro automático de hiperparâmetros e persistência de modelos no MLflow. A estrutura `mlruns/` armazena todos os metadados de execução.
+*   **Rastreabilidade (MLflow Tracking):** Registro automático de hiperparâmetros (contamination) e métricas (contagem de anomalias). O log de métricas transforma dados brutos de execução em gráficos dinâmicos no dashboard, essenciais para validar o impacto do parâmetro de contaminação.
 *   **Reprodutibilidade:** Uso de `pyenv` (Python 3.10.12) e um `requirements.txt` rigoroso para evitar conflitos de dependências.
-*   **Observabilidade:** Interface de comparação (`mlflow ui`) para garantir que o melhor modelo seja promovido.
+*   **Observabilidade:** Interface de comparação (`mlflow ui`) para inspeção em tempo real.
 
-## 4. Próximos Passos
+## 4. Próximos Passos Técnicos
 - **Módulo Phishing:** Iniciar o desenvolvimento de `src/phishing/data_preprocessing.py` utilizando `DistilBERT`.
-- **Performance:** Migração de `csv` para `parquet` para otimização de I/O em grandes volumes.
-- **Guardrails:** Implementação de camadas de validação de schemas de entrada (via `pydantic`).
+- **Performance:** Migração do formato `csv` para `parquet` para otimização de I/O em grandes volumes.
+- **Guardrails:** Implementação de camadas de validação de schemas de entrada (via `pydantic`) para garantir a integridade dos dados antes da inferência.
