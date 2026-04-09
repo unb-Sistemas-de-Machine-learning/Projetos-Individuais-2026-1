@@ -1,14 +1,15 @@
-# Projeto Individual 2
+# Projeto 2: Sistema de Segurança Integrado (IDS & Phishing)
 
-Este é o README para o Projeto Individual 2.
+## Objetivo
+Desenvolver um sistema de machine learning end-to-end, com foco em ML Systems, utilizando MLflow para rastreamento de experimentos, versionamento, registro, deploy e observabilidade. O foco é a **engenharia de pipeline** para detecção de ameaças de rede e phishing.
 
-As diretrizes para commits e a estrutura geral devem seguir o padrão do `projeto-individual-1`.
-
-## Estrutura
-
-Este projeto contém uma subpasta `templates` para arquivos de documentação.
+## Estrutura do Projeto
+- `data/`: Ingestão de dados brutos e limpos.
+- `src/`: Lógica de pré-processamento, treinamento e inferência.
+- `templates/`: Templates oficiais da disciplina.
+- `relatorio_tecnico.md`: Guia técnico detalhado para estudos.
+- `relatorio-entrega.md`: Relatório de entrega oficial para submissão.
 
 ## Documentação
-
-- `documento-engenharia.md`: Documento de engenharia do projeto.
-- `relatorio-entrega.md`: Relatório de entrega do projeto.
+- `relatorio_tecnico.md`: Detalhamento dos experimentos e arquitetura.
+- `relatorio-entrega.md`: Relatório final estruturado para avaliação.
