@@ -1,15 +1,28 @@
 # Projeto 2: Sistema de Segurança Integrado (IDS & Phishing)
 
-## Objetivo
-Desenvolver um sistema de machine learning end-to-end, com foco em ML Systems, utilizando MLflow para rastreamento de experimentos, versionamento, registro, deploy e observabilidade. O foco é a **engenharia de pipeline** para detecção de ameaças de rede e phishing.
+## 1. Visão Geral
+Este repositório contém a implementação de um **Sistema de Segurança Integrado** (Intrusion Detection System - IDS e Phishing Detection) desenvolvido sob a ótica de **ML Systems**.
 
-## Estrutura do Projeto
-- `data/`: Ingestão de dados brutos e limpos.
-- `src/`: Lógica de pré-processamento, treinamento e inferência.
-- `templates/`: Templates oficiais da disciplina.
-- `relatorio_tecnico.md`: Guia técnico detalhado para estudos.
-- `relatorio-entrega.md`: Relatório de entrega oficial para submissão.
+O projeto prioriza a engenharia de pipeline, versionamento de artefatos e observabilidade, garantindo que o sistema seja modular, reprodutível e robusto para ambientes de produção.
 
-## Documentação
-- `relatorio_tecnico.md`: Detalhamento dos experimentos e arquitetura.
-- `relatorio-entrega.md`: Relatório final estruturado para avaliação.
+## 2. Arquitetura do Sistema
+O sistema é composto por dois módulos independentes que compartilham a mesma infraestrutura de logging via **MLflow**:
+
+*   **Módulo IDS:** Utiliza *Isolation Forest* para detecção de anomalias em tráfego de rede (Dataset CICIDS2017).
+*   **Módulo Phishing:** Utiliza *DistilBERT* (Hugging Face) para classificação de URLs maliciosas.
+
+## 3. Estrutura de Pastas
+```
+ingrid-soares/projeto-2/
+├── data/               # Ingestão (ids/ e phishing/)
+├── src/                # Lógica (ids/ e phishing/ e common/)
+├── models/             # Artefatos registrados
+├── mlruns/             # Rastreamento MLflow
+├── README.md           # Visão geral
+└── relatorio_tecnico.md # Detalhes da implementação
+```
+
+## 4. Tecnologias
+- **MLOps:** MLflow (tracking, registry, observabilidade).
+- **ML Frameworks:** Scikit-Learn (IDS), PyTorch/Transformers (Phishing).
+- **Ambiente:** Python 3.10.12, gerido via `pyenv`.
