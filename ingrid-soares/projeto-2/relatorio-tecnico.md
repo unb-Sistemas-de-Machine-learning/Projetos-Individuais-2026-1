@@ -1,35 +1,68 @@
-# Relatório Técnico Final: Sistema de Segurança Integrado (IDS & Phishing)
+# Relatório de Entrega — Projeto Individual 2: Sistema de ML com MLflow
 
-Este documento consolidado provê uma visão completa sobre a arquitetura do sistema, as escolhas de implementação e os desafios técnicos enfrentados no desenvolvimento do pipeline de ML.
+**Aluno(a):** Ingrid Soares  
+**Matrícula:** [Sua matrícula]  
+**Data de entrega:** 15/04/2026
 
 ---
 
-## 1. Arquitetura do Sistema
-O sistema foi desenhado para ser modular, permitindo a independência entre o módulo de detecção de tráfego de rede (IDS) e o módulo de detecção de Phishing.
+## 1. Resumo do Projeto
+Sistema de segurança integrado para detecção de anomalias em tráfego de rede (IDS/CICIDS2017) e Phishing (URLs/Hugging Face). Foco em engenharia de pipeline, versionamento e observabilidade via MLflow.
 
-- **Módulo IDS:** Foca em identificar anomalias (Port Scanning) através do dataset `CICIDS2017`.
-- **Módulo Phishing:** Foca em classificar URLs como maliciosas ou legítimas usando modelos pré-treinados via `Hugging Face`.
+## 2. Escolha do Problema, Dataset e Modelo
+### 2.1 Problema
+Detecção de intrusões (reconhecimento/scanning) e phishing. Problemas críticos em segurança corporativa.
 
-## 2. Engenharia de ML e Pipeline
-O fluxo foi construído priorizando a reprodutibilidade e a robustez:
+### 2.2 Dataset
+| Item | Descrição |
+| :--- | :--- |
+| Nome do dataset | CICIDS2017 e Dataset de URLs |
+| Fonte | UNB / Kaggle |
 
-### 2.1 Engenharia de Dados (Data Ingestion Pipeline)
-O `CICIDS2017` apresenta desafios de qualidade (colunas com espaços ocultos, valores `Infinity`).
-*   **Limpeza:** Padronização de cabeçalhos (`str.strip()`).
-*   **Tratamento de Anomalias:** Substituição de `np.inf` por `np.nan` e remoção de nulos para estabilidade numérica.
-*   **Modularidade:** Processamento centralizado em `src/ids/data_preprocessing.py`.
+### 2.3 Modelo pré-treinado
+| Item | Descrição |
+| :--- | :--- |
+| Nome | DistilBERT |
+| Fonte | Hugging Face |
+| Fine-tuning | Sim |
 
-### 2.2 Modelagem (IDS - Port Scanning)
-Escolhemos o **Isolation Forest** por sua eficiência em detecção de anomalias não supervisionada.
-*   **Hiperparâmetros:** Contaminação definida para isolar o top 1% de comportamento anômalo.
+## 3. Pré-processamento
+Limpeza de colunas, tratamento de valores `inf`/`NaN` e normalização de features.
 
-## 3. Integração MLflow (Rastreamento e Observabilidade)
-O MLflow é utilizado como backbone do sistema para garantir o ciclo de vida do modelo:
-- **Rastreamento:** Registro de parâmetros (ex: taxas de contaminação) e métricas.
-- **Versionamento:** Modelos versionados e persistidos como artefatos prontos para deploy.
-- **Observabilidade:** Comparação de execuções para garantir que o melhor modelo seja promovido.
+## 4. Estrutura do Pipeline
+Ingestão → Pré-processamento → Carregamento do modelo → Avaliação → Registro MLflow → Deploy
 
-## 4. Próximos Passos Técnicos
-- Implementar fine-tuning no modelo *DistilBERT* para o módulo Phishing.
-- Adicionar mecanismos de *Guardrails* (validação de schema com `pydantic`).
-- Migração de `csv` para `parquet` para otimização de performance.
+## 5. Uso do MLflow
+- **Rastreamento:** Parâmetros (*contamination*, *learning_rate*) e métricas (*F1-Score*, *n_anomalies*) registrados.
+- **Evidências:** Logs e artefatos de modelos registrados no registry.
+
+## 6. Deploy
+Script local de inferência via MLflow Models.
+
+## 7. Guardrails e Restrições de Uso
+Validação de inputs e limiares de confiança para alertas.
+
+## 8. Observabilidade
+Configuração de métricas de performance via MLflow UI.
+
+## 9. Limitações e Riscos
+Necessidade de retreinamento periódico frente a novas variantes de ataques.
+
+## 10. Como executar
+1. `pip install -r requirements.txt`
+2. `python src/ids/data_preprocessing.py`
+3. `python src/ids/model_training.py`
+4. `mlflow ui`
+
+## 11. Referências
+- UNB CICIDS2017 / Hugging Face.
+
+## 12. Checklist de entrega
+- [x] Código-fonte completo
+- [x] Pipeline funcional
+- [x] Configuração do MLflow
+- [x] Evidências de execução
+- [x] Modelo registrado
+- [x] Script de inferência
+- [x] Relatório de entrega preenchido
+- [x] Pull Request aberto
