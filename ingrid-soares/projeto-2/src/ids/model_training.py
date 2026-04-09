@@ -4,21 +4,20 @@ import mlflow.sklearn
 from sklearn.ensemble import IsolationForest
 import os
 
-# Define a pasta raiz do projeto de forma dinâmica
-PROJECT_ROOT = os.path.join("ingrid-soares", "projeto-2")
+# Caminho relativo simples a partir da pasta ingrid-soares/projeto-2/
+DATA_PATH = os.path.join("data", "ids", "cleaned_ids_data.csv")
 
 def train_and_log_model(data_path, contamination=0.01):
     """
-    Treina um modelo Isolation Forest para detecção de anomalias (Port Scanning)
-    e registra o modelo, parâmetros e métricas no MLflow.
+    Treina um modelo Isolation Forest e registra no MLflow.
     """
     if not os.path.exists(data_path):
-        print(f"Erro: Arquivo {data_path} não encontrado. Execute o pré-processamento primeiro.")
+        print(f"Erro: Arquivo '{data_path}' não encontrado. Verifique se você está na pasta 'projeto-2'.")
         return
 
-    print("Carregando dados para treinamento...")
+    print(f"Carregando dados de: {data_path}")
     df = pd.read_csv(data_path)
-    # Seleção de colunas numéricas para o Isolation Forest
+    # Seleção de colunas numéricas
     X = df.select_dtypes(include=['number'])
     
     # Iniciar experimento no MLflow
@@ -40,5 +39,4 @@ def train_and_log_model(data_path, contamination=0.01):
         print("Modelo treinado e registrado com sucesso no MLflow.")
 
 if __name__ == "__main__":
-    data_path = os.path.join(PROJECT_ROOT, "data", "ids", "cleaned_ids_data.csv")
-    train_and_log_model(data_path)
+    train_and_log_model(DATA_PATH)
