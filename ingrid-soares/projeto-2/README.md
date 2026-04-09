@@ -14,12 +14,14 @@ O sistema é composto por dois módulos independentes que compartilham a mesma i
 ## 3. Estrutura de Pastas
 ```
 ingrid-soares/projeto-2/
-├── data/               # Ingestão (ids/ e phishing/)
-├── src/                # Lógica (ids/ e phishing/ e common/)
-├── models/             # Artefatos registrados
-├── mlruns/             # Rastreamento MLflow
-├── README.md           # Visão geral
-└── relatorio_tecnico.md # Detalhes da implementação
+├── data/ids             # Ingestão (ids/ e phishing/)
+├── src/                 # Lógica (ids/ e phishing/ e common/)
+├── models/              # Artefatos registrados
+├── mlruns/              # Rastreamento MLflow
+├── README.md            # Visão geral
+└── detalhes-tecnicos.md # Detalhes extras
+└── relatorio-entrega.md # Informações de escopo
+└── relatorio-tecnico.md # Detalhes da implementação
 ```
 
 ## 4. Tecnologias
