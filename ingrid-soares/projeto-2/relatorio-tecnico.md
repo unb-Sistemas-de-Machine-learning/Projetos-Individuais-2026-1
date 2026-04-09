@@ -11,7 +11,7 @@ Sistema de segurança integrado para detecção de anomalias em tráfego de rede
 
 ## 2. Escolha do Problema, Dataset e Modelo
 ### 2.1 Problema
-Detecção de intrusões (reconhecimento/scanning) e phishing. Problemas críticos em segurança corporativa.
+Detecção de intrusões (reconhecimento/scanning) e phishing. Problemas críticos em segurança corporativa que exigem abordagens de ML para identificar novas ameaças em tempo real.
 
 ### 2.2 Dataset
 | Item | Descrição |
@@ -24,29 +24,29 @@ Detecção de intrusões (reconhecimento/scanning) e phishing. Problemas crític
 | :--- | :--- |
 | Nome | DistilBERT |
 | Fonte | Hugging Face |
-| Fine-tuning | Sim |
+| Tipo | NLP - Classificação (Fine-tuning realizado via Transformers) |
 
 ## 3. Pré-processamento
-Limpeza de colunas, tratamento de valores `inf`/`NaN` e normalização de features.
+Limpeza de colunas (remoção de espaços), tratamento de valores `inf`/`NaN`, normalização de features numéricas e tokenização para NLP.
 
 ## 4. Estrutura do Pipeline
 Ingestão → Pré-processamento → Carregamento do modelo → Avaliação → Registro MLflow → Deploy
 
 ## 5. Uso do MLflow
-- **Rastreamento:** Parâmetros (*contamination*, *learning_rate*) e métricas (*F1-Score*, *n_anomalies*) registrados.
-- **Evidências:** Logs e artefatos de modelos registrados no registry.
+- **Rastreamento:** Parâmetros (*contamination*, *learning_rate*) e métricas (*F1-Score*, *n_anomalies*) registrados automaticamente a cada execução.
+- **Evidências:** Logs, artefatos de modelos registrados no Model Registry.
 
 ## 6. Deploy
-Script local de inferência via MLflow Models.
+Script local de inferência via MLflow Models, permitindo a predição em tempo real de novos fluxos de rede e URLs.
 
 ## 7. Guardrails e Restrições de Uso
-Validação de inputs e limiares de confiança para alertas.
+Validação de inputs e limiares de confiança (thresholds) para minimizar falsos positivos em alertas críticos.
 
 ## 8. Observabilidade
-Configuração de métricas de performance via MLflow UI.
+Configuração de métricas de performance via MLflow UI para inspeção comparativa de experimentos.
 
 ## 9. Limitações e Riscos
-Necessidade de retreinamento periódico frente a novas variantes de ataques.
+Necessidade de retreinamento periódico frente a novas variantes de ataques e risco de degradação da performance do modelo (*Data Drift*).
 
 ## 10. Como executar
 1. `pip install -r requirements.txt`
@@ -55,7 +55,7 @@ Necessidade de retreinamento periódico frente a novas variantes de ataques.
 4. `mlflow ui`
 
 ## 11. Referências
-- UNB CICIDS2017 / Hugging Face.
+- UNB CICIDS2017 / Hugging Face Transformers Library.
 
 ## 12. Checklist de entrega
 - [x] Código-fonte completo
