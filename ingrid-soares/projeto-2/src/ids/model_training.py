@@ -4,19 +4,27 @@ import mlflow.sklearn
 from sklearn.ensemble import IsolationForest
 import os
 
-# Caminho relativo simples: a partir de ingrid-soares/projeto-2/
-DATA_PATH = os.path.join("data", "ids", "cleaned_ids_data.csv")
+# Caminho base para os dados (CSV e Parquet)
+DATA_DIR = os.path.join("data", "ids")
+CSV_PATH = os.path.join(DATA_DIR, "cleaned_ids_data.csv")
+PARQUET_PATH = os.path.join(DATA_DIR, "cleaned_ids_data.parquet")
 
-def train_and_log_model(data_path, contamination=0.01):
+def load_data(csv_path, parquet_path):
+    """Carrega dados em Parquet (preferencial) ou CSV."""
+    if os.path.exists(parquet_path):
+        print(f"Carregando dados via Parquet: {parquet_path}")
+        return pd.read_parquet(parquet_path)
+    elif os.path.exists(csv_path):
+        print(f"Carregando dados via CSV: {csv_path}")
+        return pd.read_csv(csv_path)
+    else:
+        raise FileNotFoundError(f"Dados não encontrados em {csv_path} ou {parquet_path}")
+
+def train_and_log_model(csv_path, parquet_path, contamination=0.01):
     """
     Treina um modelo Isolation Forest, registra métricas de anomalia e o modelo no MLflow.
     """
-    if not os.path.exists(data_path):
-        print(f"Erro: Arquivo '{data_path}' não encontrado. Verifique se você está na pasta 'ingrid-soares/projeto-2/'.")
-        return
-
-    print(f"Carregando dados de: {data_path}")
-    df = pd.read_csv(data_path)
+    df = load_data(csv_path, parquet_path)
     X = df.select_dtypes(include=['number'])
     
     # Iniciar experimento no MLflow
@@ -36,7 +44,7 @@ def train_and_log_model(data_path, contamination=0.01):
         mlflow.log_param("model_type", "IsolationForest")
         mlflow.log_param("contamination", contamination)
         
-        # Log de métricas (para gerar gráficos no MLflow)
+        # Log de métricas
         mlflow.log_metric("n_anomalies", n_anomalies)
         mlflow.log_metric("n_normal", n_normal)
         
@@ -47,4 +55,4 @@ def train_and_log_model(data_path, contamination=0.01):
         print("Modelo registrado com sucesso no MLflow.")
 
 if __name__ == "__main__":
-    train_and_log_model(DATA_PATH)
+    train_and_log_model(CSV_PATH, PARQUET_PATH)

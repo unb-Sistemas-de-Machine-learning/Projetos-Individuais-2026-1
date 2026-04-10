@@ -28,12 +28,15 @@ if __name__ == "__main__":
     data_dir = os.path.join("data", "ids")
     file_name = "Monday-WorkingHours.pcap_ISCX.csv"
     input_path = os.path.join(data_dir, file_name)
-    output_path = os.path.join(data_dir, "cleaned_ids_data.csv")
+    
+    output_csv = os.path.join(data_dir, "cleaned_ids_data.csv")
+    output_parquet = os.path.join(data_dir, "cleaned_ids_data.parquet")
     
     try:
         df = preprocess_ids_data(input_path)
-        # Salva o arquivo limpo para uso no treinamento
-        df.to_csv(output_path, index=False)
-        print(f"Arquivo limpo salvo em {output_path}")
+        # Salva o arquivo limpo para uso no treinamento em CSV e Parquet
+        df.to_csv(output_csv, index=False)
+        df.to_parquet(output_parquet, index=False, engine='pyarrow', compression='snappy')
+        print(f"Arquivos salvos em {output_csv} e {output_parquet}")
     except Exception as e:
         print(f"Erro: {e}")
