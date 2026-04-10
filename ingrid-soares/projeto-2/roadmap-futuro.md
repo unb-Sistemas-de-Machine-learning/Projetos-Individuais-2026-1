@@ -1,4 +1,4 @@
-# Roadmap de Engenharia de ML: Evoluções Avançadas (Nível Industrial)
+# Roadmap de Engenharia de ML: Evoluções Futuras
 
 Este documento define o plano de evolução técnica para transformar o pipeline de MLOps atual (operacional em ambiente local) em um sistema de escala empresarial em nuvem.
 

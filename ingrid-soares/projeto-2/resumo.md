@@ -1,6 +1,6 @@
-# Resumo do Pull Request: Projeto Individual 2 - Sistema de ML (ML Systems & MLOps)
+# Resumo do Projeto Individual 2 - Sistema de ML (ML Systems & MLOps)
 
-Este Pull Request entrega uma infraestrutura de **Machine Learning Systems** de alta maturidade, desenhada para detecção de ameaças cibernéticas (IDS e Phishing). O sistema evoluiu de scripts isolados para um ecossistema de produção robusto, focado em escalabilidade e observabilidade.
+Essa é a entrega de uma infraestrutura de **Machine Learning Systems** de alta maturidade, desenhada para detecção de ameaças cibernéticas (IDS e Phishing). O sistema evoluiu de scripts isolados para um ecossistema de produção robusto, focado em escalabilidade e observabilidade.
 
 ### Visão Geral: Da Concepção à Produção
 O projeto começou com a necessidade de desenvolver modelos de detecção de ameaças que fossem além de simples classificações, exigindo um pipeline que pudesse ser operado com segurança. Ao longo do desenvolvimento, transformamos dados brutos (CSV) em fluxos de trabalho otimizados (Parquet), garantindo que o sistema fosse rápido e não consumisse memória desnecessária. Implementamos "filtros de segurança" (Guardrails) em todas as entradas de dados, protegendo o sistema contra dados corrompidos ou maliciosos. Além disso, automatizamos o processo de treinamento e fine-tuning, garantindo que o sistema não dependa de ajustes manuais, e criamos uma API moderna que permite que o sistema seja consultado instantaneamente, monitorando sua própria saúde e performance através de dashboards e logs estruturados.
