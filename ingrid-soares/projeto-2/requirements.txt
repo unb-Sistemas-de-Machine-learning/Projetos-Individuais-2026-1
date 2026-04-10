@@ -7,3 +7,4 @@ transformers
 torch
 sentencepiece
 pydantic
+evaluate
