@@ -1,39 +1,56 @@
+# src/ids/inference.py
+
 import mlflow
-import mlflow.sklearn
 import pandas as pd
+import numpy as np
 import os
 
-# Define a pasta raiz do projeto de forma dinâmica
-PROJECT_ROOT = os.path.join("ingrid-soares", "projeto-2")
+# --- Configurações ---
+MODEL_NAME = "ids_model"
 
-def predict_traffic(test_data_path, model_uri="models:/ids_model/latest"):
-    """
-    Carrega o modelo do MLflow e faz a inferência no tráfego de rede.
-    """
-    print(f"Carregando modelo de: {model_uri}")
+# --- Funções de Inferência ---
+
+def load_ids_model(model_name=MODEL_NAME):
+    """Carrega a versão mais recente do modelo IDS via MLflow Registry."""
+    print(f"Carregando modelo '{model_name}' via MLflow...")
+    # Usando o Model Registry (forma mais robusta)
+    model_uri = f"models:/{model_name}/latest"
     try:
-        model = mlflow.sklearn.load_model(model_uri)
+        return mlflow.sklearn.load_model(model_uri)
     except Exception as e:
-        print(f"Erro ao carregar modelo: {e}. Certifique-se que o modelo foi registrado.")
-        return None
+        print(f"Erro ao carregar modelo do Registry: {e}. Tente treinar e registrar o modelo primeiro.")
+        raise
 
-    df = pd.read_csv(test_data_path)
-    X = df.select_dtypes(include=['number'])
+def predict_traffic(df, model):
+    """
+    Realiza a inferência em um DataFrame de tráfego de rede.
+    """
+    # Guardrail: Seleciona apenas colunas numéricas
+    X = df.select_dtypes(include=[np.number])
     
-    # IsolationForest: 1 para normal, -1 para anomalia
-    df['is_anomaly'] = model.predict(X)
+    # Tratamento preventivo de valores nulos
+    if X.isnull().values.any():
+        print("Aviso: Dados de entrada contêm valores nulos. Preenchendo com 0.")
+        X = X.fillna(0)
+
+    # Inferência: IsolationForest retorna -1 para anomalia, 1 para normal
+    predictions = model.predict(X)
+    df['anomaly_label'] = ['anomaly' if p == -1 else 'normal' for p in predictions]
     
     return df
 
 if __name__ == "__main__":
-    # Caminho do teste dentro da estrutura correta
-    test_path = os.path.join(PROJECT_ROOT, "data", "ids", "test_data.csv")
+    # Caminho do teste
+    test_path = "data/ids/test_data.csv"
     
     if os.path.exists(test_path):
-        results = predict_traffic(test_path)
-        if results is not None:
-            output_path = os.path.join(PROJECT_ROOT, "data", "ids", "predictions.csv")
-            results.to_csv(output_path, index=False)
-            print(f"Inferência concluída e salva em {output_path}")
+        model = load_ids_model()
+        df = pd.read_csv(test_path)
+        
+        results = predict_traffic(df, model)
+        
+        output_path = "data/ids/predictions.csv"
+        results.to_csv(output_path, index=False)
+        print(f"Inferência concluída. {len(results)} registros processados. Resultados em: {output_path}")
     else:
-        print(f"Arquivo de teste {test_path} não encontrado.")
+        print(f"Arquivo de teste '{test_path}' não encontrado.")
