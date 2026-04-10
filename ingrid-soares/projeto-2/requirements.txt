@@ -2,7 +2,6 @@ mlflow
 pandas
 numpy
 scikit-learn
-pycaret
 transformers
 torch
 sentencepiece

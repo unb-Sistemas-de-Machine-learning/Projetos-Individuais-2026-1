@@ -5,12 +5,14 @@ Desenvolver um sistema de machine learning end-to-end, focado em **ML Systems**,
 
 ## Estrutura do Repositório
 - `data/`: Ingestão de dados brutos e limpos.
-- `src/`: Lógica de pré-processamento, treinamento e inferência.
-- `detalhes-tecnicos.md`: Documentação técnica de engenharia.
-- `relatorio-tecnico.md`: Relatório oficial de entrega.
+- `src/`: Lógica de pré-processamento, fine-tuning e inferência.
+    - `ids/`: Módulo de detecção de intrusão baseado em *Isolation Forest*.
+    - `phishing/`: Módulo de detecção de phishing baseado em *DistilBERT*.
+    - `common/`: Utilitários compartilhados.
 
 ## Execução
 1. `pip install -r requirements.txt`
-2. `python src/ids/data_preprocessing.py`
-3. `python src/ids/model_training.py`
-4. `mlflow ui`
+2. **Treinamento IDS:** `python src/ids/model_training.py`
+3. **Fine-tuning Phishing:** `TRAIN_EPOCHS=3 TRAIN_BATCH_SIZE=8 python src/phishing/fine_tuning.py`
+4. **MLflow UI:** `mlflow ui`
+5. **Inferência:** `python src/ids/inference.py` ou `python src/phishing/inference.py`
