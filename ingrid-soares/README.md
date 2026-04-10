@@ -9,7 +9,7 @@ Repositório destinado aos **projetos individuais** da disciplina de Sistemas de
 
 | # | Projeto | Descrição |
 |---|---------|-----------|
-| 1 | [Agente de IA Orientado a Problema](projeto-individual-1/) | Projetar e implementar um agente de IA funcional com foco em requisitos, arquitetura e implementação |
-| 2 | [Sistema de ML com MLflow](ingrid-soares/projeto-2/) | Desenvolvimento de um sistema end-to-end de ML com foco em MLOps, rastreamento de experimentos, versionamento, deploy e observabilidade. |
+| 1 | [Agente de IA Orientado a Problema](projeto-1/) | Projetar e implementar um agente de IA funcional com foco em requisitos, arquitetura e implementação |
+| 2 | [Sistema de ML com MLflow](projeto-2/) | Desenvolvimento de um sistema end-to-end de ML com foco em MLOps, rastreamento de experimentos, versionamento, deploy e observabilidade. |
 
 ---

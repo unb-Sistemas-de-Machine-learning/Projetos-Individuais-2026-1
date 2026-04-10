@@ -23,7 +23,7 @@ Projetos-Individuais-2026-1/
 
 
 ### Projetos de Ingrid Soares
-- [Repositório de Projetos Individual](https://github.com/ingrdsoares/Projetos-Individuais-2026-1/tree/main/ingrid-soares)
+- [Repositório de Projetos Individual](ingrid-soares/)
 
 ---
 
