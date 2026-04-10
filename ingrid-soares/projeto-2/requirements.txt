@@ -6,3 +6,4 @@ pycaret
 transformers
 torch
 sentencepiece
+pydantic
