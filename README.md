@@ -21,12 +21,6 @@ Projetos-Individuais-2026-1/
 └── ...
 ```
 
-## Projetos
-
-| # | Projeto | Descrição |
-|---|---------|-----------|
-| 1 | [Agente de IA Orientado a Problema](projeto-individual-1/) | Projetar e implementar um agente de IA funcional com foco em requisitos, arquitetura e implementação |
-| 2 | [Sistema de ML com MLflow](ingrid-soares/projeto-2/) | Desenvolvimento de um sistema end-to-end de ML com foco em MLOps, rastreamento de experimentos, versionamento, deploy e observabilidade. |
 
 ### Projetos de Ingrid Soares
 - [Repositório de Projetos Individual](https://github.com/ingrdsoares/Projetos-Individuais-2026-1/tree/main/ingrid-soares)
