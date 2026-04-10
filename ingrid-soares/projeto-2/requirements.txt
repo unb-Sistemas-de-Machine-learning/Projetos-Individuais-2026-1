@@ -2,8 +2,15 @@ mlflow
 pandas
 numpy
 scikit-learn
+pycaret
 transformers
 torch
 sentencepiece
 pydantic
 evaluate
+optuna
+optuna-integration
+fastapi
+uvicorn
+pyarrow
+fastparquet
