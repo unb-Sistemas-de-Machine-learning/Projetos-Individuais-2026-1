@@ -1,1 +1,10 @@
 *.csv
+    mlruns/
+    mlflow.db
+    src/phishing/mlruns/
+    src/phishing/mlflow.db
+    EOF
+
+
+
+eof
