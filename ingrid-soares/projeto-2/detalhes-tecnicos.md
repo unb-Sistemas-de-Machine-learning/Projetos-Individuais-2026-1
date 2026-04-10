@@ -409,7 +409,7 @@ Este checklist organiza as entregas em níveis de criticidade e maturidade, serv
 ### 12.3 Performance e Otimização 
 
 - [x] **Otimização de I/O (Parquet):** Migração do formato de persistência de dados de `csv` para `parquet`, visando redução drástica de latência de leitura e consumo de memória em grandes volumes.
-- [ ] **Dashboards de Observabilidade:** Configuração de painéis em *Grafana/Dash* para monitoramento de eventos por segundo (EPS) e latência de inferência.
+- [x] **Dashboards de Observabilidade:** Configuração de painéis em *Grafana/Dash* para monitoramento de eventos por segundo (EPS) e latência de inferência.
 
 ---
 
