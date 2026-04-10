@@ -1,7 +1,7 @@
 # Relatório de Entrega — Projeto Individual 2: Sistema de ML com MLflow
 
 **Aluno(a):** Ingrid Soares  
-**Matrícula:** [Sua matrícula]  
+**Matrícula:** 160125162
 **Data de entrega:** 15/04/2026
 
 ---
@@ -25,6 +25,7 @@ Detecção de intrusões (reconhecimento/scanning) e phishing. Problemas crític
 | Nome | DistilBERT |
 | Fonte | Hugging Face |
 | Tipo | NLP - Classificação (Fine-tuning realizado via Transformers) |
+| Fine-tuning realizado? | Sim (Pipeline implementado) |
 
 ## 3. Pré-processamento
 Limpeza de colunas (remoção de espaços), tratamento de valores `inf`/`NaN`, normalização de features numéricas e tokenização para NLP.
@@ -55,7 +56,8 @@ Necessidade de retreinamento periódico frente a novas variantes de ataques e ri
 4. `mlflow ui`
 
 ## 11. Referências
-- UNB CICIDS2017 / Hugging Face Transformers Library.
+- UNB CICIDS2017
+- Hugging Face Transformers Library.
 
 ## 12. Checklist de entrega
 - [x] Código-fonte completo
@@ -65,4 +67,4 @@ Necessidade de retreinamento periódico frente a novas variantes de ataques e ri
 - [x] Modelo registrado
 - [x] Script de inferência
 - [x] Relatório de entrega preenchido
-- [x] Pull Request aberto
+- [ ] Pull Request aberto
