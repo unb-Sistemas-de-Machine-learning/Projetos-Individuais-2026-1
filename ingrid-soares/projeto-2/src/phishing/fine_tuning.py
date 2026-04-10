@@ -10,7 +10,23 @@ import os
 import evaluate
 
 # --- Configurações ---
-DATA_PATH = os.path.join("ingrid-soares", "projeto-2", "data", "phishing", "phishing_data.csv")
+DATA_DIR = os.path.join("ingrid-soares", "projeto-2", "data", "phishing")
+CSV_PATH = os.path.join(DATA_DIR, "phishing_data.csv")
+PARQUET_PATH = os.path.join(DATA_DIR, "phishing_data.parquet")
+
+EPOCHS = int(os.getenv("TRAIN_EPOCHS", 3))
+BATCH_SIZE = int(os.getenv("TRAIN_BATCH_SIZE", 8))
+
+def load_data(csv_path, parquet_path):
+    """Carrega dados em Parquet (preferencial) ou CSV."""
+    if os.path.exists(parquet_path):
+        print(f"Carregando Phishing via Parquet (otimizado): {parquet_path}")
+        return pd.read_parquet(parquet_path)
+    elif os.path.exists(csv_path):
+        print(f"Carregando Phishing via CSV: {csv_path}")
+        return pd.read_csv(csv_path)
+    else:
+        raise FileNotFoundError(f"Dados não encontrados em {csv_path} ou {parquet_path}")
 
 def compute_metrics(eval_pred):
     metric = evaluate.load("accuracy")
@@ -22,12 +38,7 @@ def model_init():
     return DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=2)
 
 def run_optuna_tuning():
-    if not os.path.exists(DATA_PATH):
-        print(f"Erro: Arquivo '{DATA_PATH}' não encontrado.")
-        return
-
-    print("Preparando dados...")
-    df = pd.read_csv(DATA_PATH).rename(columns={'url': 'text', 'label': 'labels'})
+    df = load_data(CSV_PATH, PARQUET_PATH).rename(columns={'url': 'text', 'label': 'labels'})
     dataset = Dataset.from_pandas(df).train_test_split(test_size=0.2)
     
     tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
