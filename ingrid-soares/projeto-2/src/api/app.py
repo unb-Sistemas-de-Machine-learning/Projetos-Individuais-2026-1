@@ -6,6 +6,7 @@ import time
 import logging
 from src.ids.inference import load_ids_model, predict_traffic
 from src.phishing.inference import load_model_and_tokenizer, predict_url
+from src.common.drift_detector import detect_drift
 
 # Configurar logging para monitoramento
 logging.basicConfig(level=logging.INFO)
@@ -13,10 +14,13 @@ logger = logging.getLogger("ML-Security-API")
 
 app = FastAPI(title="ML Security API")
 
-# --- Carregamento dos modelos em memória ---
-print("Carregando modelos para API...")
+# --- Carregamento dos modelos e baseline para detecção de drift ---
+print("Carregando modelos e baseline para API...")
 ids_model = load_ids_model()
 phishing_tokenizer, phishing_model = load_model_and_tokenizer()
+
+# Carrega baseline de treino (IDS) para comparação de drift
+TRAIN_IDS_DATA = pd.read_parquet("data/ids/cleaned_ids_data.parquet")
 
 class PhishingRequest(BaseModel):
     url: str
@@ -45,6 +49,12 @@ async def predict_ids(data: dict):
     # Recebe dados JSON, converte para DataFrame e faz inferência
     try:
         df = pd.DataFrame([data])
+        
+        # Verifica Drift antes da inferência
+        if detect_drift(TRAIN_IDS_DATA, df):
+            logger.critical("ALERTA: Data Drift detectado nos dados de inferência!")
+            # Opcional: Adicionar lógica para notificação aqui
+            
         results = predict_traffic(df, ids_model)
         return results.to_dict(orient="records")[0]
     except Exception as e:
