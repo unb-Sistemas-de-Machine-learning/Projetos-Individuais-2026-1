@@ -5,15 +5,16 @@ from transformers import DistilBertTokenizer, DistilBertForSequenceClassificatio
 import torch
 import os
 
-# Caminho relativo simples a partir da pasta ingrid-soares/projeto-2/
-DATA_PATH = os.path.join("data", "phishing", "phishing_data.csv")
+# Caminho relativo ajustado para subir dois níveis (de src/phishing/ para a raiz do projeto)
+# Raiz do projeto é: Proj-Individuais-2026-1/ingrid-soares/projeto-2/
+DATA_PATH = os.path.join("..", "..", "data", "phishing", "phishing_data.csv")
 
 def train_phishing_model(data_path):
     """
     Treina/Carrega um modelo DistilBERT para detecção de Phishing.
     """
     if not os.path.exists(data_path):
-        print(f"Erro: Arquivo '{data_path}' não encontrado.")
+        print(f"Erro: Arquivo '{data_path}' não encontrado. Caminho atual: {os.getcwd()}")
         return
 
     print(f"Carregando dados de: {data_path}")
