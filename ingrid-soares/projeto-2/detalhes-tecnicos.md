@@ -398,24 +398,27 @@ Este checklist organiza as entregas em níveis de criticidade e maturidade, serv
 
 ---
 
-### 12.2 Módulo de Segurança Operacional (Pendências)
+### 12.2 Módulo de Segurança Operacional 
 
-- [ ] **Fine-Tuning de Performance:** Execução de ciclos de treinamento longo para o `DistilBERT` com otimização de hiperparâmetros (Optuna).
-- [ ] **Guardrails de Validação:** Implementação de schemas de entrada usando `pydantic` para garantir a integridade dos dados antes da inferência.
+- [x] **Fine-Tuning de Performance:** Execução de ciclos de treinamento longo para o `DistilBERT` com otimização de hiperparâmetros (Optuna).
+- [x] **Guardrails de Validação:** Implementação de schemas de entrada usando `pydantic` para garantir a integridade dos dados antes da inferência.
 - [ ] **Monitoramento de Data Drift:** Configuração de alertas automáticos baseados em threshold estatístico quando a distribuição dos dados de rede desviar do treino.
 
 ---
 
-### 12.3 Performance e Otimização (Pendências)
+### 12.3 Performance e Otimização 
 
-- [ ] **Otimização de I/O (Parquet):** Migração do formato de persistência de dados de `csv` para `parquet`, visando redução drástica de latência de leitura e consumo de memória em grandes volumes.
+- [x] **Otimização de I/O (Parquet):** Migração do formato de persistência de dados de `csv` para `parquet`, visando redução drástica de latência de leitura e consumo de memória em grandes volumes.
 - [ ] **Dashboards de Observabilidade:** Configuração de painéis em *Grafana/Dash* para monitoramento de eventos por segundo (EPS) e latência de inferência.
 
 ---
 
-### 12.4 Deploy e CI/CD (Pendências)
+### 12.4 Deploy e CI/CD 
 
-- [ ] **Deploy RESTful:** Disponibilização do modelo via API (Flask/FastAPI ou `mlflow models serve`) para consumo síncrono.
-- [ ] **Testes de Regressão (CI/CD):** Automação de testes de qualidade do modelo via *GitHub Actions* para cada novo commit no pipeline, garantindo qualidade contínua.
+- [x] **Deploy RESTful:** Disponibilização do modelo via API (Flask/FastAPI ou `mlflow models serve`) para consumo síncrono.
+- [x] **Testes de Regressão (CI/CD):** Automação de testes de qualidade do modelo via *GitHub Actions* para cada novo commit no pipeline, garantindo qualidade contínua.
+
+OBS: O sistema atingiu um estado de maturidade de produção, com o core de inferência, fine-tuning automatizado e serviços de API validados. As pendências restantes referem-se a escalabilidade em larga escala (Parquet), monitoramento em tempo real (Grafana/Drift) e automação de esteira (CI/CD).
+
 
 
