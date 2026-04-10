@@ -9,3 +9,7 @@
    .python-version
    EOF
 
+mlruns/
+mlflow.db
+src/phishing/mlruns/
+src/phishing/mlflow.db
