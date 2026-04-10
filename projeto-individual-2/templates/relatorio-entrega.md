@@ -171,4 +171,3 @@ python src/inference.py
 - [ ] Script ou endpoint de inferência
 - [ ] Relatório de entrega preenchido
 - [ ] Pull Request aberto
-

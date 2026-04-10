@@ -171,4 +171,3 @@ O relatório deve justificar:
 1. Dentro da  pasta `projeto-2/`, crie uma subpasta com o nome do seu projeto
 2. Coloque todos os entregáveis dentro dessa subpasta
 3. Abra um **Pull Request** para submissão
-
