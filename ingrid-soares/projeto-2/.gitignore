@@ -1,10 +1,11 @@
-*.csv
+    *.csv
     mlruns/
     mlflow.db
     src/phishing/mlruns/
     src/phishing/mlflow.db
-    EOF
+    __pycache__/
+    *.pyc
+   .env
+   .python-version
+   EOF
 
-
-
-eof
