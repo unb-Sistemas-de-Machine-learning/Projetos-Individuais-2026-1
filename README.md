@@ -21,12 +21,6 @@ Projetos-Individuais-2026-1/
 └── ...
 ```
 
-## Projetos
-
-| # | Projeto | Descrição |
-|---|---------|-----------|
-| 1 | [Agente de IA Orientado a Problema](projeto-individual-1/) | Projetar e implementar um agente de IA funcional com foco em requisitos, arquitetura e implementação |
-
 ---
 
 ## Regras
