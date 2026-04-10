@@ -10,6 +10,7 @@ Este documento centraliza as entregas validadas do pipeline de MLOps.
 - [x] **Fine-Tuning de Phishing:** Pipeline de NLP (`DistilBERT`) com otimização bayesiana (Optuna), validação cruzada e métricas de acurácia.
 - [x] **Guardrails de Validação:** Implementação de contratos de dados (via `pydantic`) para garantir a integridade dos inputs antes da inferência.
 - [x] **Deploy RESTful:** Disponibilização de serviços de inferência síncronos via **FastAPI**, com documentação automática.
+- [x] **Automação de CI/CD (Regressão):** Automação de testes de qualidade do modelo e integridade do pipeline via **GitHub Actions**.
 - [x] **Documentação Técnica:** Relatórios e Detalhes Técnicos consolidados e versionados no repositório.
 - [x] **Governança de Ambiente:** Fixação de dependências via `requirements.txt` (suporte a `transformers`, `torch`, `pydantic`, `optuna` e `fastapi`).
 
