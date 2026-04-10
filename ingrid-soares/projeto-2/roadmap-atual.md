@@ -2,7 +2,7 @@
 
 Este documento centraliza as entregas validadas do pipeline de MLOps.
 
-### 12.1 Funcionalidades Implementadas e Validadas (Core MLOps)
+### 1 Funcionalidades Implementadas e Validadas (Core MLOps)
 
 - [x] **Estrutura de Repositório:** Organização modular centralizada em `src/`, garantindo separação de responsabilidades e portabilidade absoluta.
 - [x] **Ingestão IDS:** Pipeline de dados robusto com sanitização automática (`inf/NaN`) e normalização estatística para o dataset CICIDS2017.
@@ -16,22 +16,22 @@ Este documento centraliza as entregas validadas do pipeline de MLOps.
 
 ---
 
-### 12.2 Módulo de Segurança Operacional 
+### 2 Módulo de Segurança Operacional 
 
 - [ ] **Monitoramento de Data Drift:** Configuração de alertas automáticos baseados em threshold estatístico quando a distribuição dos dados de rede desviar do treino.
 
 ---
 
-### 12.3 Performance e Otimização 
+### 3 Performance e Otimização 
 
 - [ ] **Otimização de I/O (Parquet):** Migração do formato de persistência de dados de `csv` para `parquet`, visando redução drástica de latência de leitura e consumo de memória.
 - [ ] **Dashboards de Observabilidade (Grafana/Dash):** Configuração de painéis externos para monitoramento avançado de latência e EPS (Eventos Por Segundo).
 
 ---
 
-### 12.4 Deploy e CI/CD 
+### 4 Deploy e CI/CD 
 
-- [ ] **Testes de Regressão (CI/CD):** Automação de testes de qualidade do modelo via *GitHub Actions* para cada novo commit no pipeline, garantindo qualidade contínua.
+- [x] **Testes de Regressão (CI/CD):** Automação de testes de qualidade do modelo via *GitHub Actions* para cada novo commit no pipeline, garantindo qualidade contínua.
 
 **OBS:** O sistema atingiu um estado avançado de maturidade de produção, com o core de inferência, fine-tuning automatizado e serviços de API já validados. As pendências restantes referem-se a escalabilidade em larga escala (Parquet), monitoramento avançado em tempo real (Grafana/Drift) e automação de esteira (CI/CD). 
 
