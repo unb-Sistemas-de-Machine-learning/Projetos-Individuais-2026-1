@@ -4,7 +4,6 @@ Repositório destinado aos **projetos individuais** da disciplina de Sistemas de
 
 **Aluno(a):** Ingrid Soares  
 **Matrícula:** 160125162
-**Data de entrega:** 15/04/2026
 
 ## Projetos
 

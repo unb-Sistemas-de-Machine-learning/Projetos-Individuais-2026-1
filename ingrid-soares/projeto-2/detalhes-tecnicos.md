@@ -402,7 +402,7 @@ Este checklist organiza as entregas em níveis de criticidade e maturidade, serv
 
 - [x] **Fine-Tuning de Performance:** Execução de ciclos de treinamento longo para o `DistilBERT` com otimização de hiperparâmetros (Optuna).
 - [x] **Guardrails de Validação:** Implementação de schemas de entrada usando `pydantic` para garantir a integridade dos dados antes da inferência.
-- [ ] **Monitoramento de Data Drift:** Configuração de alertas automáticos baseados em threshold estatístico quando a distribuição dos dados de rede desviar do treino.
+- [x] **Monitoramento de Data Drift:** Configuração de alertas automáticos baseados em threshold estatístico quando a distribuição dos dados de rede desviar do treino.
 
 ---
 
