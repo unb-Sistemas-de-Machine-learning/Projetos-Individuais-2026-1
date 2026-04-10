@@ -28,6 +28,6 @@ Este documento centraliza as entregas validadas do pipeline de MLOps.
 **Status:** O sistema atingiu um estado avançado de maturidade de produção, com o core de inferência, fine-tuning automatizado e serviços de API já validados. O projeto encontra-se em fase de refinamento contínuo para escalabilidade em larga escala (Parquet), monitoramento em tempo real (Grafana/Drift) e automação de esteira (CI/CD). Todo o core de inferência, fine-tuning automatizado, API de baixo overhead (latência monitorada) e lógica de detecção de drift estão implementados e validados.
 
 **Consulte os documentos para o roadmap viável da disciplina:**
-- [roadmap-futuro.md](https://github.com/ingrdsoares/Projetos-Individuais-2026-1/blob/main/ingrid-soares/projeto-2/roadmap-futuro.md) para detalhes sobre as próximas evoluções técnicas.
-- [relatorio-entrega.md](https://github.com/ingrdsoares/Projetos-Individuais-2026-1/blob/main/ingrid-soares/projeto-2/relatorio-entrega.md) para o documento oficial de submissão.
-- [detalhes-tecnicos.md](https://github.com/ingrdsoares/Projetos-Individuais-2026-1/blob/main/ingrid-soares/projeto-2/detalhes-tecnicos.md) para a visão técnica aprofundada da arquitetura.
+- [roadmap-futuro.md](roadmap-futuro.md) para detalhes sobre as próximas evoluções técnicas.
+- [relatorio-entrega.md](relatorio-entrega.md) para o documento oficial de submissão.
+- [detalhes-tecnicos.md](detalhes-tecnicos.md) para a visão técnica aprofundada da arquitetura.
