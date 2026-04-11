@@ -11,6 +11,12 @@ import re
 
 import pandas as pd
 
+# Semantic version of the preprocessing logic. Bump this whenever `clean_text`
+# changes in a way that could affect model inputs (new rules, different regex,
+# etc.). Logged as an MLflow param so runs using different preprocessing are
+# never silently compared as if they were equivalent.
+PREPROCESS_VERSION = "v1"
+
 _BR_TAG_RE = re.compile(r"<br\s*/?>", flags=re.IGNORECASE)
 _WHITESPACE_RE = re.compile(r"\s+")
 
