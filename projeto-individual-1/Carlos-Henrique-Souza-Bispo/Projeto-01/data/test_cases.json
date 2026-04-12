@@ -1,0 +1,57 @@
+[
+  {
+    "nome": "Caso alto risco",
+    "input": {
+      "frequencia": 45,
+      "nota_media": 4.2,
+      "acessos_plataforma_semana": 1,
+      "pendencia_financeira": true,
+      "relato_estudante": "Estou desmotivado e pensando em trancar porque nao consigo acompanhar."
+    },
+    "esperado": "alto"
+  },
+  {
+    "nome": "Caso baixo risco",
+    "input": {
+      "frequencia": 88,
+      "nota_media": 8.1,
+      "acessos_plataforma_semana": 7,
+      "pendencia_financeira": false,
+      "relato_estudante": "Estou conseguindo estudar e acompanhar as atividades normalmente."
+    },
+    "esperado": "baixo"
+  },
+  {
+    "nome": "Caso moderado por frequencia",
+    "input": {
+      "frequencia": 67,
+      "nota_media": 7.0,
+      "acessos_plataforma_semana": 3,
+      "pendencia_financeira": false,
+      "relato_estudante": "Perdi algumas aulas este mes por problemas pessoais."
+    },
+    "esperado": "moderado"
+  },
+  {
+    "nome": "Caso alto por nota e relato",
+    "input": {
+      "frequencia": 62,
+      "nota_media": 3.8,
+      "acessos_plataforma_semana": 2,
+      "pendencia_financeira": false,
+      "relato_estudante": "Estou muito perdido e penso em desistir do curso."
+    },
+    "esperado": "alto"
+  },
+  {
+    "nome": "Caso baixo com bom engajamento",
+    "input": {
+      "frequencia": 92,
+      "nota_media": 7.6,
+      "acessos_plataforma_semana": 6,
+      "pendencia_financeira": false,
+      "relato_estudante": "As mentorias estao ajudando bastante e estou motivado."
+    },
+    "esperado": "baixo"
+  }
+]

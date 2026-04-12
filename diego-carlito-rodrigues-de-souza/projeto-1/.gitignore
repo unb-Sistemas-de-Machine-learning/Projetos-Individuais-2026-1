@@ -1,0 +1,48 @@
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Ambiente virtual
+.venv/
+venv/
+env/
+ENV/
+
+# ChromaDB
+data/chroma_db/
+*.sqlite3
+
+# PDFs e dados brutos
+data/raw/
+data/editais/
+*.pdf
+
+# Logs e saídas de sessão
+logs/
+*.log
+*.json.log
+
+# Streamlit
+.streamlit/secrets.toml
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema
+.DS_Store
+Thumbs.db
