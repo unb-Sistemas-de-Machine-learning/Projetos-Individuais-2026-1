@@ -1,0 +1,19 @@
+# LLM e Orquestração
+langchain==1.2.13
+langchain-core==1.2.23
+langchain-google-genai==4.2.1
+google-genai==1.69.0
+
+# Banco Vetorial (RAG)
+chromadb==1.5.5
+sentence-transformers==5.3.0
+
+# Leitura de PDFs
+PyPDF2==3.0.1
+pdfplumber==0.11.9
+
+# Interface Web
+streamlit==1.55.0
+
+# Utilitários
+python-dotenv==1.2.2

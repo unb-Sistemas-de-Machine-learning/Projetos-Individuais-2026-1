@@ -93,15 +93,6 @@ _Descreva a arquitetura escolhida para o agente. Responda:_
 
 ---
 
-## 8. Estratégia de Avaliação
-
-_Descreva como você pretende avaliar o agente:_
-
-- **Métricas definidas:** (precisão, relevância, latência, custo, etc.)
-- **Conjunto de testes:** (quantos exemplos, de onde vêm os dados)
-- **Método de avaliação:** (manual, automático, comparativo)
-
----
 
 ## 9. Referências
 
