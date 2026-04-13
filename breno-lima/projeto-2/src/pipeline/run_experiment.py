@@ -34,16 +34,23 @@ def run_experiment(model_name: str):
     mlflow.set_experiment("Skin Cancer Classification")
     model_service = ModelService(model_name)
 
+    split_sizes = dataset.split_sizes()
+    test_paths = dataset.get_split("test")
+
     with mlflow.start_run(run_name=model_name):
         mlflow.log_param("model_name", model_name)
         mlflow.log_param("dataset_size", len(dataset))
+        mlflow.log_param("train_size", split_sizes["train"])
+        mlflow.log_param("val_size", split_sizes["val"])
+        mlflow.log_param("test_size", split_sizes["test"])
 
-        result = evaluate(model_service, dataset)
+        result = evaluate(model_service, test_paths)
 
         confidence_scores = [r["confidence"] for r in result]
 
         avg_confidence = sum(confidence_scores) / len(confidence_scores)
-        mlflow.log_metric("confidence", avg_confidence)
+        mlflow.log_metric("avg_confidence", avg_confidence)
+        mlflow.log_metric("warnings_count", sum(1 for r in result if r["warnings"]))
 
         mlflow.log_dict(
             {
@@ -57,7 +64,7 @@ def run_experiment(model_name: str):
             artifact_path="model",
         )
 
-        print(f"[{model_name}] Average Confidence: {avg_confidence:.4f}")
+        print(f"[{model_name}] Test size: {len(test_paths)} | Avg Confidence: {avg_confidence:.4f}")
 
 
 if __name__ == "__main__":
