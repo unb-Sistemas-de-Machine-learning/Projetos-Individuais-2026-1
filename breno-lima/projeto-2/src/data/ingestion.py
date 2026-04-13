@@ -21,9 +21,13 @@ class ISICClient:
         return response.json()["results"]
 
     def download_image(self, image_id, url):
-        response = requests.get(url)
-
         file_path = os.path.join(self.output_dir, f"{image_id}.jpg")
+
+        if os.path.exists(file_path):
+            return file_path
+
+        response = requests.get(url)
+        response.raise_for_status()
 
         with open(file_path, "wb") as f:
             f.write(response.content)
