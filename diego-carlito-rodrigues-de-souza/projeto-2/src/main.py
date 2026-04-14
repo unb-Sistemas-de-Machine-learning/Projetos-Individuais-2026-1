@@ -6,6 +6,7 @@ import logging
 from ingest import load_and_clean_data
 from model_engine import TicketClassifier
 from guardrails import mask_pii, apply_confidence_guardrail
+from evaluation import evaluate_performance
 
 # Configuração de log
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -80,10 +81,16 @@ def run_pipeline(data_path: str, sample_size: int = 10, confidence_threshold: fl
             df_results.to_csv(output_file, index=False)
             logger.info(f"Resultados salvos em {output_file}")
 
+            # 5.1 Marcos: Avaliar performance real
+            metricas_finais = evaluate_performance(output_file)
+
             # 6. Registrar Métricas, Artefatos e Assinatura no MLflow
             end_time = time.time()
             total_time = end_time - start_time
             avg_confidence = df_results['confianca_modelo'].mean()
+
+            mlflow.log_metric("accuracy", metricas_finais["accuracy"])
+            mlflow.log_metric("automation_rate", metricas_finais["automation_rate"])
 
             mlflow.log_metric("total_latency_seconds", total_time)
             mlflow.log_metric("avg_confidence", avg_confidence)
