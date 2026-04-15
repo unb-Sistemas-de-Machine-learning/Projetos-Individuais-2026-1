@@ -104,7 +104,16 @@ Como a arquitetura não envolve treinamento de pesos customizados, a reproducibi
 
 ### 5.3 Evidências
 
-_Inclua prints da UI do MLflow ou logs mostrando os experimentos registrados._
+Abaixo estão as evidências do rastreamento do pipeline na interface do MLflow, comprovando a orquestração bem-sucedida do MLOps e o funcionamento das travas de segurança.
+
+**1. Visão Geral do Experimento e Histórico de Execuções (Runs):**
+![Dashboard MLflow - Visão Geral](mlflow-runs.png)
+
+**2. Rastreabilidade de Parâmetros de Negócio e Métricas de Performance:**
+![Dashboard MLflow - Métricas e Parâmetros](mlflow-metrics.png)
+
+**3. Versionamento de Artefatos (Comprovação visual do Guardrail de Confiança em ação):**
+![Dashboard MLflow - Artefatos Registrados](mlflow-artifacts.png)
 
 ---
 
