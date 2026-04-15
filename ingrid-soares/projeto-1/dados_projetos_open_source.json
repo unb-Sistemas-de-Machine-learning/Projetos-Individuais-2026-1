@@ -1,0 +1,2002 @@
+[
+    {
+        "nome_repositorio": "coze-dev/coze-studio",
+        "url_repositorio": "https://github.com/coze-dev/coze-studio",
+        "data_criacao": "2025-06-26T02:19:21Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "An AI agent development platform with all-in-one visual tools, simplifying agent creation, debugging, and deployment like never before. Coze your way to AI Agent creation.",
+        "estrelas": 20358,
+        "forks": 2926
+    },
+    {
+        "nome_repositorio": "stitionai/devika",
+        "url_repositorio": "https://github.com/stitionai/devika",
+        "data_criacao": "2024-03-21T03:03:21Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "Devika is the first open-source implementation of an Agentic Software Engineer. Initially started as an open-source alternative to Devin.",
+        "estrelas": 19498,
+        "forks": 2590
+    },
+    {
+        "nome_repositorio": "getomni-ai/zerox",
+        "url_repositorio": "https://github.com/getomni-ai/zerox",
+        "data_criacao": "2024-07-21T21:25:49Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "OCR & Document Extraction using vision models",
+        "estrelas": 12193,
+        "forks": 837
+    },
+    {
+        "nome_repositorio": "microsoft/TRELLIS",
+        "url_repositorio": "https://github.com/microsoft/TRELLIS",
+        "data_criacao": "2024-12-02T05:44:19Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "Official repo for paper \"Structured 3D Latents for Scalable and Versatile 3D Generation\" (CVPR'25 Spotlight).",
+        "estrelas": 12088,
+        "forks": 1136
+    },
+    {
+        "nome_repositorio": "OpenSPG/KAG",
+        "url_repositorio": "https://github.com/OpenSPG/KAG",
+        "data_criacao": "2024-09-21T13:56:44Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "KAG is a logical form-guided reasoning and retrieval framework based on OpenSPG engine and LLMs.  It is used to build logical reasoning and factual Q&A solutions for professional domain knowledge bases. It can effectively overcome the shortcomings of the traditional RAG vector similarity calculation model.",
+        "estrelas": 8645,
+        "forks": 667
+    },
+    {
+        "nome_repositorio": "NapNeko/NapCatQQ",
+        "url_repositorio": "https://github.com/NapNeko/NapCatQQ",
+        "data_criacao": "2024-03-26T11:44:13Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "Modern protocol-side framework based on NTQQ",
+        "estrelas": 8209,
+        "forks": 686
+    },
+    {
+        "nome_repositorio": "HumanAIGC/EMO",
+        "url_repositorio": "https://github.com/HumanAIGC/EMO",
+        "data_criacao": "2024-02-27T11:23:44Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "Emote Portrait Alive: Generating Expressive Portrait Videos with Audio2Video Diffusion Model under Weak Conditions",
+        "estrelas": 7631,
+        "forks": 935
+    },
+    {
+        "nome_repositorio": "poloclub/transformer-explainer",
+        "url_repositorio": "https://github.com/poloclub/transformer-explainer",
+        "data_criacao": "2024-05-16T21:42:10Z",
+        "linguagem_principal": "JavaScript",
+        "licenca": "MIT",
+        "descricao_curta": "Transformer Explained Visually: Learn How LLM Transformer Models Work with Interactive Visualization",
+        "estrelas": 7014,
+        "forks": 748
+    },
+    {
+        "nome_repositorio": "spaceandtimefdn/sxt-proof-of-sql",
+        "url_repositorio": "https://github.com/spaceandtimefdn/sxt-proof-of-sql",
+        "data_criacao": "2024-04-25T17:30:50Z",
+        "linguagem_principal": "Rust",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "Space and Time | Proof of SQL",
+        "estrelas": 5464,
+        "forks": 276
+    },
+    {
+        "nome_repositorio": "neuphonic/neutts",
+        "url_repositorio": "https://github.com/neuphonic/neutts",
+        "data_criacao": "2025-10-02T12:48:55Z",
+        "linguagem_principal": "Python",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "On-device TTS model by Neuphonic",
+        "estrelas": 5096,
+        "forks": 560
+    },
+    {
+        "nome_repositorio": "google/pebble",
+        "url_repositorio": "https://github.com/google/pebble",
+        "data_criacao": "2025-01-21T21:11:59Z",
+        "linguagem_principal": "C",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "This is the latest version of the internal repository from Pebble Technology providing the software to run on Pebble watches. Proprietary source code has been removed from this repository and it will not compile as-is. This is for information only.",
+        "estrelas": 4963,
+        "forks": 396
+    },
+    {
+        "nome_repositorio": "PacktPublishing/LLM-Engineers-Handbook",
+        "url_repositorio": "https://github.com/PacktPublishing/LLM-Engineers-Handbook",
+        "data_criacao": "2024-04-09T10:56:03Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "The LLM's practical guide: From the fundamentals to deploying advanced LLM and RAG apps to AWS using LLMOps best practices",
+        "estrelas": 4873,
+        "forks": 1174
+    },
+    {
+        "nome_repositorio": "netease-youdao/LobsterAI",
+        "url_repositorio": "https://github.com/netease-youdao/LobsterAI",
+        "data_criacao": "2026-02-12T09:56:20Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "Your 24/7 all-scenario AI agent that gets work done for you.",
+        "estrelas": 4739,
+        "forks": 689
+    },
+    {
+        "nome_repositorio": "breaking-brake/cc-wf-studio",
+        "url_repositorio": "https://github.com/breaking-brake/cc-wf-studio",
+        "data_criacao": "2025-11-01T16:04:15Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "CC Workflow Studio",
+        "estrelas": 4637,
+        "forks": 519
+    },
+    {
+        "nome_repositorio": "MoonshotAI/Kimi-Audio",
+        "url_repositorio": "https://github.com/MoonshotAI/Kimi-Audio",
+        "data_criacao": "2025-04-25T10:00:18Z",
+        "linguagem_principal": "Python",
+        "licenca": null,
+        "descricao_curta": "Kimi-Audio, an open-source audio foundation model excelling in audio understanding, generation, and conversation",
+        "estrelas": 4550,
+        "forks": 343
+    },
+    {
+        "nome_repositorio": "fixie-ai/ultravox",
+        "url_repositorio": "https://github.com/fixie-ai/ultravox",
+        "data_criacao": "2024-05-29T23:17:05Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "A fast multimodal LLM for real-time voice",
+        "estrelas": 4383,
+        "forks": 368
+    },
+    {
+        "nome_repositorio": "llamastack/llama-stack-apps",
+        "url_repositorio": "https://github.com/llamastack/llama-stack-apps",
+        "data_criacao": "2024-06-25T22:29:07Z",
+        "linguagem_principal": null,
+        "licenca": "MIT",
+        "descricao_curta": "Agentic components of the Llama Stack APIs",
+        "estrelas": 4300,
+        "forks": 641
+    },
+    {
+        "nome_repositorio": "going-doer/Paper2Code",
+        "url_repositorio": "https://github.com/going-doer/Paper2Code",
+        "data_criacao": "2025-04-25T07:58:12Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "Paper2Code: Automating Code Generation from Scientific Papers in Machine Learning",
+        "estrelas": 4294,
+        "forks": 620
+    },
+    {
+        "nome_repositorio": "panaversity/learn-agentic-ai",
+        "url_repositorio": "https://github.com/panaversity/learn-agentic-ai",
+        "data_criacao": "2024-06-12T07:50:04Z",
+        "linguagem_principal": "Jupyter Notebook",
+        "licenca": "MIT",
+        "descricao_curta": "Learn Agentic AI using Dapr Agentic Cloud Ascent (DACA) Design Pattern and Agent-Native Cloud Technologies: OpenAI Agents SDK, Memory, MCP, A2A, Knowledge Graphs, Dapr, Rancher Desktop, and Kubernetes.",
+        "estrelas": 4031,
+        "forks": 934
+    },
+    {
+        "nome_repositorio": "icip-cas/PPTAgent",
+        "url_repositorio": "https://github.com/icip-cas/PPTAgent",
+        "data_criacao": "2025-01-04T00:54:29Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "An Agentic Framework for Reflective PowerPoint Generation",
+        "estrelas": 3893,
+        "forks": 464
+    },
+    {
+        "nome_repositorio": "PeterH0323/Streamer-Sales",
+        "url_repositorio": "https://github.com/PeterH0323/Streamer-Sales",
+        "data_criacao": "2024-04-05T03:26:27Z",
+        "linguagem_principal": "Python",
+        "licenca": "AGPL-3.0",
+        "descricao_curta": "Streamer-Sales 销冠 —— 卖货主播 LLM 大模型🛒🎁，一个能够根据给定的商品特点从激发用户购买意愿角度出发进行商品解说的卖货主播大模型。🚀⭐内含详细的数据生成流程❗ 📦另外还集成了 LMDeploy 加速推理🚀、RAG检索增强生成 📚、TTS文字转语音🔊、数字人生成 🦸、 Agent 使用网络查询实时信息🌐、ASR 语音转文字🎙️、Vue 生态搭建前端🍍、FastAPI 搭建后端🗝️、Docker-compose 打包部署🐋",
+        "estrelas": 3655,
+        "forks": 560
+    },
+    {
+        "nome_repositorio": "ZHO-ZHO-ZHO/ZHO-nano-banana-Creation",
+        "url_repositorio": "https://github.com/ZHO-ZHO-ZHO/ZHO-nano-banana-Creation",
+        "data_criacao": "2025-08-28T13:09:00Z",
+        "linguagem_principal": null,
+        "licenca": "GPL-3.0",
+        "descricao_curta": "我的 nano-banana 创意玩法大合集！  持续更新中！",
+        "estrelas": 3641,
+        "forks": 353
+    },
+    {
+        "nome_repositorio": "chenhg5/cc-connect",
+        "url_repositorio": "https://github.com/chenhg5/cc-connect",
+        "data_criacao": "2026-02-28T02:39:39Z",
+        "linguagem_principal": "Go",
+        "licenca": null,
+        "descricao_curta": "Bridge local AI coding agents (Claude Code, Cursor, Gemini CLI, Codex) to messaging platforms (Feishu/Lark, DingTalk, Slack, Telegram, Discord, LINE, WeChat Work). Chat with your AI dev assistant from anywhere — no public IP required for most platforms.",
+        "estrelas": 3634,
+        "forks": 314
+    },
+    {
+        "nome_repositorio": "bgreenwell/doxx",
+        "url_repositorio": "https://github.com/bgreenwell/doxx",
+        "data_criacao": "2025-08-16T18:48:24Z",
+        "linguagem_principal": "Makefile",
+        "licenca": "MIT",
+        "descricao_curta": "Expose the contents of .docx files without leaving your terminal. Fast, safe, and smart — no Office required!",
+        "estrelas": 3633,
+        "forks": 89
+    },
+    {
+        "nome_repositorio": "gpt-omni/mini-omni",
+        "url_repositorio": "https://github.com/gpt-omni/mini-omni",
+        "data_criacao": "2024-08-27T10:57:04Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "open-source multimodal large language model that can hear, talk while thinking. Featuring real-time end-to-end speech input and streaming audio output conversational capabilities. ",
+        "estrelas": 3537,
+        "forks": 308
+    },
+    {
+        "nome_repositorio": "srcbookdev/srcbook",
+        "url_repositorio": "https://github.com/srcbookdev/srcbook",
+        "data_criacao": "2024-05-08T19:28:00Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "TypeScript-centric app development platform: notebook and AI app builder",
+        "estrelas": 3448,
+        "forks": 313
+    },
+    {
+        "nome_repositorio": "liaokongVFX/MCP-Chinese-Getting-Started-Guide",
+        "url_repositorio": "https://github.com/liaokongVFX/MCP-Chinese-Getting-Started-Guide",
+        "data_criacao": "2025-03-01T15:47:55Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "Model Context Protocol(MCP) 编程极速入门",
+        "estrelas": 3419,
+        "forks": 208
+    },
+    {
+        "nome_repositorio": "Soul-AILab/SoulX-Podcast",
+        "url_repositorio": "https://github.com/Soul-AILab/SoulX-Podcast",
+        "data_criacao": "2025-09-22T03:32:35Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "SoulX-Podcast is an inference codebase by the Soul AI team for generating high-fidelity podcasts from text.",
+        "estrelas": 3261,
+        "forks": 425
+    },
+    {
+        "nome_repositorio": "gurecn/YuyanIme",
+        "url_repositorio": "https://github.com/gurecn/YuyanIme",
+        "data_criacao": "2024-05-24T04:53:19Z",
+        "linguagem_principal": "Kotlin",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "语燕输入法-一款基于Rime定制开发的九键、全拼、双拼、手写、火星文等方案、支持悬浮、单手、数字行等键盘模式的中文输入法",
+        "estrelas": 3248,
+        "forks": 179
+    },
+    {
+        "nome_repositorio": "hyperai/awesome-ai4s",
+        "url_repositorio": "https://github.com/hyperai/awesome-ai4s",
+        "data_criacao": "2024-04-07T10:21:29Z",
+        "linguagem_principal": null,
+        "licenca": "Apache-2.0",
+        "descricao_curta": "AI for Science 论文解读合集（持续更新ing），论文/数据集/教程下载：hyper.ai",
+        "estrelas": 3166,
+        "forks": 499
+    },
+    {
+        "nome_repositorio": "Kedreamix/Linly-Dubbing",
+        "url_repositorio": "https://github.com/Kedreamix/Linly-Dubbing",
+        "data_criacao": "2024-08-08T23:25:36Z",
+        "linguagem_principal": "Jupyter Notebook",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "智能视频多语言AI配音/翻译工具 - Linly-Dubbing — “AI赋能，语言无界”",
+        "estrelas": 3108,
+        "forks": 344
+    },
+    {
+        "nome_repositorio": "AutoMaker-Org/automaker",
+        "url_repositorio": "https://github.com/AutoMaker-Org/automaker",
+        "data_criacao": "2025-12-07T21:42:08Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "NOASSERTION",
+        "descricao_curta": null,
+        "estrelas": 3074,
+        "forks": 597
+    },
+    {
+        "nome_repositorio": "ridgerchu/matmulfreellm",
+        "url_repositorio": "https://github.com/ridgerchu/matmulfreellm",
+        "data_criacao": "2024-04-23T20:44:31Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "Implementation for MatMul-free LM.",
+        "estrelas": 3056,
+        "forks": 199
+    },
+    {
+        "nome_repositorio": "KOWX712/Tricky-Addon-Update-Target-List",
+        "url_repositorio": "https://github.com/KOWX712/Tricky-Addon-Update-Target-List",
+        "data_criacao": "2024-10-15T19:59:35Z",
+        "linguagem_principal": "JavaScript",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "A KSU WebUI to configure Tricky Store target.txt",
+        "estrelas": 2914,
+        "forks": 129
+    },
+    {
+        "nome_repositorio": "Saiyan-World/goku",
+        "url_repositorio": "https://github.com/Saiyan-World/goku",
+        "data_criacao": "2025-02-10T00:39:13Z",
+        "linguagem_principal": "Python",
+        "licenca": null,
+        "descricao_curta": "[CVPR2025 Highlight] Video Generation Foundation Models: https://saiyan-world.github.io/goku/",
+        "estrelas": 2903,
+        "forks": 313
+    },
+    {
+        "nome_repositorio": "Everlyn-Labs/Everlyn-1",
+        "url_repositorio": "https://github.com/Everlyn-Labs/Everlyn-1",
+        "data_criacao": "2024-10-13T18:19:10Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "The first open autoregressive foundational video AI model.",
+        "estrelas": 2892,
+        "forks": 486
+    },
+    {
+        "nome_repositorio": "thijsvanloef/palworld-server-docker",
+        "url_repositorio": "https://github.com/thijsvanloef/palworld-server-docker",
+        "data_criacao": "2024-01-19T08:24:38Z",
+        "linguagem_principal": "Shell",
+        "licenca": "MIT",
+        "descricao_curta": "A Docker Container to easily run a Palworld dedicated server.",
+        "estrelas": 2784,
+        "forks": 322
+    },
+    {
+        "nome_repositorio": "xiao-zaiyi/illa-helper",
+        "url_repositorio": "https://github.com/xiao-zaiyi/illa-helper",
+        "data_criacao": "2025-06-15T09:08:41Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "浸入式学语言助手 (Immersive Language Learning Assistant)",
+        "estrelas": 2778,
+        "forks": 140
+    },
+    {
+        "nome_repositorio": "DenisSergeevitch/chatgpt-custom-instructions",
+        "url_repositorio": "https://github.com/DenisSergeevitch/chatgpt-custom-instructions",
+        "data_criacao": "2024-11-29T14:13:10Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "My own Prompts for Custom instructions ChatGPT",
+        "estrelas": 2618,
+        "forks": 124
+    },
+    {
+        "nome_repositorio": "openai/openai-agents-js",
+        "url_repositorio": "https://github.com/openai/openai-agents-js",
+        "data_criacao": "2025-05-31T00:08:49Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "A lightweight, powerful framework for multi-agent workflows and voice agents",
+        "estrelas": 2551,
+        "forks": 660
+    },
+    {
+        "nome_repositorio": "chaterm/Chaterm",
+        "url_repositorio": "https://github.com/chaterm/Chaterm",
+        "data_criacao": "2025-04-14T04:19:01Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "Open source AI terminal and SSH client for cloud and infrastructure",
+        "estrelas": 2539,
+        "forks": 240
+    },
+    {
+        "nome_repositorio": "iliane5/meridian",
+        "url_repositorio": "https://github.com/iliane5/meridian",
+        "data_criacao": "2025-03-06T00:37:01Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "Meridian cuts through news noise by scraping hundreds of sources, analyzing stories with AI, and delivering concise, personalized daily briefs.",
+        "estrelas": 2396,
+        "forks": 434
+    },
+    {
+        "nome_repositorio": "codse/animata",
+        "url_repositorio": "https://github.com/codse/animata",
+        "data_criacao": "2024-06-10T03:46:56Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "Bring your site to life with easy to use animation & interaction code. Copy. Paste. Animate. ",
+        "estrelas": 2388,
+        "forks": 196
+    },
+    {
+        "nome_repositorio": "abhinavxd/libredesk",
+        "url_repositorio": "https://github.com/abhinavxd/libredesk",
+        "data_criacao": "2024-05-12T12:14:24Z",
+        "linguagem_principal": "Go",
+        "licenca": "AGPL-3.0",
+        "descricao_curta": "Modern, open source, self-hosted customer support desk. Single binary app.",
+        "estrelas": 2384,
+        "forks": 161
+    },
+    {
+        "nome_repositorio": "fogsightai/fogsight",
+        "url_repositorio": "https://github.com/fogsightai/fogsight",
+        "data_criacao": "2025-07-17T17:19:00Z",
+        "linguagem_principal": "JavaScript",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "Fogsight is an AI agent and animation engine powered by Large Language Models.",
+        "estrelas": 2369,
+        "forks": 358
+    },
+    {
+        "nome_repositorio": "jbilcke-hf/clapper",
+        "url_repositorio": "https://github.com/jbilcke-hf/clapper",
+        "data_criacao": "2024-05-31T11:09:04Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "Clapper.app, a video synthesizer and sequencer designed for the age of AI cinema",
+        "estrelas": 2323,
+        "forks": 229
+    },
+    {
+        "nome_repositorio": "agentscope-ai/agentscope-java",
+        "url_repositorio": "https://github.com/agentscope-ai/agentscope-java",
+        "data_criacao": "2025-09-23T04:37:43Z",
+        "linguagem_principal": "Java",
+        "licenca": null,
+        "descricao_curta": "AgentScope Java: Agent-Oriented Programming for Building LLM Applications",
+        "estrelas": 2305,
+        "forks": 468
+    },
+    {
+        "nome_repositorio": "buaacyw/MeshAnything",
+        "url_repositorio": "https://github.com/buaacyw/MeshAnything",
+        "data_criacao": "2024-06-16T16:02:59Z",
+        "linguagem_principal": "Python",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "[ICLR 2025] From anything to mesh like human artists. Official impl. of \"MeshAnything: Artist-Created Mesh Generation with Autoregressive Transformers\"",
+        "estrelas": 2272,
+        "forks": 103
+    },
+    {
+        "nome_repositorio": "itMrBoy/resumePolice",
+        "url_repositorio": "https://github.com/itMrBoy/resumePolice",
+        "data_criacao": "2025-07-26T17:34:45Z",
+        "linguagem_principal": null,
+        "licenca": "MIT",
+        "descricao_curta": "简历警察 🕵️‍♂️ 疯狂逮捕",
+        "estrelas": 2166,
+        "forks": 109
+    },
+    {
+        "nome_repositorio": "Cleanuparr/Cleanuparr",
+        "url_repositorio": "https://github.com/Cleanuparr/Cleanuparr",
+        "data_criacao": "2024-11-05T21:31:03Z",
+        "linguagem_principal": "C#",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "Cleanuparr is a tool for automating the cleanup of unwanted or blocked files in Sonarr, Radarr, and supported download clients like qBittorrent, Deluge and Transmission.",
+        "estrelas": 2117,
+        "forks": 38
+    },
+    {
+        "nome_repositorio": "agentstack-ai/AgentStack",
+        "url_repositorio": "https://github.com/agentstack-ai/AgentStack",
+        "data_criacao": "2024-09-18T21:40:53Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "The fastest way to build robust AI agents",
+        "estrelas": 2116,
+        "forks": 209
+    },
+    {
+        "nome_repositorio": "bbruceyuan/LLMs-Zero-to-Hero",
+        "url_repositorio": "https://github.com/bbruceyuan/LLMs-Zero-to-Hero",
+        "data_criacao": "2025-01-05T13:47:22Z",
+        "linguagem_principal": "Jupyter Notebook",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "从无名小卒到大模型（LLM）大英雄~ 欢迎关注后续！！！",
+        "estrelas": 2110,
+        "forks": 145
+    },
+    {
+        "nome_repositorio": "LittleSurvival/copymanga-copy20",
+        "url_repositorio": "https://github.com/LittleSurvival/copymanga-copy20",
+        "data_criacao": "2025-05-11T02:02:36Z",
+        "linguagem_principal": "Smali",
+        "licenca": null,
+        "descricao_curta": "Mihon/Tachiyomi系列 拷貝漫畫等中文資源的書源 相關社群見readme",
+        "estrelas": 1974,
+        "forks": 14
+    },
+    {
+        "nome_repositorio": "feige996/unibest",
+        "url_repositorio": "https://github.com/feige996/unibest",
+        "data_criacao": "2024-08-03T07:49:53Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "【这是新仓库，codercup那个进不去不维护了。】unibest - 最好用的 uniapp 开发框架。unibest 是由 uniapp + Vue3 + Ts + Vite5 + UnoCss + WotUI 驱动的跨端快速启动模板，使用 VS Code 开发，具有代码提示、自动格式化、统一配置、代码片段等功能，同时内置了大量平时开发常用的基本组件，开箱即用，让你编写 uniapp 拥有 best 体验。",
+        "estrelas": 1971,
+        "forks": 239
+    },
+    {
+        "nome_repositorio": "PixArt-alpha/PixArt-sigma",
+        "url_repositorio": "https://github.com/PixArt-alpha/PixArt-sigma",
+        "data_criacao": "2024-02-29T15:20:35Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "PixArt-Σ: Weak-to-Strong Training of Diffusion Transformer for 4K Text-to-Image Generation",
+        "estrelas": 1912,
+        "forks": 98
+    },
+    {
+        "nome_repositorio": "kleinlee/DH_live",
+        "url_repositorio": "https://github.com/kleinlee/DH_live",
+        "data_criacao": "2024-07-30T11:18:22Z",
+        "linguagem_principal": "Python",
+        "licenca": null,
+        "descricao_curta": "每个人都能用的数字人",
+        "estrelas": 1908,
+        "forks": 401
+    },
+    {
+        "nome_repositorio": "PiLiDAR/PiLiDAR",
+        "url_repositorio": "https://github.com/PiLiDAR/PiLiDAR",
+        "data_criacao": "2024-09-07T08:52:21Z",
+        "linguagem_principal": "Python",
+        "licenca": "NOASSERTION",
+        "descricao_curta": null,
+        "estrelas": 1863,
+        "forks": 86
+    },
+    {
+        "nome_repositorio": "libukai/Awesome-ChatTTS",
+        "url_repositorio": "https://github.com/libukai/Awesome-ChatTTS",
+        "data_criacao": "2024-06-05T01:15:39Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "官方推荐的 ChatTTS 资源汇总项目，整理了全网相关资源和常见问题 || Officially recommended ChatTTS resource collection project",
+        "estrelas": 1855,
+        "forks": 116
+    },
+    {
+        "nome_repositorio": "firecrawl/fireplexity",
+        "url_repositorio": "https://github.com/firecrawl/fireplexity",
+        "data_criacao": "2025-06-19T23:26:27Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": null,
+        "descricao_curta": "🔥 Open Source Perplexity like AI search engine with real-time citations, streaming responses, and live data powered by Firecrawl ",
+        "estrelas": 1854,
+        "forks": 330
+    },
+    {
+        "nome_repositorio": "THUDM/LongWriter",
+        "url_repositorio": "https://github.com/THUDM/LongWriter",
+        "data_criacao": "2024-08-12T16:00:19Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "[ICLR 2025] LongWriter: Unleashing 10,000+ Word Generation from Long Context LLMs",
+        "estrelas": 1850,
+        "forks": 183
+    },
+    {
+        "nome_repositorio": "2-fly-4-ai/V0-system-prompt",
+        "url_repositorio": "https://github.com/2-fly-4-ai/V0-system-prompt",
+        "data_criacao": "2024-10-30T05:55:58Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": null,
+        "estrelas": 1812,
+        "forks": 521
+    },
+    {
+        "nome_repositorio": "GongRzhe/Office-Word-MCP-Server",
+        "url_repositorio": "https://github.com/GongRzhe/Office-Word-MCP-Server",
+        "data_criacao": "2025-03-25T04:37:15Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "A Model Context Protocol (MCP) server for creating, reading, and manipulating Microsoft Word documents. This server enables AI assistants to work with Word documents through a standardized interface, providing rich document editing capabilities.",
+        "estrelas": 1791,
+        "forks": 238
+    },
+    {
+        "nome_repositorio": "ashish0kumar/windots",
+        "url_repositorio": "https://github.com/ashish0kumar/windots",
+        "data_criacao": "2024-05-26T10:34:40Z",
+        "linguagem_principal": null,
+        "licenca": "MIT",
+        "descricao_curta": "my windows setup",
+        "estrelas": 1768,
+        "forks": 42
+    },
+    {
+        "nome_repositorio": "Simple-Efficient/RL-Factory",
+        "url_repositorio": "https://github.com/Simple-Efficient/RL-Factory",
+        "data_criacao": "2025-05-23T03:43:44Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "Train your Agent model via our easy and efficient framework",
+        "estrelas": 1722,
+        "forks": 163
+    },
+    {
+        "nome_repositorio": "SmartFlowAI/EmoLLM",
+        "url_repositorio": "https://github.com/SmartFlowAI/EmoLLM",
+        "data_criacao": "2024-01-11T08:58:19Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "心理健康大模型 (LLM x Mental Health), Pre & Post-training & Dataset & Evaluation & Depoly & RAG,  with InternLM / Qwen / Baichuan / DeepSeek / Mixtral / LLama / GLM series models",
+        "estrelas": 1715,
+        "forks": 218
+    },
+    {
+        "nome_repositorio": "Action-State-Labs/android-action-kernel",
+        "url_repositorio": "https://github.com/Action-State-Labs/android-action-kernel",
+        "data_criacao": "2025-12-11T11:07:23Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": null,
+        "estrelas": 1684,
+        "forks": 217
+    },
+    {
+        "nome_repositorio": "zlwaterfield/scramble",
+        "url_repositorio": "https://github.com/zlwaterfield/scramble",
+        "data_criacao": "2024-09-18T02:06:14Z",
+        "linguagem_principal": "JavaScript",
+        "licenca": "MIT",
+        "descricao_curta": "Open-Source Grammarly Alternative",
+        "estrelas": 1652,
+        "forks": 88
+    },
+    {
+        "nome_repositorio": "JackySoft/marsview",
+        "url_repositorio": "https://github.com/JackySoft/marsview",
+        "data_criacao": "2024-08-04T03:19:37Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "Marsview 是一款中后台方向的低代码可视化搭建平台，开发者可以在平台上创建项目、页面和组件，支持事件交互、接口调用、数据联动和逻辑编排等，开发者还可通过微服务快速集成到自己的业务系统中。   Marsview is a low code visualization platform for middle and backend direction, supporting event interaction, interface calling, data linkage, and logical orchestration.",
+        "estrelas": 1651,
+        "forks": 361
+    },
+    {
+        "nome_repositorio": "nickjvandyke/eslint-plugin-react-you-might-not-need-an-effect",
+        "url_repositorio": "https://github.com/nickjvandyke/eslint-plugin-react-you-might-not-need-an-effect",
+        "data_criacao": "2025-04-25T14:38:55Z",
+        "linguagem_principal": "JavaScript",
+        "licenca": "MIT",
+        "descricao_curta": "Catch unnecessary React effects to make your code simpler, faster, and safer.",
+        "estrelas": 1639,
+        "forks": 15
+    },
+    {
+        "nome_repositorio": "teorth/analysis",
+        "url_repositorio": "https://github.com/teorth/analysis",
+        "data_criacao": "2025-05-31T18:49:43Z",
+        "linguagem_principal": "Lean",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "A Lean companion to Analysis I",
+        "estrelas": 1637,
+        "forks": 221
+    },
+    {
+        "nome_repositorio": "Picsart-AI-Research/StreamingT2V",
+        "url_repositorio": "https://github.com/Picsart-AI-Research/StreamingT2V",
+        "data_criacao": "2024-03-18T04:33:26Z",
+        "linguagem_principal": "Python",
+        "licenca": null,
+        "descricao_curta": "[CVPR 2025] StreamingT2V: Consistent, Dynamic, and Extendable Long Video Generation from Text",
+        "estrelas": 1630,
+        "forks": 160
+    },
+    {
+        "nome_repositorio": "FrigadeHQ/trench",
+        "url_repositorio": "https://github.com/FrigadeHQ/trench",
+        "data_criacao": "2024-09-30T19:19:01Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "Trench — Open-Source Analytics Infrastructure. A single production-ready Docker image built on ClickHouse, Kafka, and Node.js for tracking events. Easily build product analytics dashboards, LLM RAGs, observability platforms, or any other analytics product.",
+        "estrelas": 1618,
+        "forks": 61
+    },
+    {
+        "nome_repositorio": "zhouxr6066/Res-SAM",
+        "url_repositorio": "https://github.com/zhouxr6066/Res-SAM",
+        "data_criacao": "2025-04-02T08:17:55Z",
+        "linguagem_principal": "Python",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "Res-SAM Framework for GPR Underground Hazard Detection",
+        "estrelas": 1616,
+        "forks": 62
+    },
+    {
+        "nome_repositorio": "LYiHub/mad-professor-public",
+        "url_repositorio": "https://github.com/LYiHub/mad-professor-public",
+        "data_criacao": "2025-04-18T11:37:57Z",
+        "linguagem_principal": "JavaScript",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "An AI companion for reading papers.",
+        "estrelas": 1583,
+        "forks": 199
+    },
+    {
+        "nome_repositorio": "wiredoor/wiredoor",
+        "url_repositorio": "https://github.com/wiredoor/wiredoor",
+        "data_criacao": "2025-03-29T16:07:42Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "Self hosted ingress-as-a-service platform that allows you to expose applications and services running in private or local networks to the internet",
+        "estrelas": 1576,
+        "forks": 76
+    },
+    {
+        "nome_repositorio": "eooce/Gla-deploy",
+        "url_repositorio": "https://github.com/eooce/Gla-deploy",
+        "data_criacao": "2025-12-13T11:36:04Z",
+        "linguagem_principal": "JavaScript",
+        "licenca": null,
+        "descricao_curta": null,
+        "estrelas": 1559,
+        "forks": 427
+    },
+    {
+        "nome_repositorio": "dindin0497/SeeIt",
+        "url_repositorio": "https://github.com/dindin0497/SeeIt",
+        "data_criacao": "2024-10-29T19:49:32Z",
+        "linguagem_principal": "Java",
+        "licenca": null,
+        "descricao_curta": null,
+        "estrelas": 1552,
+        "forks": 193
+    },
+    {
+        "nome_repositorio": "facebookresearch/coconut",
+        "url_repositorio": "https://github.com/facebookresearch/coconut",
+        "data_criacao": "2025-01-15T05:43:45Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "Training Large Language Model to Reason in a Continuous Latent Space",
+        "estrelas": 1550,
+        "forks": 171
+    },
+    {
+        "nome_repositorio": "wasiahmad/Awesome-LLM-Synthetic-Data",
+        "url_repositorio": "https://github.com/wasiahmad/Awesome-LLM-Synthetic-Data",
+        "data_criacao": "2024-08-08T20:17:30Z",
+        "linguagem_principal": null,
+        "licenca": "MIT",
+        "descricao_curta": "A reading list on LLM based Synthetic Data Generation 🔥",
+        "estrelas": 1532,
+        "forks": 91
+    },
+    {
+        "nome_repositorio": "Olcmyk/HuChenFeng",
+        "url_repositorio": "https://github.com/Olcmyk/HuChenFeng",
+        "data_criacao": "2025-10-06T12:04:16Z",
+        "linguagem_principal": null,
+        "licenca": "MIT",
+        "descricao_curta": "收集户晨风的所有内容",
+        "estrelas": 1530,
+        "forks": 169
+    },
+    {
+        "nome_repositorio": "BemiHQ/BemiDB",
+        "url_repositorio": "https://github.com/BemiHQ/BemiDB",
+        "data_criacao": "2024-11-04T22:09:10Z",
+        "linguagem_principal": "Go",
+        "licenca": "AGPL-3.0",
+        "descricao_curta": "Open-source Snowflake & Fivetran alternative, with Postgres compatibility.",
+        "estrelas": 1521,
+        "forks": 43
+    },
+    {
+        "nome_repositorio": "MorpheApp/morphe-patches",
+        "url_repositorio": "https://github.com/MorpheApp/morphe-patches",
+        "data_criacao": "2025-11-26T12:06:53Z",
+        "linguagem_principal": "Java",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "Morphe Patches",
+        "estrelas": 1504,
+        "forks": 65
+    },
+    {
+        "nome_repositorio": "Nutlope/napkins",
+        "url_repositorio": "https://github.com/Nutlope/napkins",
+        "data_criacao": "2024-09-18T03:15:18Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "napkins.dev – from screenshot to app",
+        "estrelas": 1468,
+        "forks": 202
+    },
+    {
+        "nome_repositorio": "Benexl/yt-x",
+        "url_repositorio": "https://github.com/Benexl/yt-x",
+        "data_criacao": "2024-09-11T10:45:35Z",
+        "linguagem_principal": "Shell",
+        "licenca": "MIT",
+        "descricao_curta": "Browse youtube from your terminal",
+        "estrelas": 1459,
+        "forks": 69
+    },
+    {
+        "nome_repositorio": "Waujito/youtubeUnblock",
+        "url_repositorio": "https://github.com/Waujito/youtubeUnblock",
+        "data_criacao": "2024-07-21T14:46:05Z",
+        "linguagem_principal": "C",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "Bypasses YouTube detection systems that rely on SNI.",
+        "estrelas": 1458,
+        "forks": 127
+    },
+    {
+        "nome_repositorio": "dleemiller/WordLlama",
+        "url_repositorio": "https://github.com/dleemiller/WordLlama",
+        "data_criacao": "2024-06-12T00:50:09Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "Things you can do with the token embeddings of an LLM",
+        "estrelas": 1453,
+        "forks": 49
+    },
+    {
+        "nome_repositorio": "code100x/cms",
+        "url_repositorio": "https://github.com/code100x/cms",
+        "data_criacao": "2024-02-01T02:43:50Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "Repo for https://app.100xdevs.com/ ",
+        "estrelas": 1448,
+        "forks": 1897
+    },
+    {
+        "nome_repositorio": "openai/SWELancer-Benchmark",
+        "url_repositorio": "https://github.com/openai/SWELancer-Benchmark",
+        "data_criacao": "2025-02-18T17:23:15Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "This repo contains the dataset and code for the paper \"SWE-Lancer: Can Frontier LLMs Earn $1 Million from Real-World Freelance Software Engineering?\"",
+        "estrelas": 1441,
+        "forks": 139
+    },
+    {
+        "nome_repositorio": "SmartSchoolAI/ai-to-pptx",
+        "url_repositorio": "https://github.com/SmartSchoolAI/ai-to-pptx",
+        "data_criacao": "2024-02-16T03:39:21Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "前端后端同时开源。 Ai-to-pptx是一个使用AI技术(DeepSeek)制作PPTX的助手，支持在线生成和导出PPTX。 主要功能: 1 使用DeepSeek等大语言模型来生成大纲 2 生成PPTX的时候可以选择不同的模板 3 支持导出PPTX",
+        "estrelas": 1411,
+        "forks": 182
+    },
+    {
+        "nome_repositorio": "f/git-rewrite-commits",
+        "url_repositorio": "https://github.com/f/git-rewrite-commits",
+        "data_criacao": "2025-11-10T00:16:19Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "AI-powered git commit message rewriter using Ollama or GPT",
+        "estrelas": 1409,
+        "forks": 56
+    },
+    {
+        "nome_repositorio": "getseabird/seabird",
+        "url_repositorio": "https://github.com/getseabird/seabird",
+        "data_criacao": "2024-01-18T09:53:42Z",
+        "linguagem_principal": "Go",
+        "licenca": "MPL-2.0",
+        "descricao_curta": "Native Kubernetes desktop IDE designed for seamless cluster exploration",
+        "estrelas": 1395,
+        "forks": 38
+    },
+    {
+        "nome_repositorio": "sassanix/Warracker",
+        "url_repositorio": "https://github.com/sassanix/Warracker",
+        "data_criacao": "2025-03-02T02:40:52Z",
+        "linguagem_principal": "JavaScript",
+        "licenca": "AGPL-3.0",
+        "descricao_curta": "🛡️ Warracker is an open source, self-hostable warranty tracker to monitor expirations, store receipts, files. You own the data, your rules!",
+        "estrelas": 1381,
+        "forks": 42
+    },
+    {
+        "nome_repositorio": "Langboat/Mengzi3",
+        "url_repositorio": "https://github.com/Langboat/Mengzi3",
+        "data_criacao": "2024-03-29T11:26:35Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": null,
+        "estrelas": 1370,
+        "forks": 16
+    },
+    {
+        "nome_repositorio": "PKU-YuanGroup/MagicTime",
+        "url_repositorio": "https://github.com/PKU-YuanGroup/MagicTime",
+        "data_criacao": "2024-04-07T14:17:15Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "[TPAMI 2025🔥] MagicTime: Time-lapse Video Generation Models as Metamorphic Simulators",
+        "estrelas": 1345,
+        "forks": 124
+    },
+    {
+        "nome_repositorio": "labex-labs/practice-c-programming-projects",
+        "url_repositorio": "https://github.com/labex-labs/practice-c-programming-projects",
+        "data_criacao": "2024-06-06T07:25:40Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "Build real C projects with 18 beginner-friendly challenges. Learn by doing with guided coding exercises and practical applications.",
+        "estrelas": 1344,
+        "forks": 91
+    },
+    {
+        "nome_repositorio": "mehdibha/dotUI",
+        "url_repositorio": "https://github.com/mehdibha/dotUI",
+        "data_criacao": "2024-03-07T14:32:17Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "Build your design system within seconds.",
+        "estrelas": 1336,
+        "forks": 33
+    },
+    {
+        "nome_repositorio": "peterkrueck/Claude-Code-Development-Kit",
+        "url_repositorio": "https://github.com/peterkrueck/Claude-Code-Development-Kit",
+        "data_criacao": "2025-07-02T11:04:30Z",
+        "linguagem_principal": "Shell",
+        "licenca": "MIT",
+        "descricao_curta": "Claude Code Workflow for beginners & intermediate users. Tutorial and Installer included",
+        "estrelas": 1335,
+        "forks": 152
+    },
+    {
+        "nome_repositorio": "ThePhaseless/Byparr",
+        "url_repositorio": "https://github.com/ThePhaseless/Byparr",
+        "data_criacao": "2024-07-24T13:57:38Z",
+        "linguagem_principal": "Python",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "Get your valid antibot cookies yourself!",
+        "estrelas": 1335,
+        "forks": 57
+    },
+    {
+        "nome_repositorio": "Roy3838/Observer",
+        "url_repositorio": "https://github.com/Roy3838/Observer",
+        "data_criacao": "2025-02-05T16:35:16Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": null,
+        "estrelas": 1332,
+        "forks": 101
+    },
+    {
+        "nome_repositorio": "slavakurilyak/awesome-ai-agents",
+        "url_repositorio": "https://github.com/slavakurilyak/awesome-ai-agents",
+        "data_criacao": "2024-01-15T12:48:42Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "Awesome list of 300+ agentic AI resources",
+        "estrelas": 1329,
+        "forks": 297
+    },
+    {
+        "nome_repositorio": "f/git-rewrite-commits",
+        "url_repositorio": "https://github.com/f/git-rewrite-commits",
+        "data_criacao": "2025-11-10T00:16:19Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "AI-powered git commit message rewriter using Ollama or GPT",
+        "estrelas": 1409,
+        "forks": 56
+    },
+    {
+        "nome_repositorio": "getseabird/seabird",
+        "url_repositorio": "https://github.com/getseabird/seabird",
+        "data_criacao": "2024-01-18T09:53:42Z",
+        "linguagem_principal": "Go",
+        "licenca": "MPL-2.0",
+        "descricao_curta": "Native Kubernetes desktop IDE designed for seamless cluster exploration",
+        "estrelas": 1395,
+        "forks": 38
+    },
+    {
+        "nome_repositorio": "INotGreen/XiebroC2",
+        "url_repositorio": "https://github.com/INotGreen/XiebroC2",
+        "data_criacao": "2024-02-15T15:46:07Z",
+        "linguagem_principal": "Go",
+        "licenca": null,
+        "descricao_curta": "渗透测试C2、支持Lua插件扩展、域前置/CDN上线、自定义profile、前置sRDI、文件管理、进程管理、内存加载、截图、反向代理、分组管理",
+        "estrelas": 1393,
+        "forks": 210
+    },
+    {
+        "nome_repositorio": "sassanix/Warracker",
+        "url_repositorio": "https://github.com/sassanix/Warracker",
+        "data_criacao": "2025-03-02T02:40:52Z",
+        "linguagem_principal": "JavaScript",
+        "licenca": "AGPL-3.0",
+        "descricao_curta": "🛡️ Warracker is an open source, self-hostable warranty tracker to monitor expirations, store receipts, files. You own the data, your rules!",
+        "estrelas": 1381,
+        "forks": 42
+    },
+    {
+        "nome_repositorio": "Langboat/Mengzi3",
+        "url_repositorio": "https://github.com/Langboat/Mengzi3",
+        "data_criacao": "2024-03-29T11:26:35Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": null,
+        "estrelas": 1370,
+        "forks": 16
+    },
+    {
+        "nome_repositorio": "PKU-YuanGroup/MagicTime",
+        "url_repositorio": "https://github.com/PKU-YuanGroup/MagicTime",
+        "data_criacao": "2024-04-07T14:17:15Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "[TPAMI 2025🔥] MagicTime: Time-lapse Video Generation Models as Metamorphic Simulators",
+        "estrelas": 1345,
+        "forks": 124
+    },
+    {
+        "nome_repositorio": "labex-labs/practice-c-programming-projects",
+        "url_repositorio": "https://github.com/labex-labs/practice-c-programming-projects",
+        "data_criacao": "2024-06-06T07:25:40Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "Build real C projects with 18 beginner-friendly challenges. Learn by doing with guided coding exercises and practical applications.",
+        "estrelas": 1344,
+        "forks": 91
+    },
+    {
+        "nome_repositorio": "mehdibha/dotUI",
+        "url_repositorio": "https://github.com/mehdibha/dotUI",
+        "data_criacao": "2024-03-07T14:32:17Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "Build your design system within seconds.",
+        "estrelas": 1336,
+        "forks": 33
+    },
+    {
+        "nome_repositorio": "peterkrueck/Claude-Code-Development-Kit",
+        "url_repositorio": "https://github.com/peterkrueck/Claude-Code-Development-Kit",
+        "data_criacao": "2025-07-02T11:04:30Z",
+        "linguagem_principal": "Shell",
+        "licenca": "MIT",
+        "descricao_curta": "Claude Code Workflow for beginners & intermediate users. Tutorial and Installer included",
+        "estrelas": 1335,
+        "forks": 152
+    },
+    {
+        "nome_repositorio": "ThePhaseless/Byparr",
+        "url_repositorio": "https://github.com/ThePhaseless/Byparr",
+        "data_criacao": "2024-07-24T13:57:38Z",
+        "linguagem_principal": "Python",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "Get your valid antibot cookies yourself!",
+        "estrelas": 1335,
+        "forks": 57
+    },
+    {
+        "nome_repositorio": "Roy3838/Observer",
+        "url_repositorio": "https://github.com/Roy3838/Observer",
+        "data_criacao": "2025-02-05T16:35:16Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": null,
+        "estrelas": 1332,
+        "forks": 101
+    },
+    {
+        "nome_repositorio": "slavakurilyak/awesome-ai-agents",
+        "url_repositorio": "https://github.com/slavakurilyak/awesome-ai-agents",
+        "data_criacao": "2024-01-15T12:48:42Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "Awesome list of 300+ agentic AI resources",
+        "estrelas": 1329,
+        "forks": 297
+    },
+    {
+        "nome_repositorio": "gvcgo/version-manager",
+        "url_repositorio": "https://github.com/gvcgo/version-manager",
+        "data_criacao": "2024-02-29T10:49:37Z",
+        "linguagem_principal": "Go",
+        "licenca": "MIT",
+        "descricao_curta": "🔥 A general version manager for thousands of SDKs with TUI inspired by lazygit. No need to remember any commands. Less bugs. ",
+        "estrelas": 1321,
+        "forks": 58
+    },
+    {
+        "nome_repositorio": "evilsocket/nerve",
+        "url_repositorio": "https://github.com/evilsocket/nerve",
+        "data_criacao": "2024-06-07T09:58:13Z",
+        "linguagem_principal": "Python",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "The Simple Agent Development Kit.",
+        "estrelas": 1319,
+        "forks": 114
+    },
+    {
+        "nome_repositorio": "Darwin-lfl/langmanus",
+        "url_repositorio": "https://github.com/Darwin-lfl/langmanus",
+        "data_criacao": "2025-03-18T01:17:34Z",
+        "linguagem_principal": null,
+        "licenca": "MIT",
+        "descricao_curta": "A community-driven AI automation framework that builds upon the incredible work of the open source community. Our goal is to combine language models with specialized tools for tasks like web search, crawling, and Python code execution, while giving back to the community that made this possible.",
+        "estrelas": 1313,
+        "forks": 1202
+    },
+    {
+        "nome_repositorio": "agents-flex/agents-flex",
+        "url_repositorio": "https://github.com/agents-flex/agents-flex",
+        "data_criacao": "2024-01-12T08:23:40Z",
+        "linguagem_principal": "Java",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "Agents-flex is A Lightweight Java AI Application Development Framework.",
+        "estrelas": 1303,
+        "forks": 114
+    },
+    {
+        "nome_repositorio": "XTXMarkets/ternfs",
+        "url_repositorio": "https://github.com/XTXMarkets/ternfs",
+        "data_criacao": "2025-09-02T09:31:27Z",
+        "linguagem_principal": "C++",
+        "licenca": null,
+        "descricao_curta": "An exabyte-scale, multi-region distributed file system",
+        "estrelas": 1292,
+        "forks": 89
+    },
+    {
+        "nome_repositorio": "sql-hkr/tiny8",
+        "url_repositorio": "https://github.com/sql-hkr/tiny8",
+        "data_criacao": "2025-10-20T16:28:30Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "A tiny CPU simulator written in Python",
+        "estrelas": 1279,
+        "forks": 32
+    },
+    {
+        "nome_repositorio": "bytedance/flux",
+        "url_repositorio": "https://github.com/bytedance/flux",
+        "data_criacao": "2024-03-01T22:21:42Z",
+        "linguagem_principal": "C++",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "A fast communication-overlapping library for tensor/expert parallelism on GPUs.",
+        "estrelas": 1277,
+        "forks": 99
+    },
+    {
+        "nome_repositorio": "altera-al/project-sid",
+        "url_repositorio": "https://github.com/altera-al/project-sid",
+        "data_criacao": "2024-11-01T00:42:25Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": null,
+        "estrelas": 1272,
+        "forks": 45
+    },
+    {
+        "nome_repositorio": "mallahyari/ml-practical-usecases",
+        "url_repositorio": "https://github.com/mallahyari/ml-practical-usecases",
+        "data_criacao": "2024-06-30T15:51:04Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "A database of 650 Machine Learning (ML) system design case studies from 100+ companies.",
+        "estrelas": 1250,
+        "forks": 226
+    },
+    {
+        "nome_repositorio": "KhoomeiK/LlamaGym",
+        "url_repositorio": "https://github.com/KhoomeiK/LlamaGym",
+        "data_criacao": "2024-03-01T03:03:38Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "Fine-tune LLM agents with online reinforcement learning",
+        "estrelas": 1249,
+        "forks": 64
+    },
+    {
+        "nome_repositorio": "panphp/pan",
+        "url_repositorio": "https://github.com/panphp/pan",
+        "data_criacao": "2024-10-09T19:53:10Z",
+        "linguagem_principal": "PHP",
+        "licenca": "MIT",
+        "descricao_curta": "A simple, lightweight, and privacy-focused product analytics php package",
+        "estrelas": 1246,
+        "forks": 62
+    },
+    {
+        "nome_repositorio": "HJYao00/Mulberry",
+        "url_repositorio": "https://github.com/HJYao00/Mulberry",
+        "data_criacao": "2024-12-23T16:03:10Z",
+        "linguagem_principal": "Python",
+        "licenca": null,
+        "descricao_curta": "[NIPS'25 Spotlight] Mulberry, an o1-like Reasoning and Reflection MLLM Implemented via Collective MCTS",
+        "estrelas": 1242,
+        "forks": 113
+    },
+    {
+        "nome_repositorio": "uclaml/SPIN",
+        "url_repositorio": "https://github.com/uclaml/SPIN",
+        "data_criacao": "2024-02-04T21:43:19Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "The official implementation of Self-Play Fine-Tuning (SPIN)",
+        "estrelas": 1235,
+        "forks": 105
+    },
+    {
+        "nome_repositorio": "wukongdaily/OrangePiShell",
+        "url_repositorio": "https://github.com/wukongdaily/OrangePiShell",
+        "data_criacao": "2024-04-14T12:22:17Z",
+        "linguagem_principal": "Shell",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "在Linux上快速部署一些好用的docker项目。起初只是为了香橙派制作。推荐使用1panel面板轻松管理docker。",
+        "estrelas": 1226,
+        "forks": 385
+    },
+    {
+        "nome_repositorio": "Henry-23/VideoChat",
+        "url_repositorio": "https://github.com/Henry-23/VideoChat",
+        "data_criacao": "2024-10-18T07:11:02Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "实时交互数字人，可自定义形象与音色，支持音色克隆，对话延迟低至3s。Real-time voice interactive digital human, customizable appearance and voice, supporting voice cloning, with initial package delay as low as 3s.",
+        "estrelas": 1224,
+        "forks": 159
+    },
+    {
+        "nome_repositorio": "zju3dv/MatchAnything",
+        "url_repositorio": "https://github.com/zju3dv/MatchAnything",
+        "data_criacao": "2025-01-09T12:51:24Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "Code for \"MatchAnything: Universal Cross-Modality Image Matching with Large-Scale Pre-Training\", Arxiv 2025.",
+        "estrelas": 1222,
+        "forks": 37
+    },
+    {
+        "nome_repositorio": "DreamTechAI/Direct3D-S2",
+        "url_repositorio": "https://github.com/DreamTechAI/Direct3D-S2",
+        "data_criacao": "2025-05-23T05:59:32Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "[NeurIPS 2025] Direct3D‑S2: Gigascale 3D Generation Made Easy with Spatial Sparse Attention",
+        "estrelas": 1211,
+        "forks": 102
+    },
+    {
+        "nome_repositorio": "mozillazg/ptcpdump",
+        "url_repositorio": "https://github.com/mozillazg/ptcpdump",
+        "data_criacao": "2024-04-05T08:59:43Z",
+        "linguagem_principal": "C",
+        "licenca": "MIT",
+        "descricao_curta": "Process-aware, eBPF-based tcpdump",
+        "estrelas": 1210,
+        "forks": 65
+    },
+    {
+        "nome_repositorio": "terrateamio/terrateam",
+        "url_repositorio": "https://github.com/terrateamio/terrateam",
+        "data_criacao": "2024-10-03T09:11:21Z",
+        "linguagem_principal": "OCaml",
+        "licenca": "MPL-2.0",
+        "descricao_curta": "Terrateam is open-source GitOps infrastructure orchestration. It integrates with GitHub to automate Terraform, OpenTofu, CDKTF, Terragrunt, and Pulumi workflows through pull requests.",
+        "estrelas": 1207,
+        "forks": 63
+    },
+    {
+        "nome_repositorio": "ratatui/tachyonfx",
+        "url_repositorio": "https://github.com/ratatui/tachyonfx",
+        "data_criacao": "2024-06-08T08:00:49Z",
+        "linguagem_principal": "Rust",
+        "licenca": "MIT",
+        "descricao_curta": "Effects and animation library for Ratatui applications",
+        "estrelas": 1182,
+        "forks": 16
+    },
+    {
+        "nome_repositorio": "tk04/Marker",
+        "url_repositorio": "https://github.com/tk04/Marker",
+        "data_criacao": "2024-02-27T22:01:34Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "A Desktop App for Easily Viewing and Editing Markdown Files",
+        "estrelas": 1179,
+        "forks": 44
+    },
+    {
+        "nome_repositorio": "wiredopposite/OGX-Mini",
+        "url_repositorio": "https://github.com/wiredopposite/OGX-Mini",
+        "data_criacao": "2024-02-20T19:30:50Z",
+        "linguagem_principal": "C++",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "RP2040 & RP2350 USB gamepad emulation for multiple platforms.",
+        "estrelas": 1176,
+        "forks": 109
+    },
+    {
+        "nome_repositorio": "ostafen/digler",
+        "url_repositorio": "https://github.com/ostafen/digler",
+        "data_criacao": "2024-09-14T08:05:16Z",
+        "linguagem_principal": "Go",
+        "licenca": "MIT",
+        "descricao_curta": "Digler is a tool for forensic disk analysis and file recovery. It's designed to help you unearth lost or deleted data from various disk images and raw devices.",
+        "estrelas": 1175,
+        "forks": 67
+    },
+    {
+        "nome_repositorio": "weitianxin/Awesome-Agentic-Reasoning",
+        "url_repositorio": "https://github.com/weitianxin/Awesome-Agentic-Reasoning",
+        "data_criacao": "2025-08-31T03:54:31Z",
+        "linguagem_principal": null,
+        "licenca": "MIT",
+        "descricao_curta": "A curated list of papers and resources based on the survey \"Agentic Reasoning for Large Language Models\"",
+        "estrelas": 1164,
+        "forks": 91
+    },
+    {
+        "nome_repositorio": "soulhotel/FF-ULTIMA",
+        "url_repositorio": "https://github.com/soulhotel/FF-ULTIMA",
+        "data_criacao": "2024-03-17T17:46:29Z",
+        "linguagem_principal": "CSS",
+        "licenca": "MPL-2.0",
+        "descricao_curta": "The Firefox theme with too many options.. FF Ultima.",
+        "estrelas": 1163,
+        "forks": 41
+    },
+    {
+        "nome_repositorio": "983632847/Awesome-Multimodal-Object-Tracking",
+        "url_repositorio": "https://github.com/983632847/Awesome-Multimodal-Object-Tracking",
+        "data_criacao": "2024-05-19T06:21:00Z",
+        "linguagem_principal": "Jupyter Notebook",
+        "licenca": "MIT",
+        "descricao_curta": "A continuously updated project to track the latest progress in the field of multi-modal object tracking. This project focuses solely on single-object tracking.",
+        "estrelas": 1158,
+        "forks": 55
+    },
+    {
+        "nome_repositorio": "OpenNJet/OpenNJet",
+        "url_repositorio": "https://github.com/OpenNJet/OpenNJet",
+        "data_criacao": "2024-04-02T03:42:38Z",
+        "linguagem_principal": "C",
+        "licenca": "MulanPSL-2.0",
+        "descricao_curta": null,
+        "estrelas": 1157,
+        "forks": 31
+    },
+    {
+        "nome_repositorio": "todo-for-ai/todo-for-ai",
+        "url_repositorio": "https://github.com/todo-for-ai/todo-for-ai",
+        "data_criacao": "2025-07-28T18:53:08Z",
+        "linguagem_principal": "Shell",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "🤖 A comprehensive task management system specifically designed for AI assistants. Supports project management, task tracking, team collaboration, and seamless AI integration through MCP (Model Context Protocol). Built with modern tech stack including React, Flask, and Docker. Try it now at https://todo4ai.org/",
+        "estrelas": 1156,
+        "forks": 103
+    },
+    {
+        "nome_repositorio": "wbopan/cui",
+        "url_repositorio": "https://github.com/wbopan/cui",
+        "data_criacao": "2025-06-12T06:35:25Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "A web UI for Claude Code agents",
+        "estrelas": 1153,
+        "forks": 114
+    },
+    {
+        "nome_repositorio": "lpiccinelli-eth/UniDepth",
+        "url_repositorio": "https://github.com/lpiccinelli-eth/UniDepth",
+        "data_criacao": "2024-03-25T17:22:22Z",
+        "linguagem_principal": "Python",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "Universal Monocular Metric Depth Estimation",
+        "estrelas": 1153,
+        "forks": 108
+    },
+    {
+        "nome_repositorio": "kijai/ComfyUI-IC-Light",
+        "url_repositorio": "https://github.com/kijai/ComfyUI-IC-Light",
+        "data_criacao": "2024-05-09T07:49:07Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "Using IC-LIght models in ComfyUI",
+        "estrelas": 1144,
+        "forks": 55
+    },
+    {
+        "nome_repositorio": "gsidhu/buzee-tauri",
+        "url_repositorio": "https://github.com/gsidhu/buzee-tauri",
+        "data_criacao": "2024-03-04T14:03:03Z",
+        "linguagem_principal": "Svelte",
+        "licenca": "MIT",
+        "descricao_curta": "A superfast full-text search application",
+        "estrelas": 1144,
+        "forks": 61
+    },
+    {
+        "nome_repositorio": "Spooks4576/Ghost_ESP",
+        "url_repositorio": "https://github.com/Spooks4576/Ghost_ESP",
+        "data_criacao": "2024-03-15T13:43:31Z",
+        "linguagem_principal": "C",
+        "licenca": "MIT",
+        "descricao_curta": "Ghost ESP is a ESP32 Firmware that Revolutionizes the way we use ESP32 devices in a Pen Testing aspect",
+        "estrelas": 1139,
+        "forks": 218
+    },
+    {
+        "nome_repositorio": "zhuhaichao518/cloudplayplus_stone",
+        "url_repositorio": "https://github.com/zhuhaichao518/cloudplayplus_stone",
+        "data_criacao": "2024-06-24T08:09:41Z",
+        "linguagem_principal": "Dart",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "Cloud Play Plus Remote Streaming Project",
+        "estrelas": 1135,
+        "forks": 115
+    },
+    {
+        "nome_repositorio": "shashankrustagi/DSA-IITD-NaveenGarg",
+        "url_repositorio": "https://github.com/shashankrustagi/DSA-IITD-NaveenGarg",
+        "data_criacao": "2024-02-28T18:45:06Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "DSA notes of Dr Naveen Garg, IIT Delhi, NPTEL",
+        "estrelas": 1134,
+        "forks": 151
+    },
+    {
+        "nome_repositorio": "xoofx/ultra",
+        "url_repositorio": "https://github.com/xoofx/ultra",
+        "data_criacao": "2024-11-18T09:56:16Z",
+        "linguagem_principal": "C#",
+        "licenca": "BSD-2-Clause",
+        "descricao_curta": "An advanced profiler for .NET Applications on Windows",
+        "estrelas": 1122,
+        "forks": 19
+    },
+    {
+        "nome_repositorio": "HITsz-TMG/AIGC-Claw",
+        "url_repositorio": "https://github.com/HITsz-TMG/AIGC-Claw",
+        "data_criacao": "2024-08-29T13:58:59Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "Your First AIGC Coworker. Chat an Idea. Get a Film. 🦞",
+        "estrelas": 1122,
+        "forks": 146
+    },
+    {
+        "nome_repositorio": "bowang-lab/MedRAX",
+        "url_repositorio": "https://github.com/bowang-lab/MedRAX",
+        "data_criacao": "2025-02-06T15:51:23Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "MedRAX: Medical Reasoning Agent for Chest X-ray - ICML 2025",
+        "estrelas": 1119,
+        "forks": 197
+    },
+    {
+        "nome_repositorio": "gityuanbao/share",
+        "url_repositorio": "https://github.com/gityuanbao/share",
+        "data_criacao": "2024-09-26T03:18:32Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": null,
+        "estrelas": 1119,
+        "forks": 83
+    },
+    {
+        "nome_repositorio": "PKU-VCL-3DV/SLAM3R",
+        "url_repositorio": "https://github.com/PKU-VCL-3DV/SLAM3R",
+        "data_criacao": "2024-12-11T12:58:54Z",
+        "linguagem_principal": "Python",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "[CVPR 2025 Highlight] Real-time dense scene reconstruction with SLAM3R",
+        "estrelas": 1117,
+        "forks": 75
+    },
+    {
+        "nome_repositorio": "fpgaminer/joycaption",
+        "url_repositorio": "https://github.com/fpgaminer/joycaption",
+        "data_criacao": "2024-10-12T18:35:17Z",
+        "linguagem_principal": "Jupyter Notebook",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "JoyCaption is an image captioning Visual Language Model (VLM) being built from the ground up as a free, open, and uncensored model for the community to use in training Diffusion models.",
+        "estrelas": 1117,
+        "forks": 68
+    },
+    {
+        "nome_repositorio": "cline/prompts",
+        "url_repositorio": "https://github.com/cline/prompts",
+        "data_criacao": "2025-04-30T19:10:48Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "Library of prompts from the Cline community",
+        "estrelas": 1116,
+        "forks": 236
+    },
+    {
+        "nome_repositorio": "vipshop/cache-dit",
+        "url_repositorio": "https://github.com/vipshop/cache-dit",
+        "data_criacao": "2025-06-12T07:54:30Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "A PyTorch-native inference engine with hybrid cache acceleration and massive parallelism for DiTs.",
+        "estrelas": 1114,
+        "forks": 66
+    },
+    {
+        "nome_repositorio": "m31coding/fuzzy-search",
+        "url_repositorio": "https://github.com/m31coding/fuzzy-search",
+        "data_criacao": "2024-02-06T16:31:26Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "A fast, accurate and multilingual fuzzy search library for the frontend.",
+        "estrelas": 1112,
+        "forks": 20
+    },
+    {
+        "nome_repositorio": "AgentsMesh/Pivo",
+        "url_repositorio": "https://github.com/AgentsMesh/Pivo",
+        "data_criacao": "2025-07-20T10:48:58Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "Task-focused programming environment designed for the right vibe.",
+        "estrelas": 1106,
+        "forks": 97
+    },
+    {
+        "nome_repositorio": "alishobeiri/thread-notebook",
+        "url_repositorio": "https://github.com/alishobeiri/thread-notebook",
+        "data_criacao": "2024-05-21T20:18:22Z",
+        "linguagem_principal": "JavaScript",
+        "licenca": "AGPL-3.0",
+        "descricao_curta": "AI-powered Jupyter Notebook. Use AI to generate and edit code cells, automatically fix errors, and chat with your data",
+        "estrelas": 1101,
+        "forks": 57
+    },
+    {
+        "nome_repositorio": "gamehublite/gamehub-oss",
+        "url_repositorio": "https://github.com/gamehublite/gamehub-oss",
+        "data_criacao": "2025-10-07T10:08:17Z",
+        "linguagem_principal": "Smali",
+        "licenca": null,
+        "descricao_curta": "privacy oriented gamehub",
+        "estrelas": 1101,
+        "forks": 56
+    },
+    {
+        "nome_repositorio": "yerfor/Real3DPortrait",
+        "url_repositorio": "https://github.com/yerfor/Real3DPortrait",
+        "data_criacao": "2024-02-02T07:08:40Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "Real3D-Portrait: One-shot Realistic 3D Talking Portrait Synthesis; ICLR 2024 Spotlight; Official code",
+        "estrelas": 1092,
+        "forks": 130
+    },
+    {
+        "nome_repositorio": "githubnext/copilot-workspace-user-manual",
+        "url_repositorio": "https://github.com/githubnext/copilot-workspace-user-manual",
+        "data_criacao": "2024-04-23T23:15:37Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "📖 The user manual for GitHub Copilot Workspace",
+        "estrelas": 1081,
+        "forks": 124
+    },
+    {
+        "nome_repositorio": "builtbybel/xd-AntiSpy",
+        "url_repositorio": "https://github.com/builtbybel/xd-AntiSpy",
+        "data_criacao": "2024-06-25T22:34:35Z",
+        "linguagem_principal": "C#",
+        "licenca": "MIT",
+        "descricao_curta": "The successor to xp-AntiSpy, designed for the modern Windows experience",
+        "estrelas": 1079,
+        "forks": 42
+    },
+    {
+        "nome_repositorio": "oxylabs/ai-map-py",
+        "url_repositorio": "https://github.com/oxylabs/ai-map-py",
+        "data_criacao": "2025-10-29T14:05:45Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "AI Map is an AI-powered website mapping tool by Oxylabs AI Studio that uses natural language prompts to intelligently discover and extract relevant URLs from any website.",
+        "estrelas": 1077,
+        "forks": 0
+    },
+    {
+        "nome_repositorio": "oxylabs/browser-agent-py",
+        "url_repositorio": "https://github.com/oxylabs/browser-agent-py",
+        "data_criacao": "2025-10-13T08:43:54Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "AI Browser Agent is an advanced Browser AI tool developed by Oxylabs AI Studio that automates real user browsing tasks using natural language instructions.",
+        "estrelas": 1073,
+        "forks": 1
+    },
+    {
+        "nome_repositorio": "Bhartendu-Kumar/rules_template",
+        "url_repositorio": "https://github.com/Bhartendu-Kumar/rules_template",
+        "data_criacao": "2025-03-21T10:31:17Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "If using CLINE/RooCode/Cursor/Windsurf Setup these rules. Usable for newbies riding AI wave and experienced folks both . Combines: (1) Memory,(2) Reasoning into subtasks (3) Prompts for best practices.",
+        "estrelas": 1063,
+        "forks": 136
+    },
+    {
+        "nome_repositorio": "TrueMyst/BeatPrints",
+        "url_repositorio": "https://github.com/TrueMyst/BeatPrints",
+        "data_criacao": "2024-01-02T12:16:00Z",
+        "linguagem_principal": "Python",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "☕ BeatPrints, create eye-catching, Pinterest-style music posters effortlessly.",
+        "estrelas": 1056,
+        "forks": 41
+    },
+    {
+        "nome_repositorio": "levkk/rwf",
+        "url_repositorio": "https://github.com/levkk/rwf",
+        "data_criacao": "2024-06-28T04:50:35Z",
+        "linguagem_principal": "Rust",
+        "licenca": "MIT",
+        "descricao_curta": "Comprehensive framework for building web applications in Rust.",
+        "estrelas": 1056,
+        "forks": 20
+    },
+    {
+        "nome_repositorio": "martinpacesa/BindCraft",
+        "url_repositorio": "https://github.com/martinpacesa/BindCraft",
+        "data_criacao": "2024-09-18T10:45:09Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "User friendly and accurate binder design pipeline",
+        "estrelas": 1055,
+        "forks": 244
+    },
+    {
+        "nome_repositorio": "Tencent-Hunyuan/InstantCharacter",
+        "url_repositorio": "https://github.com/Tencent-Hunyuan/InstantCharacter",
+        "data_criacao": "2025-04-16T09:29:52Z",
+        "linguagem_principal": "Python",
+        "licenca": "NOASSERTION",
+        "descricao_curta": null,
+        "estrelas": 1054,
+        "forks": 93
+    },
+    {
+        "nome_repositorio": "PolygonHive/GASPALS",
+        "url_repositorio": "https://github.com/PolygonHive/GASPALS",
+        "data_criacao": "2024-06-30T19:31:05Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "Game Animation Sample with ALS Layering | Unreal Engine 5",
+        "estrelas": 1046,
+        "forks": 297
+    },
+    {
+        "nome_repositorio": "USTCLLM/RecFM",
+        "url_repositorio": "https://github.com/USTCLLM/RecFM",
+        "data_criacao": "2024-11-26T08:37:10Z",
+        "linguagem_principal": null,
+        "licenca": "Apache-2.0",
+        "descricao_curta": "Comprehensive tools and frameworks for developing foundation models tailored to recommendation systems.",
+        "estrelas": 1043,
+        "forks": 681
+    },
+    {
+        "nome_repositorio": "Gowtham-Darkseid/AutoPentestX",
+        "url_repositorio": "https://github.com/Gowtham-Darkseid/AutoPentestX",
+        "data_criacao": "2025-11-30T08:33:45Z",
+        "linguagem_principal": "Python",
+        "licenca": "NOASSERTION",
+        "descricao_curta": "AutoPentestX – Automated Pentesting & Vulnerability Reporting Tool",
+        "estrelas": 1039,
+        "forks": 202
+    },
+    {
+        "nome_repositorio": "YuzeHao2023/Awesome-MCP-Servers",
+        "url_repositorio": "https://github.com/YuzeHao2023/Awesome-MCP-Servers",
+        "data_criacao": "2025-11-06T02:53:15Z",
+        "linguagem_principal": null,
+        "licenca": "Apache-2.0",
+        "descricao_curta": "A curated list of Model Context Protocol (MCP) servers ",
+        "estrelas": 1036,
+        "forks": 106
+    },
+    {
+        "nome_repositorio": "AgibotTech/agibot_x1_hardware",
+        "url_repositorio": "https://github.com/AgibotTech/agibot_x1_hardware",
+        "data_criacao": "2024-10-24T03:36:54Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "The hardware design for AgiBot X1.",
+        "estrelas": 1033,
+        "forks": 329
+    },
+    {
+        "nome_repositorio": "iFurySt/RedNote-MCP",
+        "url_repositorio": "https://github.com/iFurySt/RedNote-MCP",
+        "data_criacao": "2025-04-10T12:20:05Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "🚀MCP server for accessing RedNote(XiaoHongShu, xhs).",
+        "estrelas": 1031,
+        "forks": 164
+    },
+    {
+        "nome_repositorio": "ZeroDeng01/sublinkPro",
+        "url_repositorio": "https://github.com/ZeroDeng01/sublinkPro",
+        "data_criacao": "2025-10-28T02:47:04Z",
+        "linguagem_principal": "Go",
+        "licenca": "MIT",
+        "descricao_curta": "✨ 现代化代理订阅管理平台 | 🏷️智能标签自动分类 ⚡专业测速 🔗链式代理中转 ✈️机场流量监控 🤖TG远程管理 📜JS脚本扩展 | Go+React 全新UI，移动端友好！",
+        "estrelas": 1027,
+        "forks": 147
+    },
+    {
+        "nome_repositorio": "mkasberg/ghostty-ubuntu",
+        "url_repositorio": "https://github.com/mkasberg/ghostty-ubuntu",
+        "data_criacao": "2024-12-29T22:18:24Z",
+        "linguagem_principal": "Shell",
+        "licenca": null,
+        "descricao_curta": "Ubuntu/Debian (.deb) packages for Ghostty",
+        "estrelas": 1021,
+        "forks": 30
+    },
+    {
+        "nome_repositorio": "simpler-env/SimplerEnv",
+        "url_repositorio": "https://github.com/simpler-env/SimplerEnv",
+        "data_criacao": "2024-03-23T18:52:04Z",
+        "linguagem_principal": "Jupyter Notebook",
+        "licenca": "MIT",
+        "descricao_curta": "Evaluating and reproducing real-world robot manipulation policies (e.g., RT-1, RT-1-X, Octo) in simulation under common setups (e.g., Google Robot, WidowX+Bridge) (CoRL 2024)",
+        "estrelas": 1020,
+        "forks": 183
+    },
+    {
+        "nome_repositorio": "DeepWism/DeepWism-R2",
+        "url_repositorio": "https://github.com/DeepWism/DeepWism-R2",
+        "data_criacao": "2025-06-23T08:56:38Z",
+        "linguagem_principal": null,
+        "licenca": null,
+        "descricao_curta": "DeepWism R2 is a next-generation AGI system built on the T3CEDS framework (Thin-Thick-Thin Crowd Entropy Dynamics System), which redefines intelligence as a process of entropy reduction rather than attention modeling.",
+        "estrelas": 1017,
+        "forks": 154
+    },
+    {
+        "nome_repositorio": "zaigie/palworld-server-tool",
+        "url_repositorio": "https://github.com/zaigie/palworld-server-tool",
+        "data_criacao": "2024-01-24T04:25:45Z",
+        "linguagem_principal": "Go",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "[中文|English|日本語]基于.sav存档解析和REST&RCON优雅地用可视化界面管理幻兽帕鲁专用服务器。/ Through parse .sav and REST&RCON, visual interface management PalWorld dedicated server.",
+        "estrelas": 1014,
+        "forks": 107
+    },
+    {
+        "nome_repositorio": "Silverr12/DMA-CFW-Guide",
+        "url_repositorio": "https://github.com/Silverr12/DMA-CFW-Guide",
+        "data_criacao": "2024-01-20T11:24:43Z",
+        "linguagem_principal": null,
+        "licenca": "NOASSERTION",
+        "descricao_curta": "Detailed Instructions on the creation of custom/modified DMA (attack) Firmware based on pcileech-fpga",
+        "estrelas": 1008,
+        "forks": 176
+    },
+    {
+        "nome_repositorio": "piyushsachdeva/CKA-2024",
+        "url_repositorio": "https://github.com/piyushsachdeva/CKA-2024",
+        "data_criacao": "2024-05-03T01:43:53Z",
+        "linguagem_principal": "Dockerfile",
+        "licenca": null,
+        "descricao_curta": "This repository contains the notes and code snippets of the CKA 2025 YouTube Playlist. The content is based on the latest 2025 curriculum and includes hands-on demos, assignments, and exam-based scenarios. I will be covering everything from the basics to the advanced level.",
+        "estrelas": 1008,
+        "forks": 1762
+    },
+    {
+        "nome_repositorio": "CyrilFeng/karma",
+        "url_repositorio": "https://github.com/CyrilFeng/karma",
+        "data_criacao": "2025-05-08T03:48:09Z",
+        "linguagem_principal": "Java",
+        "licenca": null,
+        "descricao_curta": "新数据洞察方式",
+        "estrelas": 1005,
+        "forks": 87
+    },
+    {
+        "nome_repositorio": "allenai/OLMoE",
+        "url_repositorio": "https://github.com/allenai/OLMoE",
+        "data_criacao": "2024-06-22T21:56:46Z",
+        "linguagem_principal": "Jupyter Notebook",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "OLMoE: Open Mixture-of-Experts Language Models",
+        "estrelas": 994,
+        "forks": 103
+    },
+    {
+        "nome_repositorio": "serverless/aws-ai-stack",
+        "url_repositorio": "https://github.com/serverless/aws-ai-stack",
+        "data_criacao": "2024-09-04T19:13:23Z",
+        "linguagem_principal": "JavaScript",
+        "licenca": null,
+        "descricao_curta": "AWS AI Stack – A ready-to-use, full-stack boilerplate project for building serverless AI applications on AWS",
+        "estrelas": 993,
+        "forks": 90
+    },
+    {
+        "nome_repositorio": "myshell-ai/JetMoE",
+        "url_repositorio": "https://github.com/myshell-ai/JetMoE",
+        "data_criacao": "2024-04-02T02:43:16Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "Reaching LLaMA2 Performance with 0.1M Dollars",
+        "estrelas": 989,
+        "forks": 77
+    },
+    {
+        "nome_repositorio": "svpino/alloy-voice-assistant",
+        "url_repositorio": "https://github.com/svpino/alloy-voice-assistant",
+        "data_criacao": "2024-05-24T15:53:38Z",
+        "linguagem_principal": "Python",
+        "licenca": null,
+        "descricao_curta": null,
+        "estrelas": 988,
+        "forks": 373
+    },
+    {
+        "nome_repositorio": "yandex/YaFSDP",
+        "url_repositorio": "https://github.com/yandex/YaFSDP",
+        "data_criacao": "2024-05-27T12:25:35Z",
+        "linguagem_principal": "Python",
+        "licenca": "Apache-2.0",
+        "descricao_curta": "YaFSDP: Yet another Fully Sharded Data Parallel",
+        "estrelas": 986,
+        "forks": 47
+    },
+    {
+        "nome_repositorio": "TencentCloudBase/CloudBase-MCP",
+        "url_repositorio": "https://github.com/TencentCloudBase/CloudBase-MCP",
+        "data_criacao": "2025-05-23T08:31:26Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "   CloudBase MCP - Connect CloudBase to your AI Agent.     Go from AI prompt to live app. ",
+        "estrelas": 985,
+        "forks": 125
+    },
+    {
+        "nome_repositorio": "fla-org/native-sparse-attention",
+        "url_repositorio": "https://github.com/fla-org/native-sparse-attention",
+        "data_criacao": "2025-02-21T18:27:44Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "🐳 Efficient Triton implementations for \"Native Sparse Attention: Hardware-Aligned and Natively Trainable Sparse Attention\"",
+        "estrelas": 980,
+        "forks": 50
+    },
+    {
+        "nome_repositorio": "multimodal-art-projection/MAP-NEO",
+        "url_repositorio": "https://github.com/multimodal-art-projection/MAP-NEO",
+        "data_criacao": "2024-05-08T11:58:35Z",
+        "linguagem_principal": "Python",
+        "licenca": null,
+        "descricao_curta": null,
+        "estrelas": 979,
+        "forks": 89
+    },
+    {
+        "nome_repositorio": "callstackincubator/cali",
+        "url_repositorio": "https://github.com/callstackincubator/cali",
+        "data_criacao": "2024-11-23T09:51:41Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "AI agent for building React Native apps",
+        "estrelas": 977,
+        "forks": 54
+    },
+    {
+        "nome_repositorio": "pingooio/pingoo",
+        "url_repositorio": "https://github.com/pingooio/pingoo",
+        "data_criacao": "2025-09-17T07:18:40Z",
+        "linguagem_principal": "Rust",
+        "licenca": "MIT",
+        "descricao_curta": "The fast and secure Load Balancer / API Gateway / Reverse Proxy with built-in service discovery, GeoIP, WAF, bot protection and much more - https://pingoo.io",
+        "estrelas": 977,
+        "forks": 39
+    },
+    {
+        "nome_repositorio": "Jeremiahcheng1206/AML-Monitoring-Engine",
+        "url_repositorio": "https://github.com/Jeremiahcheng1206/AML-Monitoring-Engine",
+        "data_criacao": "2024-11-19T19:31:29Z",
+        "linguagem_principal": "Java",
+        "licenca": null,
+        "descricao_curta": "AML end to end system",
+        "estrelas": 975,
+        "forks": 102
+    },
+    {
+        "nome_repositorio": "QiaoKes/fntv-electron",
+        "url_repositorio": "https://github.com/QiaoKes/fntv-electron",
+        "data_criacao": "2025-08-15T03:30:22Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "GPL-3.0",
+        "descricao_curta": "飞牛影视PC版",
+        "estrelas": 974,
+        "forks": 76
+    },
+    {
+        "nome_repositorio": "ViggoZ/producthunt-daily-hot",
+        "url_repositorio": "https://github.com/ViggoZ/producthunt-daily-hot",
+        "data_criacao": "2024-08-08T15:12:26Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": "自动生成每日Product Hunt热门产品中文榜单，基于GitHub Actions自动提交Markdown文件",
+        "estrelas": 971,
+        "forks": 125
+    },
+    {
+        "nome_repositorio": "zhentingqi/rStar",
+        "url_repositorio": "https://github.com/zhentingqi/rStar",
+        "data_criacao": "2024-08-07T03:40:04Z",
+        "linguagem_principal": "Python",
+        "licenca": "MIT",
+        "descricao_curta": null,
+        "estrelas": 970,
+        "forks": 110
+    },
+    {
+        "nome_repositorio": "TransformerOptimus/SuperCoder",
+        "url_repositorio": "https://github.com/TransformerOptimus/SuperCoder",
+        "data_criacao": "2024-07-03T05:12:33Z",
+        "linguagem_principal": "Go",
+        "licenca": "MIT",
+        "descricao_curta": "Open Source Autonomous Software Development System",
+        "estrelas": 969,
+        "forks": 104
+    },
+    {
+        "nome_repositorio": "Owloops/claude-powerline",
+        "url_repositorio": "https://github.com/Owloops/claude-powerline",
+        "data_criacao": "2025-08-10T09:35:29Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "MIT",
+        "descricao_curta": "Beautiful vim-style powerline statusline for Claude Code",
+        "estrelas": 968,
+        "forks": 68
+    },
+    {
+        "nome_repositorio": "Sync-in/server",
+        "url_repositorio": "https://github.com/Sync-in/server",
+        "data_criacao": "2025-07-13T16:25:43Z",
+        "linguagem_principal": "TypeScript",
+        "licenca": "AGPL-3.0",
+        "descricao_curta": "Sync-in server · Secure, open-source platform for file storage, sharing, collaboration, and syncing.",
+        "estrelas": 967,
+        "forks": 45
+    }
+]

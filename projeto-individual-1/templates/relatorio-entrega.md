@@ -85,58 +85,6 @@ export API_KEY=...
 python src/main.py
 ```
 
----
-
-## 5. Avaliação e Testes
-
-### 5.1 Métricas definidas
-
-| Métrica | Descrição | Resultado obtido |
-|---------|-----------|------------------|
-| | | |
-| | | |
-
-### 5.2 Exemplos de teste
-
-#### Teste 1
-
-- **Entrada:**
-- **Saída esperada:**
-- **Saída obtida:**
-- **Resultado:** Sucesso / Falha
-
-#### Teste 2
-
-- **Entrada:**
-- **Saída esperada:**
-- **Saída obtida:**
-- **Resultado:** Sucesso / Falha
-
-### 5.3 Análise dos resultados
-
-_Discuta os resultados obtidos. O agente atingiu os objetivos? Quais foram os pontos fortes e fracos?_
-
----
-
-## 6. Diferenciais implementados
-
-_Marque os diferenciais que foram implementados:_
-
-- [ ] RAG com base externa
-- [ ] Múltiplos agentes
-- [ ] Uso de ferramentas (tools)
-- [ ] Memória persistente
-- [ ] Explicabilidade
-- [ ] Análise crítica de limitações
-
----
-
-## 7. Limitações e Trabalhos Futuros
-
-_Descreva as limitações encontradas e o que poderia ser melhorado em iterações futuras._
-
----
-
 ## 8. Referências
 
 1. 
