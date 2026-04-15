@@ -46,6 +46,7 @@ def run_pipeline(
     radius_deg: float = 0.05,
     scale: float = 0.2,
     confidence_threshold: float = 0.4,
+    model_path: str = "hustvl/yolos-small",
 ):
     mlflow.set_experiment(EXPERIMENT_NAME)
 
@@ -53,7 +54,7 @@ def run_pipeline(
         # --- Tags ---
         mlflow.set_tags({
             "git_commit": _git_commit(),
-            "model": "hustvl/yolos-small",
+            "model": model_path,
         })
 
         # --- Log params ---
@@ -62,7 +63,7 @@ def run_pipeline(
             "radius_deg": radius_deg,
             "scale": scale,
             "confidence_threshold": confidence_threshold,
-            "model_name": "hustvl/yolos-small",
+            "model_name": model_path,
         })
 
         # --- Ingest ---
@@ -78,8 +79,8 @@ def run_pipeline(
         })
 
         # --- Load model ---
-        print("[2/4] Loading YOLOS-small")
-        detector = SpaceDetector()
+        print(f"[2/4] Loading model: {model_path}")
+        detector = SpaceDetector(model_name=model_path)
 
         # --- Inference over all downloaded images ---
         print("[3/4] Running inference")
@@ -228,6 +229,8 @@ if __name__ == "__main__":
     parser.add_argument("--scale", type=float, default=0.2)
     parser.add_argument("--confidence-threshold", type=float, default=0.4)
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
+    parser.add_argument("--model-path", type=str, default="hustvl/yolos-small",
+                        help="HuggingFace model name or path to a local fine-tuned checkpoint")
     args = parser.parse_args()
 
     run_pipeline(
@@ -236,4 +239,5 @@ if __name__ == "__main__":
         radius_deg=args.radius_deg,
         scale=args.scale,
         confidence_threshold=args.confidence_threshold,
+        model_path=args.model_path,
     )
