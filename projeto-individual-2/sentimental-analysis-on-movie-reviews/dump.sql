@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict j9v6QF0WkYdfhfTxJaE05O1rXVoRVdFTFwYDlZ1o8NR8GsiqDygVhQ7B2IljtWX
+\restrict ZEmC1pns6SIX2XrKjgvmjzyWF8FrxygF8xe08ttffIWLlofXFUh1ewJuaeGFdgN
 
 -- Dumped from database version 15.17 (Debian 15.17-1.pgdg13+1)
 -- Dumped by pg_dump version 15.17 (Debian 15.17-1.pgdg13+1)
@@ -888,6 +888,8 @@ COPY public.datasets (dataset_uuid, experiment_id, name, digest, dataset_source_
 82e1b62cca2f4beea4fef2842147b0c2	1	imdb-test	f49bb785	local	{"uri": "data/raw/aclImdb"}	{"mlflow_colspec": [{"type": "string", "name": "text", "required": true}, {"type": "long", "name": "label", "required": true}]}	{"num_rows": 500, "num_elements": 1000}
 a518e9d2248546db80f5da0a481a4770	1	imdb-test	888a2874	local	{"uri": "data/raw/aclImdb"}	{"mlflow_colspec": [{"type": "string", "name": "text", "required": true}, {"type": "long", "name": "label", "required": true}]}	{"num_rows": 250, "num_elements": 500}
 f68d24d0d7de434fbd0136d265796630	1	imdb-test	1d362985	local	{"uri": "data/raw/aclImdb"}	{"mlflow_colspec": [{"type": "string", "name": "text", "required": true}, {"type": "long", "name": "label", "required": true}]}	{"num_rows": 1000, "num_elements": 2000}
+b8fbf1d1065541cd841e799f7c0309f5	1	imdb-test	0e1dded1	local	{"uri": "data/raw/aclImdb"}	{"mlflow_colspec": [{"type": "string", "name": "text", "required": true}, {"type": "long", "name": "label", "required": true}]}	{"num_rows": 500, "num_elements": 1000}
+5495b661b094453cab30f748987aaafc	1	imdb-test	9e14af77	local	{"uri": "data/raw/aclImdb"}	{"mlflow_colspec": [{"type": "string", "name": "text", "required": true}, {"type": "long", "name": "label", "required": true}]}	{"num_rows": 500, "num_elements": 1000}
 \.
 
 
@@ -986,6 +988,8 @@ c7bb88e57437469999c08127fc23c6ba	mlflow.data.context	evaluation
 14d5dcab9d294e91bb9ffaba1ffd1f01	mlflow.data.context	evaluation
 bbb9f19c6d2a41e19812c87b0eea7769	mlflow.data.context	evaluation
 354f2f9e5f0c4296aa1bf1d368cfed17	mlflow.data.context	evaluation
+f5fd2e23d32948509b42c446171e157c	mlflow.data.context	evaluation
+e4e52f4c48cb4e06a26220c6ed25fbb0	mlflow.data.context	evaluation
 \.
 
 
@@ -1003,6 +1007,8 @@ c7bb88e57437469999c08127fc23c6ba	DATASET	82e1b62cca2f4beea4fef2842147b0c2	RUN	da
 bbb9f19c6d2a41e19812c87b0eea7769	DATASET	82e1b62cca2f4beea4fef2842147b0c2	RUN	bfd2c72f1faf4b18a158aaf2207b4cd3	0
 354f2f9e5f0c4296aa1bf1d368cfed17	DATASET	f68d24d0d7de434fbd0136d265796630	RUN	3bf05a9db5454052953cf40d7525b239	0
 8f3fc93fa87b401b821a733ff5ef22ed	RUN_OUTPUT	3bf05a9db5454052953cf40d7525b239	MODEL_OUTPUT	m-9a3f7c164b03419299027ddcf63a2a31	0
+f5fd2e23d32948509b42c446171e157c	DATASET	b8fbf1d1065541cd841e799f7c0309f5	RUN	5220471ebff74d7f9d261e8e1fe9af1a	0
+e4e52f4c48cb4e06a26220c6ed25fbb0	DATASET	5495b661b094453cab30f748987aaafc	RUN	25e5cd8d08da4de498e1955cfa3be9bc	0
 \.
 
 
@@ -1059,6 +1065,14 @@ accuracy	0.9	1776282301008	0	f	3bf05a9db5454052953cf40d7525b239
 precision	0.9311827956989247	1776282301008	0	f	3bf05a9db5454052953cf40d7525b239
 recall	0.8642714570858283	1776282301008	0	f	3bf05a9db5454052953cf40d7525b239
 f1	0.8964803312629399	1776282301008	0	f	3bf05a9db5454052953cf40d7525b239
+accuracy	0.908	1776285046825	0	f	5220471ebff74d7f9d261e8e1fe9af1a
+precision	0.9205020920502092	1776285046825	0	f	5220471ebff74d7f9d261e8e1fe9af1a
+recall	0.8906882591093117	1776285046825	0	f	5220471ebff74d7f9d261e8e1fe9af1a
+f1	0.9053497942386831	1776285046825	0	f	5220471ebff74d7f9d261e8e1fe9af1a
+accuracy	0.904	1776285253084	0	f	25e5cd8d08da4de498e1955cfa3be9bc
+precision	0.9246861924686193	1776285253084	0	f	25e5cd8d08da4de498e1955cfa3be9bc
+recall	0.8804780876494024	1776285253084	0	f	25e5cd8d08da4de498e1955cfa3be9bc
+f1	0.9020408163265307	1776285253084	0	f	25e5cd8d08da4de498e1955cfa3be9bc
 \.
 
 
@@ -1149,6 +1163,14 @@ accuracy	0.9	1776282301008	3bf05a9db5454052953cf40d7525b239	0	f
 precision	0.9311827956989247	1776282301008	3bf05a9db5454052953cf40d7525b239	0	f
 recall	0.8642714570858283	1776282301008	3bf05a9db5454052953cf40d7525b239	0	f
 f1	0.8964803312629399	1776282301008	3bf05a9db5454052953cf40d7525b239	0	f
+accuracy	0.908	1776285046825	5220471ebff74d7f9d261e8e1fe9af1a	0	f
+precision	0.9205020920502092	1776285046825	5220471ebff74d7f9d261e8e1fe9af1a	0	f
+recall	0.8906882591093117	1776285046825	5220471ebff74d7f9d261e8e1fe9af1a	0	f
+f1	0.9053497942386831	1776285046825	5220471ebff74d7f9d261e8e1fe9af1a	0	f
+accuracy	0.904	1776285253084	25e5cd8d08da4de498e1955cfa3be9bc	0	f
+precision	0.9246861924686193	1776285253084	25e5cd8d08da4de498e1955cfa3be9bc	0	f
+recall	0.8804780876494024	1776285253084	25e5cd8d08da4de498e1955cfa3be9bc	0	f
+f1	0.9020408163265307	1776285253084	25e5cd8d08da4de498e1955cfa3be9bc	0	f
 \.
 
 
@@ -1254,6 +1276,22 @@ max_length	512	3bf05a9db5454052953cf40d7525b239
 random_seed	42	3bf05a9db5454052953cf40d7525b239
 model_name	distilbert/distilbert-base-uncased-finetuned-sst-2-english	3bf05a9db5454052953cf40d7525b239
 preprocess_version	v1	3bf05a9db5454052953cf40d7525b239
+data_dir	data/raw/aclImdb	5220471ebff74d7f9d261e8e1fe9af1a
+split	test	5220471ebff74d7f9d261e8e1fe9af1a
+sample_size	500	5220471ebff74d7f9d261e8e1fe9af1a
+batch_size	8	5220471ebff74d7f9d261e8e1fe9af1a
+max_length	512	5220471ebff74d7f9d261e8e1fe9af1a
+random_seed	43	5220471ebff74d7f9d261e8e1fe9af1a
+model_name	distilbert/distilbert-base-uncased-finetuned-sst-2-english	5220471ebff74d7f9d261e8e1fe9af1a
+preprocess_version	v1	5220471ebff74d7f9d261e8e1fe9af1a
+data_dir	data/raw/aclImdb	25e5cd8d08da4de498e1955cfa3be9bc
+split	test	25e5cd8d08da4de498e1955cfa3be9bc
+sample_size	500	25e5cd8d08da4de498e1955cfa3be9bc
+batch_size	8	25e5cd8d08da4de498e1955cfa3be9bc
+max_length	512	25e5cd8d08da4de498e1955cfa3be9bc
+random_seed	44	25e5cd8d08da4de498e1955cfa3be9bc
+model_name	distilbert/distilbert-base-uncased-finetuned-sst-2-english	25e5cd8d08da4de498e1955cfa3be9bc
+preprocess_version	v1	25e5cd8d08da4de498e1955cfa3be9bc
 \.
 
 
@@ -1291,10 +1329,12 @@ COPY public.runs (run_uuid, name, source_type, source_name, entry_point_name, us
 1abce95a0c6d4d178b12f4d379f46d9c	maxlen-128	UNKNOWN			lucasmartins	FINISHED	1776280906360	1776280946428		active	mlflow-artifacts:/1/1abce95a0c6d4d178b12f4d379f46d9c/artifacts	1	\N
 d52e6c5075f848f68b4d252565d0556f	maxlen-256	UNKNOWN			lucasmartins	FINISHED	1776281007333	1776281089006		active	mlflow-artifacts:/1/d52e6c5075f848f68b4d252565d0556f/artifacts	1	\N
 cd9898768eeb4c45a583d32cfa793374	size-250	UNKNOWN			lucasmartins	FINISHED	1776281169123	1776281252092		active	mlflow-artifacts:/1/cd9898768eeb4c45a583d32cfa793374/artifacts	1	\N
-da82a11111e549e98434bc7bbe0669ee	seed-43	UNKNOWN			lucasmartins	FINISHED	1776281308870	1776281475116		active	mlflow-artifacts:/1/da82a11111e549e98434bc7bbe0669ee/artifacts	1	\N
-978203d203794cd78bfaa52432f0661e	seed-44	UNKNOWN			lucasmartins	FINISHED	1776281497429	1776281664751		active	mlflow-artifacts:/1/978203d203794cd78bfaa52432f0661e/artifacts	1	\N
 bfd2c72f1faf4b18a158aaf2207b4cd3	size-500	UNKNOWN			lucasmartins	FINISHED	1776281743457	1776281919370		active	mlflow-artifacts:/1/bfd2c72f1faf4b18a158aaf2207b4cd3/artifacts	1	\N
 3bf05a9db5454052953cf40d7525b239	baseline-1000	UNKNOWN			lucasmartins	FINISHED	1776281953053	1776282406264		active	mlflow-artifacts:/1/3bf05a9db5454052953cf40d7525b239/artifacts	1	\N
+978203d203794cd78bfaa52432f0661e	seed-44	UNKNOWN			lucasmartins	FINISHED	1776281497429	1776281664751		deleted	mlflow-artifacts:/1/978203d203794cd78bfaa52432f0661e/artifacts	1	1776284822858
+da82a11111e549e98434bc7bbe0669ee	seed-43	UNKNOWN			lucasmartins	FINISHED	1776281308870	1776281475116		deleted	mlflow-artifacts:/1/da82a11111e549e98434bc7bbe0669ee/artifacts	1	1776284822859
+5220471ebff74d7f9d261e8e1fe9af1a	seed-43	UNKNOWN			lucasmartins	FINISHED	1776284865209	1776285047005		active	mlflow-artifacts:/1/5220471ebff74d7f9d261e8e1fe9af1a/artifacts	1	\N
+25e5cd8d08da4de498e1955cfa3be9bc	seed-44	UNKNOWN			lucasmartins	FINISHED	1776285087139	1776285253295		active	mlflow-artifacts:/1/25e5cd8d08da4de498e1955cfa3be9bc/artifacts	1	\N
 \.
 
 
@@ -1383,6 +1423,16 @@ mlflow.source.name	/home/lucasmartins/sml/Projetos-Individuais-2026-1/projeto-in
 mlflow.source.type	LOCAL	3bf05a9db5454052953cf40d7525b239
 mlflow.source.git.commit	8a59a5298721844f67051be0748d50563b5019bf	3bf05a9db5454052953cf40d7525b239
 mlflow.runName	baseline-1000	3bf05a9db5454052953cf40d7525b239
+mlflow.user	lucasmartins	5220471ebff74d7f9d261e8e1fe9af1a
+mlflow.source.name	/home/lucasmartins/sml/Projetos-Individuais-2026-1/projeto-individual-2/sentimental-analysis-on-movie-reviews/src/pipeline.py	5220471ebff74d7f9d261e8e1fe9af1a
+mlflow.source.type	LOCAL	5220471ebff74d7f9d261e8e1fe9af1a
+mlflow.source.git.commit	21c13b3f3273504f45f8dd7415ffa3241711b8c5	5220471ebff74d7f9d261e8e1fe9af1a
+mlflow.runName	seed-43	5220471ebff74d7f9d261e8e1fe9af1a
+mlflow.user	lucasmartins	25e5cd8d08da4de498e1955cfa3be9bc
+mlflow.source.name	/home/lucasmartins/sml/Projetos-Individuais-2026-1/projeto-individual-2/sentimental-analysis-on-movie-reviews/src/pipeline.py	25e5cd8d08da4de498e1955cfa3be9bc
+mlflow.source.type	LOCAL	25e5cd8d08da4de498e1955cfa3be9bc
+mlflow.source.git.commit	21c13b3f3273504f45f8dd7415ffa3241711b8c5	25e5cd8d08da4de498e1955cfa3be9bc
+mlflow.runName	seed-44	25e5cd8d08da4de498e1955cfa3be9bc
 \.
 
 
@@ -2583,5 +2633,5 @@ ALTER TABLE ONLY public.webhook_events
 -- PostgreSQL database dump complete
 --
 
-\unrestrict j9v6QF0WkYdfhfTxJaE05O1rXVoRVdFTFwYDlZ1o8NR8GsiqDygVhQ7B2IljtWX
+\unrestrict ZEmC1pns6SIX2XrKjgvmjzyWF8FrxygF8xe08ttffIWLlofXFUh1ewJuaeGFdgN
 
