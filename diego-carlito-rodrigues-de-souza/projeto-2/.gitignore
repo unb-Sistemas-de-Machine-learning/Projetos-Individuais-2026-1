@@ -9,11 +9,6 @@ mlruns/
 mlflow.db
 artifacts/
 
-# Dados
-data/*.csv
-data/*.parquet
-!data/sample_*.csv
-
 # Logs
 logs/
 *.log
