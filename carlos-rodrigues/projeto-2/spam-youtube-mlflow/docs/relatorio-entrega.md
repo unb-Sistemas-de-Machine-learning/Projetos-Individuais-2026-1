@@ -327,7 +327,7 @@ mlflow ui --backend-store-uri ./mlruns --port 5000
 - [x] Código-fonte completo
 - [x] Pipeline funcional
 - [x] Configuração do MLflow
-- [x] Evidências de execução (logs, prints ou UI) *(adicionar imagens/logs nos placeholders)*
+- [x] Evidências de execução (logs, prints ou UI)
 - [x] Modelo registrado
 - [x] Script ou endpoint de inferência
 - [x] Relatório de entrega preenchido
