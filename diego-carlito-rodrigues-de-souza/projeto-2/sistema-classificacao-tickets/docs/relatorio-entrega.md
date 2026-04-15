@@ -65,7 +65,7 @@ Ingestão (Drop NaN) → Guardrail 1 (Mascaramento PII) → Inferência (Zero-Sh
 ### Estrutura do código
 
 ```
-projeto-2/
+sistema-classificacao-tickets/
 ├── src/
 │   ├── __init__.py
 │   ├── ingest.py           # Sanitização estrutural 
