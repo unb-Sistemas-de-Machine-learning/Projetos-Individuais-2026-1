@@ -32,7 +32,7 @@ pip install -r requirements.txt
 ## Como Executar o Pipeline
 
 1. **Execução do Orquestrador:**
-Na raiz do projeto, execute o script principal (os caminhos de dados e amostragem são configurados internamente no código pela equipe de desenvolvimento):
+Na raiz do projeto, execute o script principal (O dataset completo já está hospedado na pasta `data/` do repositório. O script orquestrador fará a leitura e a amostragem configurada automaticamente):
 ```bash
 python src/main.py
 ```
