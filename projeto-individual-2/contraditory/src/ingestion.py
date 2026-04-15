@@ -1,13 +1,14 @@
 import pandas
 import os
 import mlflow
+import dagshub
 
 
 def load_and_log_data():
 
-    mlflow.set_tracking_uri(f"sqlite:///{os.path.abspath(os.getcwd())}/mlflow.db")
-    
-    # nome do projeto
+    # configuração do projeto no dagshub usando mlflow
+    dagshub.init(repo_owner='Ana-Luiza-SC', repo_name='contraditory', mlflow=True)    
+    mlflow.set_tracking_uri("https://dagshub.com/Ana-Luiza-SC/contraditory.mlflow")
     mlflow.set_experiment("contraditory")
     
     train_path = "data/train.csv"

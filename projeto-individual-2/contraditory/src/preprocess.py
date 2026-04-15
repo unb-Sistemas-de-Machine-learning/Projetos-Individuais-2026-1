@@ -4,10 +4,14 @@ import pandas as pd
 import mlflow
 import os
 import numpy as np
+import dagshub
 
 def preprocess_in_batches():
+
+    # configuração do projeto no dagshub usando mlflow
+    dagshub.init(repo_owner='Ana-Luiza-SC', repo_name='contraditory', mlflow=True)
     
-    mlflow.set_tracking_uri(f"sqlite:///{os.path.abspath(os.getcwd())}/mlflow.db")
+    mlflow.set_tracking_uri("https://dagshub.com/Ana-Luiza-SC/contraditory.mlflow")
     mlflow.set_experiment("contraditory")
 
     df = pd.read_csv("data/train.csv")
@@ -17,13 +21,13 @@ def preprocess_in_batches():
     batch_size = 512 
     
     with mlflow.start_run(run_name="Preprocessing_Batched"):
-        print("✓ Carregando modelo do TF Hub...")
+        print("Carregando o modelo")
         model = hub.load(model_url)
         
         all_p_embeddings = []
         all_h_embeddings = []
 
-        print(f"✓ Processando {len(df)} linhas em lotes de {batch_size}...")
+        print(f"Processando os dados por meio do batch.")
         
         # processa em pedaços
         for i in range(0, len(df), batch_size):
@@ -47,6 +51,11 @@ def preprocess_in_batches():
         np.save("data/processed/p_emb.npy", p_emb_final)
         np.save("data/processed/h_emb.npy", h_emb_final)
         
+        # salva os dados processados no artifact do mlflow
+        mlflow.log_artifact("data/processed/p_emb.npy")
+        mlflow.log_artifact("data/processed/h_emb.npy")
+        
+        # salva para a rastreabilidade e observabilidade
         mlflow.log_param("batch_size", batch_size)
         mlflow.log_param("num_rows", len(df))
 
