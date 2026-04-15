@@ -75,18 +75,26 @@ def download_cutout(
 
 def build_dataset(
     output_dir: Path,
+    regions: list[tuple[float, float]] | None = None,
     n_regions: int = 20,
     radius_deg: float = 0.05,
     scale: float = 0.2,
 ) -> dict:
-    """Download images for N sky regions. Returns ingestion stats."""
+    """Download images for N sky regions. Returns ingestion stats.
+
+    Parameters
+    ----------
+    regions:
+        Optional list of (RA, Dec) tuples. Defaults to ``SAMPLE_REGIONS``.
+    """
+    regions = regions or SAMPLE_REGIONS
     images_dir = output_dir / "raw"
     images_dir.mkdir(parents=True, exist_ok=True)
 
     downloaded = 0
     skipped = 0
 
-    for i, (ra, dec) in enumerate(SAMPLE_REGIONS[:n_regions]):
+    for i, (ra, dec) in enumerate(regions[:n_regions]):
         objects = query_region(ra, dec, radius_deg=radius_deg)
         if objects.empty:
             skipped += 1
