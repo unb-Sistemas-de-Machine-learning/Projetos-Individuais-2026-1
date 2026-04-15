@@ -3,7 +3,11 @@ import pandas as pd
 
 LABEL_MAP = {"pos": 1, "neg": 0}
 
-def load_imdb_split(dataset_dir: Path, split: str) -> pd.DataFrame:
+def load_imdb_split(
+    dataset_dir: Path,
+    split: str,
+    random_seed: int = 42,
+) -> pd.DataFrame:
     """
      Load one split (train or test) of the Stanford aclImdb dataset
      into a DataFrame with columns: text, label.
@@ -22,12 +26,17 @@ def load_imdb_split(dataset_dir: Path, split: str) -> pd.DataFrame:
                rows.append({"text": text, "label": label_value})
         
     df = pd.DataFrame(rows)
-    return df.sample(frac=1, random_state=42).reset_index(drop=True)
+    return df.sample(frac=1, random_state=random_seed).reset_index(drop=True)
 
 
 
-def load_imdb(dataset_dir: str | Path, split: str = "test", sample_size: int | None = None) -> pd.DataFrame:
-    df = load_imdb_split(Path(dataset_dir), split)
+def load_imdb(
+    dataset_dir: str | Path,
+    split: str = "test",
+    sample_size: int | None = None,
+    random_seed: int = 42,
+) -> pd.DataFrame:
+    df = load_imdb_split(Path(dataset_dir), split, random_seed=random_seed)
     if sample_size is not None and sample_size < len(df):
-         df = df.sample(n=sample_size, random_state=42).reset_index(drop=True)
+         df = df.sample(n=sample_size, random_state=random_seed).reset_index(drop=True)
     return df

@@ -109,7 +109,12 @@ def run(args: argparse.Namespace) -> PipelineResult:
     sample = None if args.sample_size == 0 else args.sample_size
 
     print(f"[1/4] Loading dataset from {args.data_dir} (split={args.split})...")
-    df = load_imdb(args.data_dir, split=args.split, sample_size=sample)
+    df = load_imdb(
+        args.data_dir,
+        split=args.split,
+        sample_size=sample,
+        random_seed=args.random_seed,
+    )
     print(
         f"      Loaded {len(df)} reviews | "
         f"label distribution: {df['label'].value_counts().to_dict()}"
