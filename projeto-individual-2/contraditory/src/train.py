@@ -1,74 +1,148 @@
+import os
 import numpy as np
 import pandas as pd
-import tensorflow as tf
-import mlflow.tensorflow
-from tensorflow.keras import layers, models, regularizers
 import mlflow
 import dagshub
-import os
+import torch
 
-def train_model():
-    # 1. Configuração do DagsHub e MLflow
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from datasets import Dataset
+from transformers import (
+    TrainingArguments,
+    Trainer,
+    EarlyStoppingCallback
+)
+
+from model.cross_encoder import load_tokenizer_and_model, tokenize_nli_batch
+from model.metrics import compute_metrics
+
+
+def train_cross_encoder():
     dagshub.init(repo_owner='Ana-Luiza-SC', repo_name='contraditory', mlflow=True)
     mlflow.set_tracking_uri("https://dagshub.com/Ana-Luiza-SC/contraditory.mlflow")
     mlflow.set_experiment("contraditory")
 
-    # carrega os embeddings
-    print("carrega os embeddings")
-    p_emb = np.load("data/processed/p_emb.npy")
-    h_emb = np.load("data/processed/h_emb.npy")
-    train_df = pd.read_csv("data/train.csv")
-    y = train_df['label'].values
+    df = pd.read_csv("data/processed/train_en.csv")
 
-    # combinação de vetores
-    diff = np.abs(p_emb - h_emb)
-    prod = p_emb * h_emb
-    X = np.concatenate([p_emb, h_emb, diff, prod], axis=1)
-    
-    # ativa autolog
-    mlflow.tensorflow.autolog()
+    train_df, val_df = train_test_split(
+        df,
+        test_size=0.2,
+        random_state=42,
+        stratify=df["label"]
+    )
 
-    with mlflow.start_run(run_name="Neural_Network_Simple_2"):
-        # define uma arquitetura mais simplificada
-        model = models.Sequential([
-            # primeira camada com regularização
-            layers.Dense(128, activation='relu', input_shape=(X.shape[1],),
-                         kernel_regularizer=regularizers.l2(0.01)),
-            layers.Dropout(0.5),
-            
-            layers.Dense(32, activation='relu'),
-            layers.Dropout(0.3),
-            
-            layers.Dense(3, activation='softmax') # Saída para 3 classes
-        ])
+    model_name = "cross-encoder/nli-deberta-v3-small"
+    max_length = 128
+    train_batch_size = 4
+    eval_batch_size = 8
+    learning_rate = 2e-5
+    num_train_epochs = 3
+    weight_decay = 0.01
 
-        # compilação com learning rate
-        model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
-            loss='sparse_categorical_crossentropy',
-            metrics=['accuracy']
+    tokenizer, model = load_tokenizer_and_model(model_name)
+
+    train_ds = Dataset.from_pandas(
+        train_df[["premise", "hypothesis", "label"]],
+        preserve_index=False
+    )
+    val_ds = Dataset.from_pandas(
+        val_df[["premise", "hypothesis", "label"]],
+        preserve_index=False
+    )
+
+    train_ds = train_ds.map(
+        lambda batch: tokenize_nli_batch(batch, tokenizer, max_length=max_length),
+        batched=True
+    )
+    val_ds = val_ds.map(
+        lambda batch: tokenize_nli_batch(batch, tokenizer, max_length=max_length),
+        batched=True
+    )
+
+    train_ds = train_ds.remove_columns(["premise", "hypothesis"])
+    val_ds = val_ds.remove_columns(["premise", "hypothesis"])
+
+    train_ds = train_ds.rename_column("label", "labels")
+    val_ds = val_ds.rename_column("label", "labels")
+
+    train_ds.set_format("torch")
+    val_ds.set_format("torch")
+
+    os.makedirs("models", exist_ok=True)
+    os.makedirs("artifacts", exist_ok=True)
+
+    args = TrainingArguments(
+        output_dir="models/cross_encoder_en_small",
+        eval_strategy="epoch",
+        save_strategy="epoch",
+        logging_strategy="epoch",
+        learning_rate=learning_rate,
+        per_device_train_batch_size=train_batch_size,
+        per_device_eval_batch_size=eval_batch_size,
+        num_train_epochs=num_train_epochs,
+        weight_decay=weight_decay,
+        load_best_model_at_end=True,
+        metric_for_best_model="f1_macro",
+        greater_is_better=True,
+        report_to="none",
+        save_total_limit=1
+    )
+
+    with mlflow.start_run(run_name="CrossEncoder_English_DeBERTaSmall_v1"):
+        mlflow.log_param("model_family", "CrossEncoder")
+        mlflow.log_param("language_scope", "English only")
+        mlflow.log_param("model_name", model_name)
+        mlflow.log_param("max_length", max_length)
+        mlflow.log_param("train_batch_size", train_batch_size)
+        mlflow.log_param("eval_batch_size", eval_batch_size)
+        mlflow.log_param("learning_rate", learning_rate)
+        mlflow.log_param("num_train_epochs", num_train_epochs)
+        mlflow.log_param("weight_decay", weight_decay)
+        mlflow.log_param("split_random_state", 42)
+        mlflow.log_param("train_samples", len(train_df))
+        mlflow.log_param("val_samples", len(val_df))
+        mlflow.log_param("device", "cuda" if torch.cuda.is_available() else "cpu")
+
+        trainer = Trainer(
+            model=model,
+            args=args,
+            train_dataset=train_ds,
+            eval_dataset=val_ds,
+            processing_class=tokenizer,
+            compute_metrics=compute_metrics,
+            callbacks=[EarlyStoppingCallback(early_stopping_patience=1)]
         )
 
-        # configura early stopping
-        early_stop = tf.keras.callbacks.EarlyStopping(
-            monitor='val_loss', 
-            patience=4,           
-            restore_best_weights=True 
-        )
+        print("Iniciando treino do cross-encoder...")
+        trainer.train()
 
-        # 8. Treinamento
-        print("Iniciando treino com diminuição da complexidade")
-        history = model.fit(
-            X, y, 
-            epochs=50, 
-            batch_size=64, 
-            validation_split=0.2, 
-            callbacks=[early_stop]
-        )
+        print("Avaliando modelo...")
+        eval_metrics = trainer.evaluate()
 
-        final_acc = history.history['val_accuracy'][np.argmin(history.history['val_loss'])]
-        print(f"Treino finalizado com acurácia de: {final_acc:.4f}")
+        for key, value in eval_metrics.items():
+            if isinstance(value, (int, float)):
+                mlflow.log_metric(key, float(value))
+
+        preds_output = trainer.predict(val_ds)
+        y_pred = np.argmax(preds_output.predictions, axis=1)
+        y_true = np.array(val_df["label"])
+
+        cm = confusion_matrix(y_true, y_pred)
+        np.savetxt("artifacts/confusion_matrix_cross_encoder_small.csv", cm, delimiter=",", fmt="%d")
+        mlflow.log_artifact("artifacts/confusion_matrix_cross_encoder_small.csv")
+
+        print("Métricas finais:")
+        for key, value in eval_metrics.items():
+            print(f"{key}: {value}")
+
+        print("Matriz de confusão:")
+        print(cm)
+        trainer.save_model("models/best_model")
+        
+        # Registra essa pasta como um artefato no MLflow/DagsHub
+        mlflow.log_artifacts("models/best_model", artifact_path="model_files")
+
 
 if __name__ == "__main__":
-    os.makedirs("models", exist_ok=True)
-    train_model()
+    train_cross_encoder()

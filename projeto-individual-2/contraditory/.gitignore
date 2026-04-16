@@ -1,6 +1,6 @@
 /venv
 /env
-/data
 /mlflow.db
 /mlruns/
 /mlruns/
+train_distilbert.py
