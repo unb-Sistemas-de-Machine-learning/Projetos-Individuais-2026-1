@@ -210,48 +210,101 @@ Cada execução recebe tag `git_commit` para rastreabilidade código-modelo.
 
 ![Lista de experimentos](assets/experiments_list.png)
 
+---
+
 #### Runs de fine-tuning (`space-object-detection-finetune`)
 
-| Run ID | Nome | Status | Regiões | Épocas | best_val_loss |
-|--------|------|--------|---------|--------|---------------|
-| `56567171` | big-doe-293 | FINISHED | 6 | 1 | 2.7323 (smoke-test) |
-| `754a9fa8` | placid-dolphin-127 | FINISHED | 20 | 5 | 2.8672 |
-| `586651e6` | receptive-ram-241 | FAILED | 100 | 30 | — |
-| `90bd4966` | capable-cod-85 | FINISHED | 60 | 20 | **1.5543** ← melhor |
+| Run ID | Nome | Status | Imagens | Objetos | Épocas | best_val_loss |
+|--------|------|--------|---------|---------|--------|---------------|
+| `56567171` | big-doe-293 | FINISHED | 4 | 45 | 1 | 2.7323 |
+| `754a9fa8` | placid-dolphin-127 | FINISHED | 18 | 538 | 5 | 2.8672 |
+| `586651e6` | receptive-ram-241 | FAILED | 95 | 3229 | 30 | — |
+| `90bd4966` | capable-cod-85 | FINISHED | 53 | 668 | 20 | **1.5543** |
 
-A run `90bd4966` produziu o melhor checkpoint (`data/finetune/checkpoints/best`), treinando sobre 53 imagens com 668 objetos anotados por 20 épocas, atingindo `best_val_loss=1.554` — significativamente inferior às runs de smoke-test.
+A run `90bd4966` (`capable-cod-85`) produziu o checkpoint usado em produção. Dataset: 53 imagens, 668 objetos anotados, split 43 treino / 10 validação, ~140s por época.
 
-**Run de fine-tuning (`90bd4966` / `capable-cod-85`) — curvas de loss por época:**
+**Progressão do loss por época — run `90bd4966`:**
+
+| Época | train_loss | val_loss |
+|-------|-----------|---------|
+| 0 | 3.0474 | 2.6573 |
+| 1 | 2.8877 | 2.5489 |
+| 2 | 2.7241 | 2.5108 |
+| 3 | 2.6678 | 2.4230 |
+| 4 | 2.6688 | 2.4465 |
+| **5** *(backbone descongelado)* | **2.3292** | **2.0510** |
+| 6 | 2.1250 | 1.9518 |
+| 7 | 2.0277 | 1.8976 |
+| 8 | 1.9565 | 1.7889 |
+| 9 | 1.8288 | 1.7048 |
+| 10 | 1.7686 | 1.7287 |
+| 11 | 1.6844 | 1.6221 |
+| 12 | 1.6590 | 1.5955 |
+| 13 | 1.5950 | 1.5718 |
+| 14 | 1.6283 | 1.5672 |
+| 15 | 1.5761 | 1.5728 |
+| 16 | 1.5908 | 1.5564 |
+| 17 | 1.5856 | 1.5657 |
+| 18 | 1.5427 | 1.5586 |
+| 19 | 1.5489 | **1.5543** ← best |
+
+O impacto do descongelamento do backbone é claro na época 5: `val_loss` cai de 2.447 para 2.051 em uma única época, confirmando a eficácia do treinamento em 2 fases.
+
+**Breakdown do loss final (run `90bd4966`, época 19):**
+
+| Componente | train | val |
+|-----------|-------|-----|
+| `loss_ce` (classificação) | 0.6283 | 0.6704 |
+| `loss_bbox` (regressão L1) | 0.0372 | 0.0341 |
+| `loss_giou` (sobreposição) | 0.3673 | 0.3567 |
+| **loss total** | **1.5489** | **1.5543** |
+
+Treino e validação com losses muito próximos indicam boa generalização sem overfitting relevante.
+
+**Run de fine-tuning (`90bd4966`) — curvas de loss visualizadas na MLflow UI:**
 
 ![Run de fine-tuning](assets/fine_tuning_run.png)
 
-**Comparação entre runs de fine-tuning:**
+**Comparação entre runs de fine-tuning na MLflow UI:**
 
 ![Comparação de runs 1](assets/finetuning_run_comparison1.png)
 ![Comparação de runs 2](assets/finetuning_run_comparison2.png)
 ![Comparação de runs 3](assets/finetuning_run_comparison3.png)
 
+---
+
 #### Runs de inferência (`space-object-detection`)
 
-| Run ID | Nome | Modelo | confidence_threshold | detection_rate | n_detections |
-|--------|------|--------|---------------------|----------------|--------------|
-| `9fde6658` | honorable-carp-889 | fine-tuned | 0.4 | 88.9% | 388 |
-| `4bd51066` | peaceful-squid-814 | fine-tuned | 0.4 | 77.8% | 53 |
-| `dd4443bd` | amazing-shark-660 | fine-tuned | 0.4 | 100% | 772 |
-| `fdf5bbca` | brawny-finch-19 | fine-tuned | 0.6 | 100% | 233 |
-| `d5e3debd` | skittish-boar-225 | **base (COCO)** | 0.6 | **5.6%** | **1** |
-| `3e443f8e` | treasured-stag-146 | fine-tuned | 0.6 | 100% | 233 |
-| `c6ecb73a` | abundant-auk-574 | fine-tuned | 0.6 | 100% | 233 |
+| Run ID | Modelo | threshold | detection_rate | n_detections | confidence_p50 | confidence_avg |
+|--------|--------|-----------|----------------|--------------|----------------|----------------|
+| `d5e3debd` | **base COCO** | 0.6 | **5.6%** | **1** | 0.661 | 0.661 |
+| `dd4443bd` | fine-tuned | 0.4 | 100% | 772 | 0.566 | 0.598 |
+| `e3b287ef` | fine-tuned | 0.5 | 100% | 359 | 0.652 | 0.691 |
+| `fdf5bbca` | fine-tuned | 0.6 | 100% | 233 | 0.754 | 0.769 |
+| `3e443f8e` | fine-tuned | 0.6 | 100% | 233 | 0.754 | 0.769 |
+| `c6ecb73a` | fine-tuned | 0.6 | 100% | 233 | 0.754 | 0.769 |
 
-**Impacto do fine-tuning:** A run `d5e3debd` executou o modelo base COCO (`hustvl/yolos-small`) sem fine-tuning com `confidence_threshold=0.6` — resultando em apenas 1 detecção em 18 imagens (`detection_rate=5.6%`). O modelo fine-tuned (`90bd4966`) com os mesmos parâmetros detecta objetos em 100% das imagens (233 detecções, `confidence_p50=0.754`).
+**Impacto do fine-tuning:** Com `confidence_threshold=0.6`, o modelo base COCO detecta apenas 1 objeto em 18 imagens (5.6%). O modelo fine-tuned com os mesmos parâmetros detecta objetos em 100% das imagens (233 detecções, `confidence_p50=0.754`). O fine-tuning aumentou a taxa de detecção em **18×**.
 
-**Run de inferência (`9fde6658` / `honorable-carp-889`):**
+**Sensibilidade ao threshold de confiança (modelo fine-tuned):**
+
+| threshold | detecções | detection_rate | confidence_p50 |
+|-----------|-----------|----------------|----------------|
+| 0.4 | 772 | 100% | 0.566 |
+| 0.5 | 359 | 100% | 0.652 |
+| 0.6 | 233 | 100% | 0.754 |
+
+Threshold=0.6 elimina ~70% das detecções de baixa confiança mantendo 100% de cobertura, sendo o ponto de operação escolhido para o modelo em produção.
+
+**Run de inferência (`9fde6658`):**
 
 ![Run de inferência](assets/first_inference_run.png)
 
+---
+
 #### Model Registry
 
-**Model Registry — `space-detector` (9 versões) e `space-detector-finetuned` (2 versões):**
+**Model Registry — `space-detector` (9 versões) e `space-detector-finetuned` (2 versões), todos com flavor `pyfunc`:**
 
 ![Versões space-detector](assets/list_space_detector_models.png)
 ![Versões space-detector-finetuned](assets/list_space_detector_finetuning_models.png)
