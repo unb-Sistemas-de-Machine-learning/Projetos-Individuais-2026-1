@@ -300,6 +300,8 @@ Threshold=0.6 elimina ~70% das detecções de baixa confiança mantendo 100% de 
 
 ![Run de inferência](assets/first_inference_run.png)
 
+![Métricas da run de inferência](assets/first_inference_run_metrics.png)
+
 ---
 
 #### Model Registry
