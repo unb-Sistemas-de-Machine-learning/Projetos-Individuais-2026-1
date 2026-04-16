@@ -11,19 +11,13 @@ from pathlib import Path
 
 from src.data.ingest import query_region, download_cutout
 
-# Label mapping for the 3 astronomical classes
 ASTRO_LABEL_MAP = {"star": 0, "galaxy": 1, "quasar": 2}
 ASTRO_ID2LABEL = {0: "star", 1: "galaxy", 2: "quasar"}
 
-# SDSS type codes
 _TYPE_TO_CLASS = {6: "star", 3: "galaxy", 5: "quasar"}
 
-# ~150 regions covering the SDSS North Galactic Cap footprint.
-# First 20 (index 0-19) are the original validation regions.
-# Regions 20-149 are training regions sampled from the SDSS footprint
-# (RA 120-260, Dec -5 to 65), including galaxy-cluster-rich areas.
+# ~150 regions covering the SDSS North Galactic Cap footprint (RA 120-260, Dec -5 to 65).
 TRAINING_REGIONS: list[tuple[float, float]] = [
-    # --- Original 20 (kept as validation) ---
     (180.0,   0.0),
     (210.0,  54.0),
     (130.0,  20.0),
@@ -44,8 +38,6 @@ TRAINING_REGIONS: list[tuple[float, float]] = [
     (155.0,  28.0),
     (245.0,  42.0),
     (195.0,  12.0),
-    # --- Training regions (grid-sampled + galaxy-cluster areas) ---
-    # Virgo cluster vicinity (RA 185-195, Dec 10-20)
     (186.0,  11.0),
     (187.0,  13.0),
     (188.0,  15.0),
@@ -56,12 +48,10 @@ TRAINING_REGIONS: list[tuple[float, float]] = [
     (194.0,  17.0),
     (186.5,  12.5),
     (191.5,  14.5),
-    # Coma cluster vicinity (RA 194-195, Dec 27-28)
     (194.5,  27.5),
     (194.0,  28.0),
     (195.0,  27.0),
     (195.5,  28.5),
-    # Grid: RA 120-260, Dec -5 to 65, step ~10 deg
     (120.0,   0.0),
     (120.0,  10.0),
     (120.0,  20.0),
@@ -193,17 +183,7 @@ def radec_to_pixel(
     width: int = 640,
     height: int = 640,
 ) -> tuple[float, float]:
-    """
-    Convert an object's (RA, Dec) to pixel (x, y) in an SDSS cutout image.
-
-    The SDSS cutout API produces a gnomonic projection centered on
-    (center_ra, center_dec). At the small scales used here (<200 arcsec)
-    this is essentially distortion-free.
-
-    Convention:
-      - RA increases eastward, which is to the LEFT in SDSS images.
-      - Dec increases northward, which is UPWARD (i.e., decreasing y).
-    """
+    """Convert (RA, Dec) to pixel (x, y) in an SDSS cutout. RA increases left, Dec increases up."""
     dec_rad = math.radians(center_dec)
     delta_ra_arcsec = (obj_ra - center_ra) * 3600.0 * math.cos(dec_rad)
     delta_dec_arcsec = (obj_dec - center_dec) * 3600.0
@@ -218,14 +198,7 @@ def estimate_half_width_px(
     min_box_px: float = 8.0,
     max_box_px: float = 80.0,
 ) -> float:
-    """
-    Estimate bounding box half-width in pixels from the Petrosian radius.
-
-    For point sources (stars, quasars) petroRad_r is often 0 or NaN;
-    the min_box_px floor handles those cases.
-    For extended sources (galaxies) the Petrosian radius meaningfully
-    reflects angular size, so 2× gives a box that captures most emission.
-    """
+    """Estimate bbox half-width in pixels from Petrosian radius. Falls back to min_box_px for point sources."""
     try:
         if petro_rad_r <= 0 or math.isnan(petro_rad_r):
             return min_box_px
@@ -243,17 +216,7 @@ def generate_annotations(
     width: int = 640,
     height: int = 640,
 ) -> list[dict]:
-    """
-    Query the SDSS catalog for (ra, dec) and return bounding box annotations
-    for objects that fall inside the image.
-
-    Returns a list of dicts::
-
-        {"bbox": [cx, cy, w, h],  # normalized [0, 1] — DETR/YOLOS format
-         "category_id": int}      # 0=star, 1=galaxy, 2=quasar
-
-    Objects whose center pixel falls outside the image are discarded.
-    """
+    """Return normalized [cx, cy, w, h] bbox annotations for SDSS objects in the field."""
     import pandas as pd
 
     df = query_region(ra, dec, radius_deg=radius_deg)
@@ -272,19 +235,16 @@ def generate_annotations(
             scale=scale, width=width, height=height,
         )
 
-        # Discard objects whose center is outside the image
         if not (0 <= px < width and 0 <= py < height):
             continue
 
         half_w = estimate_half_width_px(float(row["petroRad_r"]), scale=scale)
 
-        # Clip box to image boundaries
         x1 = max(0.0, px - half_w)
         y1 = max(0.0, py - half_w)
         x2 = min(float(width), px + half_w)
         y2 = min(float(height), py + half_w)
 
-        # Normalize to [0, 1] in [cx, cy, w, h] format
         cx = (x1 + x2) / 2.0 / width
         cy = (y1 + y2) / 2.0 / height
         bw = (x2 - x1) / width
@@ -306,13 +266,7 @@ def build_annotated_dataset(
     width: int = 640,
     height: int = 640,
 ) -> dict:
-    """
-    Download SDSS cutout images and generate bounding box annotations
-    for each region. Saves images to ``output_dir/raw/`` and writes
-    ``output_dir/annotations.json``.
-
-    Returns a summary dict with download and annotation statistics.
-    """
+    """Download SDSS cutouts and write annotations.json. Returns summary stats."""
     from src.model.guardrails import validate_input, GuardrailError
     from PIL import Image
 
@@ -337,7 +291,6 @@ def build_annotated_dataset(
                 skipped_sdss += 1
                 continue
 
-        # Apply input guardrails
         try:
             validate_input(Image.open(img_path).convert("RGB"))
         except GuardrailError:

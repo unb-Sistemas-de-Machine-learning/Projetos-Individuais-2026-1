@@ -3,24 +3,18 @@ from pathlib import Path
 
 import torch
 from PIL import Image
+from torchvision.ops import nms
 from transformers import YolosForObjectDetection, YolosImageProcessor
 
 MODEL_NAME = "hustvl/yolos-small"
-
-# COCO-pretrained model has no meaningful astronomical labels — strip them.
-# A fine-tuned model exposes id2label = {0: "star", 1: "galaxy", 2: "quasar"},
-# which is included in the detection output automatically.
-_COCO_MODEL_NAME = "hustvl/yolos-small"
 
 
 class SpaceDetector:
     """
     Wraps YOLOS-small for object detection on astronomical images.
 
-    When loaded from the base HuggingFace checkpoint (COCO-pretrained) class
-    labels are stripped — the model is used as a generic blob detector.
-    When loaded from a fine-tuned local checkpoint the astronomical class label
-    (star / galaxy / quasar) is included in each detection dict.
+    Base (COCO-pretrained) model: labels are stripped, used as a generic blob detector.
+    Fine-tuned model: includes "label" key (star / galaxy / quasar) in each detection.
     """
 
     def __init__(self, model_name: str = MODEL_NAME):
@@ -29,8 +23,6 @@ class SpaceDetector:
         self.model = YolosForObjectDetection.from_pretrained(model_name)
         self.model.eval()
 
-        # Determine whether this checkpoint has astronomical labels.
-        # A fine-tuned model will have id2label = {0: "star", ...}.
         id2label = getattr(self.model.config, "id2label", {})
         self._include_labels = bool(id2label) and 0 in id2label and id2label[0] in ("star", "galaxy", "quasar")
 
@@ -39,29 +31,36 @@ class SpaceDetector:
         """Load from a local fine-tuned checkpoint directory."""
         return cls(model_name=str(checkpoint_dir))
 
-    def detect(self, img: Image.Image) -> list[dict]:
-        """
-        Run inference on a PIL RGB image.
-
-        Returns list of dicts:
-          - Base model:       [{"box": [x1,y1,x2,y2], "score": float}, ...]
-          - Fine-tuned model: [{"box": [...], "score": float, "label": str}, ...]
-        """
+    def detect(
+        self,
+        img: Image.Image,
+        confidence_threshold: float = 0.6,
+        nms_iou_threshold: float = 0.5,
+    ) -> list[dict]:
+        """Run inference on a PIL RGB image. Returns list of {"box", "score"[, "label"]} dicts."""
         inputs = self.processor(images=img, return_tensors="pt")
 
         with torch.no_grad():
             outputs = self.model(**inputs)
 
-        target_sizes = torch.tensor([img.size[::-1]])  # (height, width)
+        target_sizes = torch.tensor([img.size[::-1]])
         results = self.processor.post_process_object_detection(
             outputs,
-            threshold=0.0,  # return all; confidence filtering happens in guardrails
+            threshold=confidence_threshold,
             target_sizes=target_sizes,
         )[0]
 
+        scores = results["scores"]
+        labels = results["labels"]
+        boxes = results["boxes"]
+
+        if len(scores) > 0:
+            kept = nms(boxes, scores, iou_threshold=nms_iou_threshold)
+            scores, labels, boxes = scores[kept], labels[kept], boxes[kept]
+
         id2label = self.model.config.id2label
         detections = []
-        for score, label, box in zip(results["scores"], results["labels"], results["boxes"]):
+        for score, label, box in zip(scores, labels, boxes):
             det: dict = {
                 "box": [round(v, 2) for v in box.tolist()],
                 "score": round(score.item(), 4),

@@ -1,12 +1,5 @@
 # src/data/dataset.py
-"""
-PyTorch Dataset and DataLoader utilities for YOLOS fine-tuning.
-
-Labels are returned in DETR/YOLOS format: each sample's target is a dict
-with ``class_labels`` (LongTensor) and ``boxes`` (FloatTensor, normalized
-[cx, cy, w, h] in [0, 1]).  The custom ``collate_fn`` keeps labels as a
-list of dicts because each image has a different number of objects.
-"""
+"""PyTorch Dataset and DataLoader utilities for YOLOS fine-tuning."""
 import json
 import random
 from pathlib import Path
@@ -20,30 +13,7 @@ from src.data.preprocess import preprocess_image
 
 
 class AstroDetectionDataset(Dataset):
-    """
-    Dataset for YOLOS fine-tuning on SDSS astronomical images.
-
-    Each item is a ``(pixel_values, target)`` pair where:
-    - ``pixel_values``: FloatTensor of shape ``(3, H, W)`` produced by
-      ``YolosImageProcessor`` (resized, normalized).
-    - ``target``: dict with keys ``class_labels`` (LongTensor) and
-      ``boxes`` (FloatTensor ``[N, 4]`` in normalized [cx, cy, w, h] format).
-
-    Parameters
-    ----------
-    image_dir:
-        Directory containing the raw JPEG cutout images.
-    metadata:
-        List of annotation dicts as produced by ``build_annotated_dataset``::
-
-            [{"image_file": "field_0000.jpg",
-              "objects": [{"bbox": [cx, cy, w, h], "category_id": int}, ...]},
-             ...]
-    processor:
-        A ``YolosImageProcessor`` instance used for image preprocessing.
-    augment:
-        If True, apply random flips and 90° rotations (safe for sky images).
-    """
+    """SDSS cutout dataset for YOLOS fine-tuning. Returns (pixel_values, target) pairs."""
 
     def __init__(
         self,
@@ -66,7 +36,7 @@ class AstroDetectionDataset(Dataset):
         img = preprocess_image(img)  # arcsinh stretch
 
         objects = entry["objects"]
-        boxes = [o["bbox"] for o in objects]    # list of [cx, cy, w, h] normalized
+        boxes = [o["bbox"] for o in objects]
         labels = [o["category_id"] for o in objects]
 
         if self.augment and objects:
@@ -83,13 +53,6 @@ class AstroDetectionDataset(Dataset):
 
 
 def collate_fn(batch: list[tuple]) -> tuple[torch.Tensor, list[dict]]:
-    """
-    Collate a list of (pixel_values, target) samples into a batch.
-
-    ``pixel_values`` are stacked into a single tensor.
-    ``targets`` remain as a list of dicts because each image can have a
-    different number of objects — stacking is not possible.
-    """
     pixel_values = torch.stack([item[0] for item in batch])
     targets = [item[1] for item in batch]
     return pixel_values, targets
@@ -105,10 +68,7 @@ def train_val_split(
     val_fraction: float = 0.2,
     seed: int = 42,
 ) -> tuple[list[dict], list[dict]]:
-    """
-    Split annotation metadata into train and validation sets at the
-    image level (not object level) to avoid data leakage.
-    """
+    """Image-level train/val split to avoid leakage."""
     indices = list(range(len(metadata)))
     rng = random.Random(seed)
     rng.shuffle(indices)
@@ -119,22 +79,15 @@ def train_val_split(
     return train, val
 
 
-# ---------------------------------------------------------------------------
-# Augmentation helpers
-# ---------------------------------------------------------------------------
-
 def _flip_boxes_h(boxes: list[list[float]]) -> list[list[float]]:
-    """Horizontal flip: cx -> 1 - cx."""
     return [[1.0 - cx, cy, w, h] for cx, cy, w, h in boxes]
 
 
 def _flip_boxes_v(boxes: list[list[float]]) -> list[list[float]]:
-    """Vertical flip: cy -> 1 - cy."""
     return [[cx, 1.0 - cy, w, h] for cx, cy, w, h in boxes]
 
 
 def _rot90_boxes(boxes: list[list[float]]) -> list[list[float]]:
-    """90° counter-clockwise rotation: (cx, cy, w, h) -> (cy, 1-cx, h, w)."""
     return [[cy, 1.0 - cx, h, w] for cx, cy, w, h in boxes]
 
 
@@ -142,7 +95,7 @@ def _random_augment(
     img: Image.Image,
     boxes: list[list[float]],
 ) -> tuple[Image.Image, list[list[float]]]:
-    """Apply random flips and 90° rotations. Sky images have no preferred orientation."""
+    """Random flips and 90° rotations — safe for sky images with no preferred orientation."""
     if random.random() < 0.5:
         img = img.transpose(Image.FLIP_LEFT_RIGHT)
         boxes = _flip_boxes_h(boxes)

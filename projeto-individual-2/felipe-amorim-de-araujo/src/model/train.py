@@ -1,19 +1,7 @@
 # src/model/train.py
 """
-Fine-tuning YOLOS-small for astronomical object detection.
-
-Strategy
---------
-1. Load ``hustvl/yolos-small`` with a new 3-class head (star / galaxy / quasar).
-   ``ignore_mismatched_sizes=True`` keeps pretrained backbone + bbox predictor
-   weights and re-initializes only the classification head.
-2. Phase 1 (head warm-up, ``freeze_epochs`` epochs): backbone frozen, only the
-   new classification head trains at ``lr_head``.
-3. Phase 2 (end-to-end, remaining epochs): backbone unfrozen with a 10× lower
-   learning rate (``lr_backbone``) via differential parameter groups.
-4. Loss is computed automatically by ``model.forward(labels=...)`` using the
-   built-in Hungarian matching (CE + L1 bbox + GIoU) — no custom loss needed.
-5. Every epoch logs train/val metrics to an active MLflow run.
+Two-phase fine-tuning of YOLOS-small for astronomical object detection.
+Phase 1: frozen backbone, head warm-up. Phase 2: full end-to-end with differential LRs.
 """
 from __future__ import annotations
 
@@ -33,10 +21,7 @@ LABEL2ID = {v: k for k, v in ID2LABEL.items()}
 
 
 def load_model_for_finetuning(base_model: str = MODEL_NAME) -> tuple[YolosForObjectDetection, YolosImageProcessor]:
-    """
-    Load YOLOS-small with a fresh 3-class head, keeping pretrained weights
-    for the backbone and bbox predictor.
-    """
+    """Load YOLOS-small with a fresh 3-class head, keeping pretrained backbone weights."""
     processor = YolosImageProcessor.from_pretrained(base_model)
     model = YolosForObjectDetection.from_pretrained(
         base_model,
@@ -132,14 +117,7 @@ def finetune(
     num_workers: int = 0,
     device_str: str = "auto",
 ) -> Path:
-    """
-    Fine-tune YOLOS-small on the provided annotated dataset.
-
-    Logs all metrics to the currently active MLflow run (caller is responsible
-    for creating the run with ``mlflow.start_run()``).
-
-    Returns the path to the saved fine-tuned model directory.
-    """
+    """Fine-tune YOLOS-small. Logs to the active MLflow run. Returns path to best checkpoint."""
     device = _resolve_device(device_str)
     print(f"[train] Using device: {device}")
 
@@ -158,7 +136,6 @@ def finetune(
         collate_fn=collate_fn, num_workers=num_workers,
     )
 
-    # Phase 1: Freeze backbone
     _set_backbone_grad(model, requires_grad=False)
     optimizer = _make_optimizer(model, lr_head=lr_head, lr_backbone=lr_backbone, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
@@ -167,11 +144,9 @@ def finetune(
     best_model_dir = output_dir / "best"
 
     for epoch in range(epochs):
-        # Phase 2: Unfreeze backbone after freeze_epochs
         if epoch == freeze_epochs:
             print(f"[train] Epoch {epoch}: unfreezing backbone")
             _set_backbone_grad(model, requires_grad=True)
-            # Rebuild optimizer so backbone params get their LR group
             optimizer = _make_optimizer(model, lr_head=lr_head, lr_backbone=lr_backbone, weight_decay=weight_decay)
             scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
                 optimizer, T_max=epochs - freeze_epochs, last_epoch=-1
@@ -211,7 +186,6 @@ def finetune(
             processor.save_pretrained(best_model_dir)
             print(f"[train]   -> new best val_loss={best_val_loss:.4f}, saved to {best_model_dir}")
 
-    # Also save the final checkpoint
     final_model_dir = output_dir / "final"
     model.save_pretrained(final_model_dir)
     processor.save_pretrained(final_model_dir)
