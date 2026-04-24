@@ -1,0 +1,19 @@
+[project]
+name = "felipe-amorim-de-araujo"
+version = "0.1.0"
+description = "Space object detection pipeline with YOLOS-small and MLflow"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mlflow>=2.13.0",
+    "transformers>=4.40.0",
+    "torch>=2.2.0",
+    "torchvision>=0.17.0",
+    "Pillow>=10.0.0",
+    "astroquery>=0.4.7",
+    "astropy>=6.0.0",
+    "requests>=2.31.0",
+    "numpy>=1.26.0",
+    "pytest>=8.0.0",
+    "timm>=0.9.0",
+]
