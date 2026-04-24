@@ -27,6 +27,8 @@ Projetos-Individuais-2026-1/
 |---|---------|-----------|
 | 1 | [Agente de IA Orientado a Problema](projeto-individual-1/) | Projetar e implementar um agente de IA funcional com foco em requisitos, arquitetura e implementação |
 | 2 | [Sistema de ML com MLflow](projeto-individual-2/) | Desenvolver um sistema de ML end-to-end com MLflow para rastreamento, versionamento, deploy e observabilidade |
+| 3 | [Automação com n8n e Agentes de IA](projeto-individual-3/) | Projetar e implementar um fluxo automatizado com n8n, integrando agentes de IA para decisão e orquestração |
+| 4 | [Construção Auditável de Agente de IA](projeto-individual-4/) | Desenvolver um agente de IA com processo auditável: Mission Brief, 3 soluções, ADRs, evidências e Merge-Readiness Pack |
 
 ---
 
