@@ -1,96 +1,26 @@
-# Merge-Readiness Pack
+# Merge-Readiness Pack: Multi-Agent Red Team Framework
 
-> **Projeto:** [Nome do projeto]
-> **Aluno(a):** [Seu nome completo]
-> **Data:** [DD/MM/AAAA]
+## Resumo da Solução
+Framework orquestrado pelo n8n que automatiza o ciclo de Red Team, validando vulnerabilidades através de agentes de IA e ferramentas externas.
 
----
+## Comparação das Alternativas
+| Solução | Abordagem | Complexidade | Veredito |
+|---------|-----------|--------------|----------|
+| A | Planejamento tático (LLM) | Baixa | Base conceitual |
+| B | Validação com APIs (Tool-enabled) | Média | Funcional |
+| C | Orquestração Multi-Agente (Swarm) | Alta | Solução Final |
 
-## 1. Resumo da solução escolhida
+## Testes Executados
+- [x] Validação de input JSON (Test A).
+- [x] Integração de API externa (Test B).
+- [x] Fluxo de delegação entre agentes (Test C).
 
-_Descreva brevemente a solução final implementada._
+## Evidências
+- Prints de execução localizados em `docs/evidence/`.
+- Logs de erro e persistência salvos no banco de dados n8n.
 
----
-
-## 2. Comparação entre as três alternativas
-
-| Critério | Solution A | Solution B | Solution C |
-|----------|-----------|-----------|-----------|
-| **Abordagem** | | | |
-| **Custo** | | | |
-| **Complexidade** | | | |
-| **Qualidade da resposta** | | | |
-| **Riscos** | | | |
-| **Manutenibilidade** | | | |
-| **Adequação ao problema** | | | |
-
-**Solução escolhida:** [ A / B / C ]
-
-**Justificativa:**
-
----
-
-## 3. Testes executados
-
-| Teste | Descrição | Resultado |
-|-------|-----------|-----------|
-| | | Passou / Falhou |
-| | | |
-
----
-
-## 4. Evidências de funcionamento
-
-_Inclua prints, logs, métricas ou outputs que comprovem que a solução funciona._
-
----
-
-## 5. Limitações conhecidas
-
-- 
-- 
-
----
-
-## 6. Riscos
-
-| Risco | Probabilidade | Impacto | Mitigação |
-|-------|---------------|---------|-----------|
-| | | | |
-
----
-
-## 7. Decisões arquiteturais
-
-_Liste as principais decisões de arquitetura (ou referencie os ADRs)._
-
-- ADR-001: [título]
-
----
-
-## 8. Instruções de execução
-
-```bash
-# Passos para executar a solução final
-```
-
----
-
-## 9. Checklist de revisão
-
-- [ ] Mission brief atendido
-- [ ] Três soluções implementadas/prototipadas
-- [ ] Testes executados e documentados
-- [ ] Evidências registradas em `docs/evidence/`
-- [ ] ADR(s) registrado(s) em `docs/adr/`
-- [ ] Commits com mensagens claras e racionalidade
-- [ ] Código funcional em `src/`
-- [ ] Agent.md preenchido
-- [ ] Mentorship Pack preenchido
-- [ ] Workflow Runbook seguido
-
----
-
-## 10. Justificativa para merge
-
-_Por que esta entrega está pronta para ser revisada e aceita?_
+## Checklist de Revisão
+- [ ] O fluxo é modular e reutilizável?
+- [ ] A IA está tomando decisões, não apenas respondendo?
+- [ ] O tratamento de erros (fallback) está configurado?
+- [ ] A rastreabilidade (log) está funcionando?
