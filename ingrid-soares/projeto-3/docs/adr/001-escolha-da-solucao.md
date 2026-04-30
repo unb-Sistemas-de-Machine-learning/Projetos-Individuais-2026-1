@@ -1,50 +1,24 @@
-# ADR-[NNN]: [Título da decisão]
-
-> **Data:** [DD/MM/AAAA]
-> **Status:** [proposta | aceita | rejeitada | substituída]
-
----
+# ADR 001: Definição das Estratégias de Prototipagem (Red Team Framework)
 
 ## Contexto
+Necessidade de automatizar o ciclo de Red Team (Reconhecimento, Validação e Relatório) usando n8n e Agentes de IA. Devemos comparar três níveis de maturidade/complexidade.
 
-_Qual o problema ou situação que levou a essa decisão?_
+## Abordagens Propostas
 
----
+### Solution A: Abordagem Baseada em Prompt (Simples)
+- **Foco:** IA atua como um planejador tático.
+- **n8n:** Fluxo linear onde o LLM recebe o alvo e gera um plano de ataque (passos teóricos).
+- **Complexidade:** Baixa.
 
-## Alternativas consideradas
+### Solution B: Abordagem com Ferramentas Externas (RAG/APIs)
+- **Foco:** Validação prática de vulnerabilidades.
+- **n8n:** Integração com APIs externas (ex: VirusTotal, ferramentas de scan de DNS) para coletar evidências reais.
+- **Complexidade:** Média.
 
-### Alternativa A: [nome]
+### Solution C: Multi-Agente Autônomo (Complexa)
+- **Foco:** Orquestração de tarefas e automação completa.
+- **n8n:** Fluxo com agentes especializados (Reconhecedor, Executor, Relator) que se comunicam entre si.
+- **Complexidade:** Alta.
 
-- **Descrição:** 
-- **Prós:** 
-- **Contras:** 
-
-### Alternativa B: [nome]
-
-- **Descrição:** 
-- **Prós:** 
-- **Contras:** 
-
-### Alternativa C: [nome]
-
-- **Descrição:** 
-- **Prós:** 
-- **Contras:** 
-
----
-
-## Decisão
-
-_Qual alternativa foi escolhida e por quê?_
-
----
-
-## Consequências
-
-_Quais os impactos dessa decisão? O que muda no projeto?_
-
----
-
-## Referências
-
-- 
+## Status
+Em exploração (Prototipagem).
