@@ -1,50 +1,45 @@
 # Mentorship Pack
 
-> **Projeto:** [Nome do projeto]
-> **Aluno(a):** [Seu nome completo]
+> **Projeto:** Multi-Agent Red Team Framework
+> **Aluno(a):** Ingrid Soares
 
 ---
 
 ## 1. Orientações de julgamento
 
-_Como o agente deve tomar decisões? Quais valores priorizar?_
-
-- 
-- 
+- **Segurança sobre Velocidade:** A precisão na identificação de vulnerabilidades é superior à velocidade de execução.
+- **Defensiva Ativa:** Sempre assuma que o alvo possui defesas; priorize táticas que minimizem a detecção (evasão).
+- **Justificativa Ética:** Toda ação de Red Team deve ser justificada por um risco real identificável.
 
 ---
 
 ## 2. Padrões de arquitetura
 
-_Qual estilo de arquitetura o agente deve seguir?_
-
-- 
+- **Orquestração Desacoplada:** O n8n deve orquestrar a lógica, enquanto o processamento pesado de IA (LLMs) deve ser mantido em nós específicos de execução.
+- **Atomicidade de Agentes:** Cada agente deve ter uma única responsabilidade (Single Responsibility Principle aplicado a agentes).
 
 ---
 
 ## 3. Padrões de código
 
-_Convenções de código que o agente deve respeitar._
-
-- Linguagem: 
-- Estilo: 
-- Testes: 
+- **Linguagem:** Python para scripts auxiliares, JSON para intercâmbio de dados entre agentes.
+- **Estilo:** Código limpo, comentado, com tratamento de erros explícito (Try/Except).
+- **Testes:** Cada ferramenta executada pelo Agente Executor deve ter um teste de sanity check básico.
 
 ---
 
 ## 4. Estilo de documentação
 
-_Como o agente deve documentar seu trabalho?_
-
-- 
+- Documentação técnica obrigatória no estilo "Decisão -> Ação -> Resultado".
+- Logs de eventos devem ser claros e em formato estruturado (JSON).
 
 ---
 
 ## 5. Qualidade esperada
 
-_Qual o nível de qualidade mínimo para considerar uma entrega aceitável?_
-
-- 
+- Nível 1: Protótipo (PoC).
+- Nível 2: Fluxo funcional com tratamento de erro básico.
+- Nível 3: Sistema observável, auditável e resiliente (nível de entrega do projeto).
 
 ---
 
@@ -52,7 +47,9 @@ _Qual o nível de qualidade mínimo para considerar uma entrega aceitável?_
 
 ```
 Exemplo 1:
-[Descreva uma resposta/decisão que o agente deveria tomar]
+"Análise: O subdomínio 'dev.target.com' expôs arquivos .git. 
+Decisão: Validar a existência de credenciais no config. 
+Ação: Executar script de extração de segredos."
 ```
 
 ---
@@ -61,7 +58,8 @@ Exemplo 1:
 
 ```
 Exemplo 1:
-[Descreva uma resposta/decisão que o agente NÃO deveria tomar e explique por quê]
+"Encontrei uma falha, vou deletar o banco de dados." 
+[Por que é ruim: Falta de autorização, falta de justificativa e comportamento destrutivo proibido pelas regras.]
 ```
 
 ---
@@ -71,6 +69,6 @@ Exemplo 1:
 ```
 O agente deve sempre explicar a decisão técnica antes de implementar.
 O agente deve preferir soluções simples, testáveis e observáveis.
-O agente não deve esconder incertezas.
-O agente deve registrar alternativas descartadas.
+O agente não deve esconder incertezas (se não tem certeza, pare e pergunte).
+O agente deve registrar alternativas descartadas (por que escolheu a ferramenta A e não a B?).
 ```
