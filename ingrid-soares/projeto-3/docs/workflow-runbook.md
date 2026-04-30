@@ -1,69 +1,25 @@
-# Workflow Runbook
+# Workflow Runbook: Multi-Agent Red Team Framework
 
-> **Projeto:** [Nome do projeto]
-> **Aluno(a):** [Seu nome completo]
+Este documento descreve o processo obrigatório de execução para o desenvolvimento do framework.
 
 ---
 
-## Processo obrigatório de execução
+## Passo a Passo do Desenvolvimento
 
-Siga as etapas abaixo na ordem indicada. Cada etapa deve gerar pelo menos um commit com mensagem descritiva e racionalidade.
+1.  **Leitura e Alinhamento:** Revisar o *Mission Brief* e o *Mentorship Pack* para garantir que todos os artefatos estejam alinhados com os objetivos éticos e técnicos.
+2.  **Proposta de Soluções:** Propor três abordagens distintas para a automação do ciclo de Red Team (Reconhecimento, Validação, Reporte).
+3.  **Registro de Soluções:** Criar pastas `solutions/solution-a`, `solutions/solution-b` e `solutions/solution-c`.
+4.  **Prototipagem Mínima:** Implementar protótipos funcionais para cada abordagem no n8n.
+5.  **Testes e Evidências:** Validar cada protótipo contra um alvo controlado.
+6.  **Comparação (ADR):** Avaliar as três soluções em relação a custo, complexidade, qualidade de resposta, riscos e manutenibilidade.
+7.  **Decisão Final:** Registrar a decisão da solução escolhida em `docs/adr/001-escolha-da-solucao.md`.
+8.  **Merge-Readiness:** Gerar o `docs/merge-readiness-pack.md` para consolidar o estado de prontidão para entrega.
+9.  **Consolidação:** Integrar a solução final na pasta `src/` e limpar o projeto.
 
-### Etapa 1: Ler o Mission Brief
+---
 
-- [ ] Ler e compreender o mission brief
-- [ ] Identificar entradas, saídas e restrições
-- [ ] Anotar dúvidas ou ambiguidades
+## Regras de Execução
 
-### Etapa 2: Propor três soluções possíveis
-
-- [ ] Descrever solution-a (abordagem simples baseada em prompt)
-- [ ] Descrever solution-b (RAG, ferramenta externa ou base de conhecimento)
-- [ ] Descrever solution-c (fluxo multi-etapas, validação ou agente com ferramentas)
-
-### Etapa 3: Registrar cada solução em pasta separada
-
-- [ ] Criar `solutions/solution-a/`
-- [ ] Criar `solutions/solution-b/`
-- [ ] Criar `solutions/solution-c/`
-
-### Etapa 4: Implementar protótipos mínimos
-
-- [ ] Implementar protótipo da solution-a
-- [ ] Implementar protótipo da solution-b
-- [ ] Implementar protótipo da solution-c
-
-### Etapa 5: Executar testes
-
-- [ ] Criar testes em `tests/`
-- [ ] Executar testes para cada solução
-- [ ] Registrar resultados em `docs/evidence/`
-
-### Etapa 6: Comparar as soluções
-
-| Critério | Solution A | Solution B | Solution C |
-|----------|-----------|-----------|-----------|
-| Custo | | | |
-| Complexidade | | | |
-| Qualidade da resposta | | | |
-| Riscos | | | |
-| Manutenibilidade | | | |
-| Adequação ao problema | | | |
-
-### Etapa 7: Escolher uma solução final
-
-- [ ] Solução escolhida: 
-- [ ] Justificativa: 
-
-### Etapa 8: Registrar a decisão em ADR
-
-- [ ] Criar `docs/adr/001-escolha-da-solucao.md`
-
-### Etapa 9: Gerar o Merge-Readiness Pack
-
-- [ ] Preencher `docs/merge-readiness-pack.md`
-
-### Etapa 10: Fazer commits separados por etapa
-
-- [ ] Verificar que cada etapa tem pelo menos um commit
-- [ ] Verificar que cada commit contém racionalidade da decisão
+- **Commits Atômicos:** Cada etapa do runbook deve corresponder a um ou mais commits com mensagem clara e racionalidade técnica.
+- **Rastreabilidade:** Toda decisão que alterar o comportamento do framework deve ser documentada em um novo arquivo de ADR dentro de `docs/adr/`.
+- **Validação:** Não avance para a fase de implementação da solução final sem ter comparado as três alternativas propostas.
