@@ -1,0 +1,4 @@
+run_id,status,start_time,accuracy,precision,recall,f1,batch_size,test_size,model_version
+3a55fa452270424ba3a347e6aa3b9cdd,FINISHED,2026-04-13 13:04:22.200000+00:00,1.0,1.0,1.0,1.0,16,0.2,3
+bdf64f61ab4b46508125ab39051c13cc,FINISHED,2026-04-13 13:01:30.259000+00:00,1.0,1.0,1.0,1.0,16,0.2,2
+9782797c6cdc4e359f0cdc6f3f421ce6,FINISHED,2026-04-13 12:55:05.301000+00:00,1.0,1.0,1.0,1.0,16,0.2,1

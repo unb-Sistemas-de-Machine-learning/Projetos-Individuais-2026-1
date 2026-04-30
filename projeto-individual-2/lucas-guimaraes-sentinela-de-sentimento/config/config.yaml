@@ -1,0 +1,35 @@
+# Reprodutibilidade
+seed: 42
+
+# Dataset (Hugging Face) — classificação binária de sentimento (SST-2)
+dataset:
+  path: "glue"
+  name: "sst2"
+  text_column: "sentence"
+  label_column: "label"
+
+# Modelo pré-treinado (obrigatório: sem treino do zero)
+model:
+  hf_id: "distilbert-base-uncased-finetuned-sst-2-english"
+  task: "text-classification"
+  max_length: 512
+
+# Particionamento exportado em disco
+splits:
+  train_ratio: 0.8
+  val_ratio: 0.1
+  test_ratio: 0.1
+
+# MLflow
+mlflow:
+  experiment_name: "sst2-distilbert-inferencia"
+  registered_model_name: "distilbert-sst2-sentimento"
+  # Use sqlite para um único arquivo local; ou file:./mlruns
+  tracking_uri: "sqlite:///mlflow.db"
+
+# Guardrails (inferência)
+guardrails:
+  min_chars: 3
+  max_chars: 8000
+  min_confidence: 0.55
+  allowed_languages_hint: "en"

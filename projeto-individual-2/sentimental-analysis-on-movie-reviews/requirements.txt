@@ -1,0 +1,16 @@
+transformers==4.40.0
+torch==2.2.2
+# Not used by the pipeline, but required by mlflow 2.12.1's transformers
+# flavor: get_default_pip_requirements() unconditionally reads torchvision's
+# version when logging a transformers model. Fixed in mlflow 2.13+, but we're
+# pinned to 2.12 for Windows wheel stability. 0.17.2 pairs with torch 2.2.2.
+torchvision==0.17.2
+datasets==2.18.0
+scikit-learn==1.4.2
+pandas==2.2.2
+numpy==1.26.4
+mlflow==3.11.1
+fastapi==0.111.0
+uvicorn==0.29.0
+langdetect==1.0.9
+pydantic==2.7.1

@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "titulo": "Aprendizagem baseada em problemas",
+    "texto": "A aprendizagem baseada em problemas é uma metodologia ativa em que os estudantes desenvolvem conhecimento por meio da resolução de situações reais ou simuladas. Nessa abordagem, o aluno assume papel central no processo de aprendizagem, enquanto o professor atua como mediador. Entre os benefícios estão o desenvolvimento do pensamento crítico, da autonomia e da capacidade de aplicação prática do conhecimento."
+  },
+  {
+    "id": 2,
+    "titulo": "Metodologias ativas",
+    "texto": "As metodologias ativas colocam o estudante no centro do processo de aprendizagem. Em vez de apenas ouvir o conteúdo, ele participa ativamente por meio de discussões, projetos e resolução de problemas. Isso favorece autonomia, pensamento crítico e retenção do conhecimento."
+  },
+  {
+    "id": 3,
+    "titulo": "Aprendizagem colaborativa",
+    "texto": "A aprendizagem colaborativa é uma abordagem em que os alunos constroem conhecimento em grupo. Nessa dinâmica, há troca de ideias, resolução conjunta de problemas e desenvolvimento de competências sociais. O professor atua como facilitador do processo."
+  },
+  {
+    "id": 4,
+    "titulo": "Avaliação formativa",
+    "texto": "A avaliação formativa acompanha o processo de aprendizagem ao longo do tempo. Seu objetivo é identificar dificuldades, orientar intervenções pedagógicas e apoiar o progresso do estudante, diferentemente da avaliação puramente classificatória."
+  }
+]

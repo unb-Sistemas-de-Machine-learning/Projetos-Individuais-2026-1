@@ -1,0 +1,6 @@
+mlflow==2.11.3
+transformers==4.39.3
+torch==2.2.2
+Pillow==10.2.0
+pandas==2.2.1
+scikit-learn==1.4.1.post1
