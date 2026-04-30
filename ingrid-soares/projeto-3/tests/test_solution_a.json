@@ -1,0 +1,15 @@
+# Teste da Solution A: Validação de Entrada
+
+Este arquivo contém um exemplo de JSON que será enviado para o Webhook do n8n na Solution A.
+
+## Payload de Teste
+```json
+{
+  "alvo": "staging.exemplo.com",
+  "tipo_teste": "reconhecimento",
+  "escopo_autorizado": true
+}
+```
+
+## Objetivo do Teste
+Verificar se o System Prompt do agente é capaz de interpretar este JSON e retornar o plano estruturado corretamente, conforme definido no README da Solution A.
