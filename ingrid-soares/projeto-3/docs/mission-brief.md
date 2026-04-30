@@ -1,32 +1,28 @@
 # Mission Brief
 
-> **Aluno(a):** [Seu nome completo]
+> **Aluno(a):** Ingrid Soares
 > **Matrícula:** [Sua matrícula]
-> **Domínio:** [Domínio escolhido]
+> **Domínio:** Cibersegurança - Multi-Agent Red Team Framework
 
 ---
 
 ## 1. Objetivo do agente
-
-_Descreva de forma clara e concisa o que o agente deve fazer._
+Projetar e implementar um sistema multiagente orquestrado pelo n8n que automatize o ciclo de Red Team (Reconhecimento, Validação de Vulnerabilidades e Relatório) para testes contínuos de segurança em ambientes autorizados.
 
 ---
 
 ## 2. Problema que ele resolve
-
-_Qual problema real o agente pretende resolver? Por que esse problema é relevante?_
+A execução de testes de intrusão (Pentest) é frequentemente manual e pontual. Este sistema resolve a falta de automação na verificação de superfícies de ataque, permitindo que analistas de segurança validem vulnerabilidades de forma contínua e estruturada, reduzindo o tempo entre a exposição e a detecção.
 
 ---
 
 ## 3. Usuários-alvo
-
-_Quem vai usar o agente? Qual o perfil desses usuários?_
+Analistas de Red Team, profissionais de segurança ofensiva e DevSecOps.
 
 ---
 
 ## 4. Contexto de uso
-
-_Em que situação o agente será utilizado? Descreva o ambiente, o momento e as condições de uso._
+Execução automática de "reconhecimento e validação de superfície de ataque" em ambientes controlados (Sandbox) ou CI/CD, antes de deploy em produção.
 
 ---
 
@@ -34,34 +30,33 @@ _Em que situação o agente será utilizado? Descreva o ambiente, o momento e as
 
 | Item | Descrição |
 |------|-----------|
-| **Entrada** | |
-| **Formato da entrada** | |
-| **Saída** | |
-| **Formato da saída** | |
+| **Entrada** | Domínio ou endpoint alvo com escopo autorizado |
+| **Formato da entrada** | Texto (JSON via Webhook) |
+| **Saída** | Relatório de vulnerabilidades confirmadas e recomendações |
+| **Formato da saída** | JSON estruturado (com severidade, descrição e evidências) |
 
 ---
 
 ## 6. Limites do agente
 
-_O que o agente consegue fazer e o que está fora do seu escopo?_
-
 ### O que o agente faz:
-
-- 
+- **Agente Reconhecedor:** Enumera subdomínios e endpoints.
+- **Agente Analista (LLM):** Decide o vetor de ataque (Red Team tactics) e avalia riscos.
+- **Agente Executor:** Orquestra ferramentas (scripts/APIs) para validação.
+- **Agente Relator:** Consolida evidências.
 
 ### O que o agente NÃO deve fazer:
-
-- 
+- Realizar ataques em alvos não autorizados ou fora do escopo definido.
+- Executar ataques de negação de serviço (DoS) que impactem a disponibilidade do alvo.
+- Exfiltrar dados reais; o objetivo é a prova de conceito (PoC).
 
 ---
 
 ## 7. Critérios de aceitação
-
-_Quando a missão pode ser considerada concluída com sucesso?_
-
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ] Fluxo multiagente implementado no n8n.
+- [ ] IA capaz de decidir o próximo passo (ex: se encontrou subdomínio, validar arquivos sensíveis).
+- [ ] Integração com ao menos uma ferramenta de varredura ou API de inteligência de ameaças.
+- [ ] Logs auditáveis das decisões tomadas pelo "cabeça" (Agente Analista).
 
 ---
 
@@ -69,15 +64,12 @@ _Quando a missão pode ser considerada concluída com sucesso?_
 
 | Risco | Probabilidade | Impacto | Mitigação |
 |-------|---------------|---------|-----------|
-| | Alta / Média / Baixa | Alto / Médio / Baixo | |
-| | | | |
+| Execução fora do escopo | Baixa | Altíssimo | Regras rígidas de "scope control" no n8n e nos scripts |
+| Falsos positivos no Pentest | Média | Médio | Validação lógica multi-etapas antes da confirmação da vulnerabilidade |
 
 ---
 
 ## 9. Evidências necessárias
-
-_Quais evidências são necessárias para considerar a missão concluída?_
-
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ] Diagrama do fluxo multiagente no n8n.
+- [ ] Relatório técnico comparando as 3 soluções (A, B, C).
+- [ ] Logs de execução demonstrando a cadeia de decisão (Chain-of-Thought).
