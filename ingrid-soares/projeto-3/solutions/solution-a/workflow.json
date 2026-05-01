@@ -1,0 +1,52 @@
+{
+  "name": "RedTeam-SolutionA",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "redteam-start",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "id": "webhook-trigger",
+      "name": "Webhook"
+    },
+    {
+      "parameters": {
+        "model": "gemini-1.5-flash",
+        "promptType": "define",
+        "text": "=Analise o alvo: {{$json.body.alvo}}. Gere um plano de ataque estruturado nas fases: fase_reconhecimento, fase_validacao, relatorio_riscos.",
+        "options": {
+          "systemMessage": "Você é um Operador de Red Team Senior. Responda APENAS em JSON contendo os campos: fase_reconhecimento, fase_validacao,
+      relatorio_riscos."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainGemini",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "id": "gemini-llm",
+      "name": "Agente Analista"
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = JSON.parse(items[0].json.text);
+if (!output.fase_reconhecimento || !output.fase_validacao || !output.relatorio_riscos) {
+
+      throw new Error("Formato inválido");
+}
+return { json: output };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300],
+      "id": "validator-node",
+      "name": "Validator Code"
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Agente Analista", "type": "main", "index": 0 }]] },
+    "Agente Analista": { "main": [[{ "node": "Validator Code", "type": "main", "index": 0 }]] }
+  }
+}
