@@ -25,6 +25,9 @@ O agente de IA atua em diferentes níveis de responsabilidade:
 - Não determinismo inerente aos modelos de linguagem em tarefas críticas de segurança.
 - Necessidade de configuração de infraestrutura de rede para execução de ferramentas externas.
 
-## 6. Riscos
-- **Falsos positivos:** Risco mitigado por validações lógicas e intervenção humana em casos de baixa confiança.
-- **Execução fora do escopo:** Mitigado por regras rígidas de whitelist no orquestrador e escopo de atuação definido no *Mission Brief*.
+## 7. Análise de Performance e Custo
+Para garantir a sustentabilidade do framework, consideramos os seguintes aspectos:
+- **Consumo de IA:** Estimamos um consumo moderado de tokens, otimizado pelo uso de prompts estruturados e JSON.
+- **Estratégias de Otimização:** Implementação de cache local (n8n DB) para resultados de APIs, minimizando chamadas redundantes e custos operacionais.
+- **Latência:** Latência projetada de 5-15s por ciclo, com foco principal em chamadas de I/O de rede e processamento de IA.
+
