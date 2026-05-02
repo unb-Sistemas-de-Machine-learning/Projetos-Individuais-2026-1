@@ -19,6 +19,9 @@ O fluxo é orquestrado no **n8n** e consiste em:
 2.  Ative o workflow para liberar a **Production URL** (`/webhook/redteam-start`).
 3.  Envie uma requisição POST com o JSON de alvo para a URL de produção.
 
+## Próximos Passos
+Esta solução fornece o plano de ataque. A próxima etapa é a **[Solution B: Validação Prática](../solution-b/README.md)**, onde os planos gerados serão executados automaticamente através de ferramentas de scanner e análise externa.
+
 ## Status
 - [x] Implementado
 - [x] Testado

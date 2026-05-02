@@ -1,32 +1,25 @@
-# Solution B: Validação com Ferramentas e APIs Externas
+# Solution B: Validação Prática de Red Team
 
-Esta solução eleva a maturidade do framework ao introduzir a **validação prática**. O agente não apenas planeja, mas utiliza fontes de dados externas para confirmar suas hipóteses sobre o alvo.
+Esta solução implementa a segunda fase do framework: a **Validação Prática**.
 
 ## Objetivo
-Validar hipóteses de vulnerabilidade através da integração com ferramentas de segurança e APIs, permitindo que a tomada de decisão da IA seja baseada em evidências reais (ex: reputação de domínio, registros DNS, dados públicos de segurança).
+Transformar o plano gerado pela **Solution A** em ações concretas de segurança. O objetivo é automatizar a execução de testes contra o alvo identificado.
 
-## Ferramentas de Integração (Tooling)
-1. **Ferramenta de Reconhecimento (DNS Lookup):** Consulta registros de IP e registros MX/NS do alvo.
-2. **Ferramenta de Validação (VirusTotal API):** Verifica a reputação do domínio ou IP para identificar associações com campanhas maliciosas ou malware.
+## Requisitos Técnicos
+1.  **Integração:** Receber o JSON de saída da Solution A (fases de reconhecimento e validação).
+2.  **Automação:** Executar scanners ou consultas a APIs de segurança baseadas no plano recebido.
+3.  **Processamento:** Normalizar os resultados dos scans para um formato legível pelo SOC.
 
-## Desenho do Fluxo no n8n
-1. **Webhook Trigger:** Recebe o alvo: `{ "alvo": "exemplo.com" }`.
-2. **Agente de IA (Planner):** Analisa o alvo e gera uma lista de ferramentas a serem consultadas.
-3. **Tool Nodes (n8n Nodes):**
-   - **DNS Lookup Node:** Coleta metadados de infraestrutura.
-   - **HTTP Request (VirusTotal API):** Coleta score de segurança.
-4. **Agente de IA (Analista):** Recebe o contexto (Dados do Planner + Respostas das Ferramentas) e sintetiza o parecer de segurança.
-5. **HTTP Response:** Retorna JSON com plano de ataque validado por evidências.
+## Arquitetura Proposta
+- **Entrada:** Webhook que recebe o plano de ataque da Solution A.
+- **Processamento:** Nós no n8n que realizam chamadas a APIs de segurança (ex: VirusTotal, Shodan, ou execução de scripts via Docker/Node).
+- **Saída:** Relatório técnico detalhado com as evidências coletadas.
 
-## Fluxo de Decisão (Tool-Calling)
-- "Planner": *Identifiquei o alvo. Preciso checar registros DNS e reputação no VirusTotal.*
-- "n8n": Executa as chamadas em paralelo.
-- "Analista": *Com base no score X do VirusTotal, o alvo é considerado [Risco: Baixo/Médio/Alto]. Recomendação: [Ação].*
+## Roadmap
+- [ ] Definir APIs de segurança para integração.
+- [ ] Desenhar o workflow de execução no n8n.
+- [ ] Implementar lógica de normalização de dados.
+- [ ] Validar integração entre Solution A e B.
 
-## Vantagens
-- **Validação:** Baseia decisões em dados do mundo real.
-- **Eficiência:** Automação de tarefas braçais de enumeração.
-
-## Limitações
-- **Taxa de Chamadas (Rate Limits):** APIs de segurança possuem limites de uso gratuito.
-- **Complexidade:** Requer configuração de chaves de API e tratamento de erros de rede.
+## Referências
+- [Solution A: Planejamento Tático](../solution-a/README.md)
