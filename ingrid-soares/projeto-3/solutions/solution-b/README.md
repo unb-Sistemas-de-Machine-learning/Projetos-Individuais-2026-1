@@ -1,25 +1,14 @@
 # Solution B: Validação Prática de Red Team
 
-Esta solução implementa a segunda fase do framework: a **Validação Prática**.
+Esta solução implementa a fase de **Validação Prática** (Camada Determinística).
 
 ## Objetivo
-Transformar o plano gerado pela **Solution A** em ações concretas de segurança. O objetivo é automatizar a execução de testes contra o alvo identificado.
+Validar ativos de forma automatizada e factual, sem dependência de probabilidade.
 
-## Requisitos Técnicos
-1.  **Integração:** Receber o JSON de saída da Solution A (fases de reconhecimento e validação).
-2.  **Automação:** Executar scanners ou consultas a APIs de segurança baseadas no plano recebido.
-3.  **Processamento:** Normalizar os resultados dos scans para um formato legível pelo SOC.
+## Implementação
+- **Motor:** Integração via API VirusTotal (v3).
+- **Lógica:** Consulta de reputação de domínios/IPs com normalização de dados via nó `Code` no n8n.
+- **Autenticação:** Header seguro `x-apikey`.
 
-## Arquitetura Proposta
-- **Entrada:** Webhook que recebe o plano de ataque da Solution A.
-- **Processamento:** Nós no n8n que realizam chamadas a APIs de segurança (ex: VirusTotal, Shodan, ou execução de scripts via Docker/Node).
-- **Saída:** Relatório técnico detalhado com as evidências coletadas.
-
-## Roadmap
-- [ ] Definir APIs de segurança para integração.
-- [ ] Desenhar o workflow de execução no n8n.
-- [ ] Implementar lógica de normalização de dados.
-- [ ] Validar integração entre Solution A e B.
-
-## Referências
-- [Solution A: Planejamento Tático](../solution-a/README.md)
+## Integração
+Este workflow é disparado paralelamente à Solution A pelo **[Orquestrador (Solution C)](../solution-c/README.md)**. A validação retorna um resumo de segurança factual que, em conjunto com o planejamento (A), compõe o parecer final.
