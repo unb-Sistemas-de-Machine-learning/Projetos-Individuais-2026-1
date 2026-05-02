@@ -20,7 +20,26 @@ O agente de IA atua em diferentes níveis de responsabilidade:
 - **Abordagem Agêntica:** Implementação baseada no framework de Engenharia de Software Agêntica, com separação clara de responsabilidades (Mission Brief, Mentorship Pack).
 - **Rastreabilidade:** Todos os fluxos contam com logs de auditoria e diretrizes de resiliência configuradas.
 
-## 5. Limitações do Sistema
+## 5. Implementação e Orquestração (n8n)
+A Solution A foi implementada como um workflow no n8n. O fluxo utiliza um nó `Webhook` (gatilho), `HTTP Request` (chamada ao Gemini) e `Code` (validação de resposta).
+
+### 5.1 Diferença entre URL de Teste e Produção
+- **Test URL (`/webhook-test/`):** Utilizada durante a edição. Requer que o modo "Test" seja ativado manualmente no n8n antes de disparar a requisição.
+- **Production URL (`/webhook/`):** Utilizada após o workflow ser marcado como "Active" e salvo. O fluxo roda em segundo plano e registra execuções na aba "Executions".
+
+### 5.2 Procedimento de Teste (ReqBin)
+Para verificar a integração, utilizamos o ReqBin:
+1. **Método:** POST.
+2. **URL:** URL de produção ou teste (conforme o status do workflow).
+3. **Payload (JSON):** 
+   ```json
+   {
+     "alvo": "exemplo.com"
+   }
+   ```
+4. **Resultado Esperado:** HTTP 200 OK com a resposta: `{"message": "Workflow was started"}`. As execuções bem-sucedidas são confirmadas na aba "Executions" do n8n, onde o nó final exibe o resultado do processamento.
+
+## 6. Limitações do Sistema
 - Dependência de limites de API (rate limits) de serviços de terceiros.
 - Não determinismo inerente aos modelos de linguagem em tarefas críticas de segurança.
 - Necessidade de configuração de infraestrutura de rede para execução de ferramentas externas.
