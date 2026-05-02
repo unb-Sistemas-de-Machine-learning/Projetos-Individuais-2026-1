@@ -7,19 +7,17 @@ Orquestrar a execução paralela das etapas de reconhecimento e validação, gar
 
 ## Implementação
 - **Orquestração Assíncrona:** Utiliza um webhook com `responseMode: onReceived` para responder imediatamente ao usuário, processando as tarefas em segundo plano.
-- **Execução Paralela:** Dispara as Solutions A e B simultaneamente via requisições HTTP, reduzindo o tempo total de resposta.
+- **Execução Paralela:** Dispara as Solutions A e B simultaneamente via requisições HTTP.
+
+## Integração e Testes
+- A integridade do workflow orquestrado é validada pela **[Solution D: Infraestrutura de Testes](../solution-d/README.md)**, que automatiza o disparo e a validação do ciclo.
 
 ## Procedimento de Teste (ReqBin)
-Para validar a integração completa:
+Para validar a integração manualmente:
 1. **Método:** POST
 2. **URL:** `https://ingrdsoares.app.n8n.cloud/webhook/redteam-orchestrator`
-3. **Payload (JSON):** 
-   ```json
-   {
-     "alvo": "exemplo.com"
-   }
-   ```
-4. **Resultado:** Resposta imediata `{"message": "Workflow was started"}` e verificação de sucesso na aba "Executions" do n8n para os três workflows (A, B e C).
+3. **Payload (JSON):** `{"alvo": "exemplo.com"}`
+4. **Resultado:** Resposta imediata `{"message": "Workflow was started"}`.
 
 ## Status
 - [x] Implementado

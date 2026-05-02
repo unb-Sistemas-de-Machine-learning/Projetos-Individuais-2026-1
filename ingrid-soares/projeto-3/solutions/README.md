@@ -1,6 +1,6 @@
 # Framework de Soluções: Red Team Framework
 
-Este diretório contém a implementação modular do framework de segurança automatizado, estruturado em três soluções que operam de forma integrada.
+Este diretório contém a implementação modular do framework de segurança automatizado, estruturado em quatro soluções que operam de forma integrada.
 
 ## Estrutura das Soluções
 
@@ -8,23 +8,24 @@ O framework foi desenhado em uma arquitetura **Híbrida (Determinística + LLM)*
 
 ### [Solution A: Planejamento Tático](./solution-a/README.md)
 - **Foco:** Reconhecimento e definição do plano de ataque.
-- **Tecnologia:** Inicialmente projetado com Gemini, o fluxo foi migrado para o modelo **Llama-3 via Groq Cloud** para viabilizar a arquitetura de custo zero (Free-tier).
-- **Status:** Implementado e documentado.
+- **Tecnologia:** LLM (Groq Cloud/Llama-3).
 
 ### [Solution B: Validação Prática](./solution-b/README.md)
 - **Foco:** Validação determinística de ativos.
 - **Tecnologia:** API VirusTotal (Determinístico).
-- **Status:** Implementado e documentado.
 
 ### [Solution C: Orquestrador Inteligente](./solution-c/README.md)
 - **Foco:** Integração assíncrona e orquestração.
 - **Tecnologia:** n8n (Orquestração de fluxos).
-- **Status:** Implementado e documentado.
+
+### [Solution D: Infraestrutura de Testes](./solution-d/README.md)
+- **Foco:** Qualidade e garantia de integração.
+- **Tecnologia:** Python (Pytest/Requests) para testes automatizados.
 
 ## Fluxo de Integração
 1. O **Orquestrador (C)** recebe o alvo via Webhook.
-2. Dispara simultaneamente a **Solution A** (análise estratégica via LLM híbrido) e a **Solution B** (validação técnica determinística).
-3. Os resultados são integrados, garantindo uma resposta de segurança precisa e estruturada.
+2. Dispara simultaneamente a **Solution A** (análise estratégica via LLM) e a **Solution B** (validação técnica determinística).
+3. A **Solution D** valida a integridade do ciclo completo.
 
 ## Como começar
 Recomendamos a leitura do [Relatório Técnico](../relatorio-entrega.md) para uma visão geral da arquitetura e as diretrizes de performance no [Performance Pack](../docs/performance-pack.md).
