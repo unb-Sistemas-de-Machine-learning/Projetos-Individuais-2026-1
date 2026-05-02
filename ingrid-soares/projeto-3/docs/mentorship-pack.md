@@ -1,74 +1,27 @@
 # Mentorship Pack
 
-> **Projeto:** Multi-Agent Red Team Framework
+> **Projeto:** Security Validation & Automation Framework
 > **Aluno(a):** Ingrid Soares
 
 ---
 
-## 1. Orientações de julgamento
+## 1. Princípios da Arquitetura Híbrida
+O framework evoluiu para um modelo híbrido que prioriza a precisão técnica e a sustentabilidade financeira:
 
+- **Camada Determinística:** O uso de APIs de Threat Intelligence (ex: VirusTotal) é obrigatório para garantir validações factuais antes de qualquer análise estratégica.
+- **Camada de Inteligência (LLM):** O uso de IA (Groq/Llama-3) é reservado para análise contextual e geração de relatórios, não para decisões binárias críticas.
+- **Custo Zero:** A arquitetura é otimizada para o uso de *tiers* gratuitos, garantindo execução contínua sem custos.
+
+## 2. Orientações de Desenvolvimento
 - **Segurança sobre Velocidade:** A precisão na identificação de vulnerabilidades é superior à velocidade de execução.
-- **Defensiva Ativa:** Sempre assuma que o alvo possui defesas; priorize táticas que minimizem a detecção (evasão).
-- **Justificativa Ética:** Toda ação de Red Team deve ser justificada por um risco real identificável.
+- **Automação de Testes:** A implementação de testes automatizados (Solution D) é um requisito para manter o sistema em nível de maturidade 10.0.
+- **Observabilidade:** O uso da aba "Executions" no n8n é essencial para auditoria e depuração de falhas.
 
----
-
-## 2. Padrões de arquitetura
-
-- **Orquestração Desacoplada:** O n8n deve orquestrar a lógica, enquanto o processamento pesado de IA (LLMs) deve ser mantido em nós específicos de execução.
-- **Atomicidade de Agentes:** Cada agente deve ter uma única responsabilidade (Single Responsibility Principle aplicado a agentes).
-
----
-
-## 3. Padrões de código
-
-- **Linguagem:** Python para scripts auxiliares, JSON para intercâmbio de dados entre agentes.
-- **Estilo:** Código limpo, comentado, com tratamento de erros explícito (Try/Except).
-- **Testes:** Cada ferramenta executada pelo Agente Executor deve ter um teste de sanity check básico.
-
----
+## 3. Padrões de Código e Integração
+- **Linguagem:** n8n (workflows), Python (scripts de teste e integração).
+- **Interface:** Toda integração deve seguir o padrão de payload JSON estruturado.
+- **Testes:** Qualquer alteração no fluxo de trabalho deve ser validada pelo script de teste (`test_framework.py`).
 
 ## 4. Estilo de documentação
-
-- Documentação técnica obrigatória no estilo "Decisão -> Ação -> Resultado".
-- Logs de eventos devem ser claros e em formato estruturado (JSON).
-
----
-
-## 5. Qualidade esperada
-
-- Nível 1: Protótipo (PoC).
-- Nível 2: Fluxo funcional com tratamento de erro básico.
-- Nível 3: Sistema observável, auditável e resiliente (nível de entrega do projeto).
-
----
-
-## 6. Exemplos de boas respostas
-
-```
-Exemplo 1:
-"Análise: O subdomínio 'dev.target.com' expôs arquivos .git. 
-Decisão: Validar a existência de credenciais no config. 
-Ação: Executar script de extração de segredos."
-```
-
----
-
-## 7. Exemplos de más respostas
-
-```
-Exemplo 1:
-"Encontrei uma falha, vou deletar o banco de dados." 
-[Por que é ruim: Falta de autorização, falta de justificativa e comportamento destrutivo proibido pelas regras.]
-```
-
----
-
-## 8. Princípios-guia
-
-```
-O agente deve sempre explicar a decisão técnica antes de implementar.
-O agente deve preferir soluções simples, testáveis e observáveis.
-O agente não deve esconder incertezas (se não tem certeza, pare e pergunte).
-O agente deve registrar alternativas descartadas (por que escolheu a ferramenta A e não a B?).
-```
+- Toda alteração deve ser registrada no `relatorio-entrega.md` e, se necessário, documentada no `ADR-001`.
+- A arquitetura final deve sempre manter a separação entre o orquestrador (C) e as soluções modulares (A, B, D).
