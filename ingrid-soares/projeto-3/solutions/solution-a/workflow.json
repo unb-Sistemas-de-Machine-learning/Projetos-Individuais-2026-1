@@ -15,21 +15,37 @@
     },
     {
       "parameters": {
-        "model": "gemini-1.5-flash",
-        "options": {
-          "systemMessage": "Você é um Operador de Red Team Senior. Responda APENAS em JSON contendo os campos: fase_reconhecimento, fase_validacao, relatorio_riscos."
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{$credentials.apiKey}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
         },
-        "prompt": "=Analise o alvo: {{$json.body.alvo}}. Gere um plano de ataque estruturado nas fases: fase_reconhecimento, fase_validacao, relatorio_riscos."
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "contents",
+              "value": "={{ [{\"parts\": [{\"text\": \"Analise o alvo: \" + $json.body.alvo + \". Gere um plano de ataque estruturado nas fases: fase_reconhecimento, fase_validacao, relatorio_riscos. Responda APENAS em JSON contendo os campos: fase_reconhecimento, fase_validacao, relatorio_riscos.\"}]}] }}"
+            }
+          ]
+        },
+        "options": {}
       },
-      "type": "n8n-nodes-base.googleGemini",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
       "position": [460, 300],
-      "id": "gemini-llm",
+      "id": "http-request-gemini",
       "name": "Agente Analista"
     },
     {
       "parameters": {
-        "jsCode": "const output = JSON.parse(items[0].json.output);\nif (!output.fase_reconhecimento || !output.fase_validacao || !output.relatorio_riscos) {\n  throw new Error(\"Formato inválido\");\n}\nreturn { json: output };"
+        "jsCode": "const outputText = items[0].json.candidates[0].content.parts[0].text;\nconst cleanJson = outputText.replace(/```json/g, '').replace(/```/g, '');\nconst output = JSON.parse(cleanJson);\nif (!output.fase_reconhecimento || !output.fase_validacao || !output.relatorio_riscos) {\n  throw new Error(\"Formato inválido\");\n}\nreturn { json: output };"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
