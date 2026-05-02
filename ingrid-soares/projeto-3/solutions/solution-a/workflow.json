@@ -16,13 +16,12 @@
     {
       "parameters": {
         "model": "gemini-1.5-flash",
-        "promptType": "define",
-        "text": "=Analise o alvo: {{$json.body.alvo}}. Gere um plano de ataque estruturado nas fases: fase_reconhecimento, fase_validacao, relatorio_riscos.",
         "options": {
           "systemMessage": "Você é um Operador de Red Team Senior. Responda APENAS em JSON contendo os campos: fase_reconhecimento, fase_validacao, relatorio_riscos."
-        }
+        },
+        "prompt": "=Analise o alvo: {{$json.body.alvo}}. Gere um plano de ataque estruturado nas fases: fase_reconhecimento, fase_validacao, relatorio_riscos."
       },
-      "type": "@n8n/n8n-nodes-langchain.chainGemini",
+      "type": "n8n-nodes-base.googleGemini",
       "typeVersion": 1,
       "position": [460, 300],
       "id": "gemini-llm",
@@ -30,7 +29,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const output = JSON.parse(items[0].json.text);\nif (!output.fase_reconhecimento || !output.fase_validacao || !output.relatorio_riscos) {\n  throw new Error(\"Formato inválido\");\n}\nreturn { json: output };"
+        "jsCode": "const output = JSON.parse(items[0].json.output);\nif (!output.fase_reconhecimento || !output.fase_validacao || !output.relatorio_riscos) {\n  throw new Error(\"Formato inválido\");\n}\nreturn { json: output };"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
