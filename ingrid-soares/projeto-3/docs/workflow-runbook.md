@@ -1,25 +1,25 @@
-# Workflow Runbook: Multi-Agent Red Team Framework
+# Workflow Runbook: Security Validation & Automation Framework
 
-Este documento descreve o processo obrigatório de execução para o desenvolvimento do framework.
+Este documento descreve o processo de execução e desenvolvimento do framework de segurança híbrido.
 
 ---
 
 ## Passo a Passo do Desenvolvimento
 
-1.  **Leitura e Alinhamento:** Revisar o *Mission Brief* e o *Mentorship Pack* para garantir que todos os artefatos estejam alinhados com os objetivos éticos e técnicos.
-2.  **Proposta de Soluções:** Propor três abordagens distintas para a automação do ciclo de Red Team (Reconhecimento, Validação, Reporte).
-3.  **Registro de Soluções:** Criar pastas `solutions/solution-a`, `solutions/solution-b` e `solutions/solution-c`.
-4.  **Prototipagem Mínima:** Implementar protótipos funcionais para cada abordagem no n8n.
-5.  **Testes e Evidências:** Validar cada protótipo contra um alvo controlado.
-6.  **Comparação (ADR):** Avaliar as três soluções em relação a custo, complexidade, qualidade de resposta, riscos e manutenibilidade.
-7.  **Decisão Final:** Registrar a decisão da solução escolhida em `docs/adr/001-escolha-da-solucao.md`.
-8.  **Merge-Readiness:** Gerar o `docs/merge-readiness-pack.md` para consolidar o estado de prontidão para entrega.
-9.  **Consolidação:** Integrar a solução final na pasta `src/` e limpar o projeto.
+1. **Alinhamento:** Revisar os requisitos do framework híbrido (Determinístico + LLM).
+2. **Implementação de Soluções:**
+   - **Solution A:** Planejamento tático com IA (Llama-3 via Groq).
+   - **Solution B:** Validação determinística (VirusTotal API).
+   - **Solution C:** Orquestrador assíncrono para integração A+B.
+   - **Solution D:** Infraestrutura de testes automatizados (Python/Pytest).
+3. **Validação:** Rodar scripts em `solutions/solution-d/tests/` para garantir a integridade.
+4. **Consolidação:** Integrar os fluxos e realizar o deploy em modo "Active" no n8n.
 
 ---
 
-## Regras de Execução
+## Regras de Operação
 
-- **Commits Atômicos:** Cada etapa do runbook deve corresponder a um ou mais commits com mensagem clara e racionalidade técnica.
-- **Rastreabilidade:** Toda decisão que alterar o comportamento do framework deve ser documentada em um novo arquivo de ADR dentro de `docs/adr/`.
-- **Validação:** Não avance para a fase de implementação da solução final sem ter comparado as três alternativas propostas.
+- **Commits Atômicos:** Cada fase deve ser documentada e commitada individualmente.
+- **Rastreabilidade:** Todas as decisões arquiteturais (como a transição para Groq Cloud) estão registradas em ADRs dentro de `docs/adr/`.
+- **QA:** A versão de produção (`Active`) depende do disparo bem-sucedido do script de testes da Solution D.
+- **Sustentabilidade:** Priorizar o uso de APIs com tiers gratuitos (VirusTotal/Groq) para manter custo zero.
