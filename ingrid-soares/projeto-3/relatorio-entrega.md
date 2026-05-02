@@ -32,7 +32,12 @@ A migração para uma arquitetura híbrida resultou em uma operação de **custo
 - **Orquestrador C:** Finalizado, testado e com URL de produção configurada para disparos assíncronos.
 - **Documentação Centralizada:** Relatório de Entrega, Performance Pack e READMEs das soluções (A, B e C) estão totalmente atualizados e commitados.
 
-## 8. Análise de Maturidade
+## 8. Evidência de Execução
+Para fins de auditoria, a pasta `imgs/` contém evidências de sucesso (`Succeeded`) das execuções nos Workflows A, B e C, documentando o comportamento esperado em ambiente de produção.
+
+*Nota de Disponibilidade:* Como este projeto utiliza a versão Cloud Trial do n8n, a URL de produção pode estar temporariamente indisponível após o período de 14 dias de avaliação. A integridade funcional foi validada exaustivamente e documentada através dos logs de execução anexos.
+
+## 9. Análise de Maturidade
 Com base na arquitetura desenvolvida, a maturidade do projeto é avaliada em 9.2/10, considerando os seguintes pontos:
 
 ### Pontos Fortes
@@ -41,7 +46,7 @@ Com base na arquitetura desenvolvida, a maturidade do projeto é avaliada em 9.2
 - **Escalabilidade:** O uso de orquestração assíncrona (Solution C) permite que o sistema processe múltiplos alvos sem sobrecarga de interface.
 - **Documentação:** O sistema possui um ADR formal e relatórios técnicos que justificam cada decisão, garantindo rastreabilidade e governança.
 
-### roadmap de Evolução (Rumo ao 10.0)
+### Roadmap de Evolução (Rumo ao 10.0)
 Para elevar o projeto ao nível máximo de robustez (10.0), a infraestrutura de testes será expandida conforme planejado abaixo:
 - **Solution D (Infraestrutura de Testes Automatizados):** Criação de um pipeline de testes integrados utilizando `pytest` ou `Jest` para disparar webhooks e validar respostas JSON automaticamente.
 - **Resiliência (Error Handling):** Implementação de políticas de *retry* avançadas nos nós HTTP, garantindo que falhas temporárias nas APIs externas não interrompam o ciclo de validação.

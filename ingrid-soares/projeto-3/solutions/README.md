@@ -27,5 +27,7 @@ O framework foi desenhado em uma arquitetura **Híbrida (Determinística + LLM)*
 2. Dispara simultaneamente a **Solution A** (análise estratégica via LLM) e a **Solution B** (validação técnica determinística).
 3. A **Solution D** valida a integridade do ciclo completo.
 
-## Como começar
-Recomendamos a leitura do [Relatório Técnico](../relatorio-entrega.md) para uma visão geral da arquitetura e as diretrizes de performance no [Performance Pack](../docs/performance-pack.md).
+## Evidência e Disponibilidade
+A pasta `imgs/` contém evidências de sucesso (`Succeeded`) das execuções nos Workflows A, B e C, documentando o comportamento esperado em ambiente de produção.
+
+*Nota de Disponibilidade:* Como este projeto utiliza a versão Cloud Trial do n8n, a URL de produção pode estar temporariamente indisponível após o período de 14 dias de avaliação. A integridade funcional foi validada através dos logs de execução e prints anexos.
