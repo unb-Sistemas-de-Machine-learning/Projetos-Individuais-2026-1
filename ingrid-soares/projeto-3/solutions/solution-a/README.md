@@ -1,36 +1,25 @@
-# Solution A: Planejamento Tático Baseado em Prompt
+# Solution A: Planejamento Tático de Red Team
 
-Esta solução é a base de maturidade inicial do nosso framework. O foco aqui não é a execução técnica, mas a capacidade do agente de **raciocinar** e **estruturar** um plano de Red Team de forma ética e profissional.
+Esta solução implementa a primeira fase do framework de Red Team automatizado: o **Planejamento Tático**.
 
 ## Objetivo
-Transformar uma entrada simples (alvo/domínio) em um plano de ataque estruturado que siga as melhores práticas de cibersegurança, servindo como uma "bússola" para as etapas subsequentes (B e C).
+Utilizar o Gemini para gerar um plano de ataque estruturado baseado em um alvo fornecido, dividindo a tarefa em três fases críticas:
+1.  `fase_reconhecimento`
+2.  `fase_validacao`
+3.  `relatorio_riscos`
 
-## Desenho do Fluxo no n8n
-1.  **Webhook Trigger:** Recebe o JSON de entrada: `{ "alvo": "exemplo.com", "tipo_teste": "reconhecimento" }`.
-2.  **LLM Node (Gemini):** Agente de IA com System Prompt especializado.
-3.  **JSON Formatter:** Nó de código para padronizar a saída do LLM.
-4.  **HTTP Response:** Retorna o plano formatado.
+## Implementação
+O fluxo é orquestrado no **n8n** e consiste em:
+- **Webhook:** Recebe o payload com o alvo (ex: `{"alvo": "exemplo.com"}`).
+- **HTTP Request:** Envia o prompt para a API do Google Gemini (utilizando `gemini-1.5-flash`).
+- **Validator Code:** Processa a resposta da LLM, limpando formatações Markdown e validando a presença obrigatória dos campos JSON.
 
-## System Prompt (O cérebro da Solution A)
-```text
-Você é um Operador de Red Team Senior.
-Sua tarefa é analisar o alvo fornecido e gerar um plano de ataque tático.
-O plano deve seguir as fases:
-1. Reconhecimento (enumeração passiva e ativa).
-2. Validação de Vulnerabilidades (priorizando OWASP Top 10).
-3. Relatório de Riscos (severidade esperada e impacto).
+## Como utilizar
+1.  Importe o arquivo `workflow.json` no seu n8n.
+2.  Ative o workflow para liberar a **Production URL** (`/webhook/redteam-start`).
+3.  Envie uma requisição POST com o JSON de alvo para a URL de produção.
 
-Restrições:
-- Seja estritamente profissional.
-- Não sugira ataques de negação de serviço.
-- Justifique tecnicamente cada etapa do plano.
-- Saída deve ser um JSON estruturado.
-```
-
-## Vantagens
-- **Simplicidade:** Implementação rápida e fácil de depurar.
-- **Raciocínio:** Valida a capacidade do modelo de seguir diretrizes de cibersegurança.
-
-## Limitações
-- **Estático:** Não interage com sistemas reais.
-- **Teórico:** O plano gerado pode conter sugestões que não se aplicam ao ambiente real do alvo.
+## Status
+- [x] Implementado
+- [x] Testado
+- [x] Documentado
