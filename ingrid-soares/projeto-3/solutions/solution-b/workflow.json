@@ -1,0 +1,52 @@
+{
+  "name": "RedTeam-SolutionB-VirusTotal",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "redteam-validate",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "id": "webhook-trigger",
+      "name": "Webhook"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://www.virustotal.com/api/v3/domains/{{$json.body.alvo}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-apikey",
+              "value": "SUA_API_KEY_AQUI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300],
+      "id": "http-request-vt",
+      "name": "VirusTotal Scan"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items[0].json.data.attributes.last_analysis_stats;\nreturn { \n  json: {\n    alvo: items[0].json.data.id,\n    resumo_seguranca: data\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300],
+      "id": "validator-node",
+      "name": "Resumo VT"
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "VirusTotal Scan", "type": "main", "index": 0 }]] },
+    "VirusTotal Scan": { "main": [[{ "node": "Resumo VT", "type": "main", "index": 0 }]] }
+  }
+}
