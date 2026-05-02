@@ -1,31 +1,27 @@
-# Solution C: Multi-Agente Autônomo (Orquestração Avançada)
+# Solution C: Orquestrador Inteligente
 
-Esta solução representa o nível máximo de maturidade do projeto, implementando um sistema autônomo onde agentes especializados colaboram para realizar um ciclo completo de Red Team.
+Esta solução atua como o **cérebro central** do framework, integrando as fases de planejamento (Solution A) e validação (Solution B).
 
 ## Objetivo
-Criar um ecossistema de agentes (swarm) que realizam pentest automatizado de forma iterativa, com capacidade de planejamento, execução e auto-correção, tudo orquestrado pelo n8n.
+Orquestrar a execução paralela das etapas de reconhecimento e validação, garantindo que o sistema funcione de forma assíncrona e performática.
 
-## Desenho do Fluxo no n8n
-1.  **Orquestrador Principal:** Um nó central (Estado/Contexto) gerencia a memória da missão.
-2.  **Swarm de Agentes:**
-    *   **Agente Reconhecedor:** Scans dinâmicos de superfície.
-    *   **Agente Analista (Maestro):** Avalia os achados e delega tarefas aos executores.
-    *   **Agente Executor:** Tenta PoC (Proof of Concept) baseada em táticas definidas.
-    *   **Agente Relator:** Consolida evidências e gera o relatório final.
-3.  **Loop de Feedback:** Se o Executor falha, o Maestro reavalia a tática e tenta uma nova estratégia (retry logic).
+## Implementação
+- **Orquestração Assíncrona:** Utiliza um webhook com `responseMode: onReceived` para responder imediatamente ao usuário, processando as tarefas em segundo plano.
+- **Execução Paralela:** Dispara as Solutions A e B simultaneamente via requisições HTTP, reduzindo o tempo total de resposta.
 
-## Diferencial Técnico
-- **Autonomia:** O sistema não apenas executa uma sequência fixa, ele "pensa" e reage a cada nova descoberta.
-- **Memória de Contexto:** Uso de variáveis globais do n8n para manter o estado da missão (quem fez o quê, qual o status do alvo).
-- **Auto-correção:** Capacidade de contornar falhas táticas automaticamente.
+## Procedimento de Teste (ReqBin)
+Para validar a integração completa:
+1. **Método:** POST
+2. **URL:** `https://ingrdsoares.app.n8n.cloud/webhook/redteam-orchestrator`
+3. **Payload (JSON):** 
+   ```json
+   {
+     "alvo": "exemplo.com"
+   }
+   ```
+4. **Resultado:** Resposta imediata `{"message": "Workflow was started"}` e verificação de sucesso na aba "Executions" do n8n para os três workflows (A, B e C).
 
-## Fluxo de Decisão (Multi-Step Reasoning)
-- *Agente Maestro:* "Recebi subdomínio X, mas a porta 80 está fechada. Reconhecedor, procure por outros vetores. Se encontrar, Executor tentará validação de path traversal."
-
-## Vantagens
-- **Maturidade:** Alta resiliência e inteligência operacional.
-- **Escalabilidade:** Fácil adicionar novos agentes (ex: Agente de Compliance, Agente de Reporte automático).
-
-## Limitações
-- **Complexidade:** Alta curva de aprendizado para depurar múltiplos agentes interagindo.
-- **Consumo:** Maior número de requisições à API de IA (custo/tokens).
+## Status
+- [x] Implementado
+- [x] Testado
+- [x] Documentado
