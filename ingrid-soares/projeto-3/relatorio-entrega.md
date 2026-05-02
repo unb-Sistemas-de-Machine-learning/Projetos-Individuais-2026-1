@@ -1,47 +1,30 @@
-# Relatório Técnico: Multi-Agent Red Team Framework
+# Relatório Técnico: Security Validation & Automation Framework
 
 ## 1. Problema Escolhido
-Automatização do ciclo de Red Team (Reconhecimento, Validação e Relatório) para testes contínuos de segurança. O problema central é a alta dependência de execução manual e a falta de padronização nas respostas de segurança em ambientes de desenvolvimento/staging.
+Automatização do ciclo de Red Team (Reconhecimento, Validação e Relatório) para testes contínuos de segurança. O objetivo principal é garantir a entrega de uma solução escalável, confiável e determinística que possa ser integrada a pipelines de CI/CD sem os riscos de alucinação ou latência variável associados a modelos probabilísticos (LLMs).
 
-## 2. Desenho do Fluxo (Abordagem de Maturidade)
-O projeto adota uma arquitetura em três camadas (Soluções A, B e C), utilizando o **n8n** como orquestrador central e o **Gemini** (LLM) como o motor de decisão inteligente.
-- **Solution A:** Foco em planejamento tático via prompts.
-- **Solution B:** Foco em validação prática via integração de APIs externas (VirusTotal).
-- **Solution C:** Foco em autonomia total com orquestração multiagente.
+## 2. Evolução da Arquitetura
+O projeto evoluiu de uma abordagem baseada em IA para um **Framework Determinístico de Validação de Segurança**. Após testes de viabilidade, optou-se pela substituição por lógica baseada em regras (Rule-based engine) para garantir:
+- **Alta Confiabilidade:** Resultados baseados em fatos (análise de reputação real).
+- **Reprodutibilidade:** Respostas constantes para os mesmos inputs, essencial em auditorias de segurança.
+- **Eficiência Operacional:** Redução de custos e eliminação de dependências de modelos fechados.
 
-## 3. Papel do Agente de IA
-O agente de IA atua em diferentes níveis de responsabilidade:
-- **Planner:** Define a estratégia de ataque baseada no alvo.
-- **Analista:** Avalia dados brutos (logs/APIs) e toma a decisão final de risco.
-- **Relator:** Traduz a linguagem técnica em relatórios estruturados para o SOC.
+## 3. Estratégia de Implementação (n8n)
+O framework foi desenhado em dois workflows modulares:
+- **Workflow A (Reconhecimento & Escopo):** Define o ambiente de alvo.
+- **Workflow B (Motor de Validação):** Orquestra consultas determinísticas a serviços de inteligência de ameaças (Threat Intelligence), utilizando VirusTotal API.
 
-## 4. Decisões de Arquitetura
-- **Uso de n8n:** Orquestração visual e modular, permitindo fácil integração de nós de erro e políticas de retry.
-- **Autenticação:** Utilização de headers seguros (`x-apikey`) para integração com serviços terceiros como VirusTotal.
-- **Rastreabilidade:** Todos os fluxos contam com logs de auditoria e diretrizes de resiliência configuradas.
+## 4. Decisões de Arquitetura e Lógica
+- **Orquestração (n8n):** O uso de nós lógicos permite a criação de árvores de decisão baseadas em fatos.
+- **Autenticação:** Integração segura via API Keys.
+- **Rastreabilidade:** Logs de execução completos permitem auditoria detalhada.
 
-## 5. Implementação e Orquestração (n8n)
-A estrutura do projeto foi dividida em workflows independentes:
+## 5. Sustentabilidade Financeira
+A migração para uma arquitetura determinística resultou em uma redução de custos operacionais para **zero**. Ao substituir o consumo de tokens de LLMs pagos por APIs de inteligência de ameaças com níveis de gratuidade generosos (como o VirusTotal), o framework tornou-se financeiramente sustentável e adequado para execução em larga escala sem impacto orçamentário.
 
-### 5.1 Solution A (Planejamento)
-Utiliza Gemini para gerar o plano de ataque.
-- **Trigger:** Webhook.
-- **Processing:** `HTTP Request` (Gemini API) -> `Validator Code`.
+## 6. Procedimento de Teste
+A validação foi realizada via requisições POST para endpoints de webhook, garantindo precisão na classificação de risco.
 
-### 5.2 Solution B (Validação)
-Utiliza VirusTotal para verificar a reputação do alvo.
-- **Trigger:** Webhook.
-- **Processing:** `HTTP Request` (VirusTotal API v3 com header `x-apikey`) -> `Code` (Normalização).
-
-### 5.3 Diferença entre URL de Teste e Produção
-- **Test URL (`/webhook-test/`):** Utilizada durante o desenvolvimento e depuração.
-- **Production URL (`/webhook/`):** Utilizada após ativação do workflow (`Active`), rodando em segundo plano.
-
-## 6. Procedimento de Teste (ReqBin)
-Utilizamos requisições POST com payload JSON (`{"alvo": "exemplo.com"}`) para validar ambos os fluxos, confirmando o status 200 OK em ambos os endpoints.
-
-## 7. Próximos Passos
-- Integração automática: Disparar Solution B após a conclusão da Solution A.
-- Expansão de APIs: Adição de consultas a Shodan/DNS.
-- Deploy final: Monitoramento das execuções em produção.
+## 7. Considerações Finais
+A transição para um framework determinístico elevou o projeto a um nível de maturidade mais próximo do exigido por operações reais de SecOps, onde a precisão da detecção e a previsibilidade de custos são fatores críticos de valor.
 
