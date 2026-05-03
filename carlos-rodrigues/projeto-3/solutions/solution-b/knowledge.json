@@ -1,0 +1,68 @@
+[
+  {
+    "id": "topic-1",
+    "title": "Aprendizado de Máquina para Saúde",
+    "keywords": ["machine learning", "health", "diagnosis", "clinical"],
+    "summary": "Curadoria de artigos sobre aplicações de aprendizagem de máquina em saúde pública e diagnósticos clínicos."
+  },
+  {
+    "id": "topic-2",
+    "title": "Processamento de Linguagem Natural",
+    "keywords": ["nlp", "language", "text", "transformer", "embedding"],
+    "summary": "Temas relacionados a modelos de linguagem, embeddings e análise textual."
+  },
+  {
+    "id": "topic-3",
+    "title": "Sistemas Distribuídos e Escalabilidade",
+    "keywords": ["distributed", "scalability", "systems", "cloud"],
+    "summary": "Artigos sobre arquitetura de sistemas, escalabilidade e computação em nuvem."
+  },
+  {
+    "id": "chatbots-1",
+    "title": "AI Chatbots in Customer Service — Impact on CX",
+    "keywords": ["AI", "chatbots", "customer service", "CX", "customer experience"],
+    "summary": "Estudos que avaliam o impacto de chatbots baseados em IA no atendimento ao cliente: satisfação, eficiência, resolução de problemas e consistência da experiência." 
+  },
+  {
+    "id": "chatbots-2",
+    "title": "Conversational AI Design Patterns",
+    "keywords": ["dialogue design", "conversation", "fallback", "escalation", "turn-taking"],
+    "summary": "Boas práticas de desenho de conversas, fluxos de fallback, detecção de intenção, escalonamento para humanos e gestão de contexto em chatbots."
+  },
+  {
+    "id": "chatbots-3",
+    "title": "Measuring Customer Satisfaction and Efficiency",
+    "keywords": ["NPS", "CSAT", "response time", "resolution rate", "metrics"],
+    "summary": "Metodologias e métricas para avaliar desempenho de suporte automatizado: tempos de resposta, taxas de resolução, NPS e satisfação do usuário."
+  },
+  {
+    "id": "chatbots-4",
+    "title": "Case Study: Chatbots in Banking",
+    "keywords": ["banking", "finance", "chatbots", "case study", "customer support"],
+    "summary": "Estudos de caso sobre adoção de chatbots no setor financeiro, incluindo ganhos de eficiência, desafios de segurança e integração com sistemas legados."
+  },
+  {
+    "id": "chatbots-5",
+    "title": "Human-AI Collaboration and Escalation Strategies",
+    "keywords": ["human-in-the-loop", "escalation", "handoff", "supervision"],
+    "summary": "Estratégias para integrar operadores humanos com agentes automatizados, critérios de escalonamento e interfaces para revisão humana."
+  },
+  {
+    "id": "chatbots-6",
+    "title": "Ethics, Privacy and Compliance for Conversational Agents",
+    "keywords": ["privacy", "GDPR", "ethics", "compliance", "data protection"],
+    "summary": "Considerações sobre privacidade, consentimento, retenção de dados e conformidade regulatória ao projetar chatbots que lidam com informações sensíveis."
+  },
+  {
+    "id": "chatbots-7",
+    "title": "Retrieval-Augmented Generation (RAG) for Support",
+    "keywords": ["RAG", "retrieval", "knowledge base", "faq", "contextualization"],
+    "summary": "Uso de mecanismos de recuperação acoplados a geração (RAG) para fornecer respostas mais factuais e reduzir alucinações em assistentes de suporte."
+  },
+  {
+    "id": "chatbots-8",
+    "title": "Evaluation Methods for Conversational Agents",
+    "keywords": ["A/B testing", "user study", "metrics", "offline evaluation", "human evaluation"],
+    "summary": "Amostras de protocolos experimentais para avaliar chatbots: estudos com usuários, testes A/B, avaliações qualitativas e métricas automáticas."
+  }
+]

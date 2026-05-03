@@ -1,0 +1,270 @@
+{
+  "name": "solution-b",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "article-triage-rag",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "4d926ec5-07cf-485a-bb8f-cac8e9ca00a7",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1600,
+        -48
+      ],
+      "webhookId": "webhook-b"
+    },
+    {
+      "parameters": {
+        "functionCode": "const input = $input.all()[0].json;\nconst data = input.body || input;\nreturn {\n  title: data.title || '',\n  abstract: data.abstract || '',\n  keywords: data.keywords || [],\n  doi: data.doi || '',\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "0d6570ac-a92d-4cf3-acf7-4e7cb323c20b",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -1344,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://192.168.15.10:3000/search",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"q\": \"{{$json.title}} {{$json.abstract}}\", \"topK\": 3}",
+        "options": {}
+      },
+      "id": "05312f30-2ba7-4bcf-ba5f-7ddbd572c799",
+      "name": "Local Retriever",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -1104,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<API_GEMINI>",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"Use the context below to classify the article. Respond ONLY with JSON: {classification, confidence, decision, reason}\\n\\nContext:\\n{{$json.results ? $json.results.map(r => r.title + ': ' + r.summary).slice(0,3).join('\\\\n') : 'no context'}}\\n\\nTitle: {{$items('Normalize Input', 0, 0)[0].json.title}}\\nAbstract: {{$items('Normalize Input', 0, 0)[0].json.abstract}}\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "21cdf698-324c-439f-8280-0589dd22c70f",
+      "name": "AI RAG Classification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -848,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const response = $input.all()[0].json;\n\nlet content =\n  response.candidates?.[0]?.content?.parts?.[0]?.text || '{}';\n\ncontent = content.replace(/```json|```/g, '').trim();\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(content);\n} catch (e) {\n  parsed = {\n    classification: 'potentially_relevant',\n    confidence: 0.5,\n    decision: 'request_human_review',\n    reason: 'Parse error'\n  };\n}\n\nlet confidence = parsed.confidence;\n\nif (typeof confidence === 'string') {\n  confidence =\n    confidence === 'high' ? 0.9 :\n    confidence === 'medium' ? 0.6 :\n    confidence === 'low' ? 0.3 : 0.5;\n}\n\nconfidence = Number(confidence ?? 0.5);\n\nconst decision =\n  confidence < 0.5 ? 'reject' :\n  confidence < 0.7 ? 'request_human_review' :\n  'store';\n\nreturn {\n  ...$items('Normalize Input', 0, 0)[0].json,\n  ...parsed,\n  confidence,\n  decision\n};"
+      },
+      "id": "db8b667e-4786-4c85-8adc-527bb34bb116",
+      "name": "Parse RAG Output",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "rules": {
+          "rules": [
+            {
+              "value2": "request_human_review"
+            },
+            {
+              "value2": "reject",
+              "output": 1
+            }
+          ]
+        },
+        "fallbackOutput": 2
+      },
+      "id": "7cd9c473-bff2-4022-831f-abb90dbae31c",
+      "name": "Route RAG",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "1723869906",
+        "text": "=⚠️ REVISÃO NECESSÁRIA\n\n📄 {{$json.title}}\n\n🏷 {{$json.classification}}\n📊 Confiança: {{$json.confidence}}\n\n🧠 {{$json.reason}}",
+        "additionalFields": {}
+      },
+      "id": "2947a650-5e19-4849-b8ce-be34b04c8f36",
+      "name": "Telegram Review",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        -176
+      ],
+      "webhookId": "4199c6b3-f21b-44fb-a357-ed1e9ace91df",
+      "credentials": {
+        "telegramApi": {
+          "id": "<CODIGO_CHAT_TELEGRAM>",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1723869906",
+        "text": "=❌ REJEITADO\n\n📄 {{$json.title}}\n\n🏷 {{$json.classification}}\n📊 Confiança: {{$json.confidence}}\n\n🧠 {{$json.reason}}",
+        "additionalFields": {}
+      },
+      "id": "920055a3-99a0-452d-9191-5127ad56f218",
+      "name": "Telegram Reject",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        16
+      ],
+      "webhookId": "c6e01692-84aa-4b33-a8e1-05c7703d2943",
+      "credentials": {
+        "telegramApi": {
+          "id": "<CODIGO_CHAT_TELEGRAM>",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1723869906",
+        "text": "=✅ APROVADO\n\n📄 {{$json.title}}\n\n🏷 {{$json.classification}}\n📊 Confiança: {{$json.confidence}}\n\n🧠 {{$json.reason}}",
+        "additionalFields": {}
+      },
+      "id": "7f3b741c-b55a-4dc0-add3-e7246177cce0",
+      "name": "Telegram Store",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        192
+      ],
+      "webhookId": "19ecaa5f-af55-4e4f-9570-a7e7ec5a9130",
+      "credentials": {
+        "telegramApi": {
+          "id": "<CODIGO_CHAT_TELEGRAM>",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Input": {
+      "main": [
+        [
+          {
+            "node": "Local Retriever",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Local Retriever": {
+      "main": [
+        [
+          {
+            "node": "AI RAG Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI RAG Classification": {
+      "main": [
+        [
+          {
+            "node": "Parse RAG Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse RAG Output": {
+      "main": [
+        [
+          {
+            "node": "Route RAG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route RAG": {
+      "main": [
+        [
+          {
+            "node": "Telegram Review",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Reject",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ad375285-a25d-4b65-acb3-3f8a56162d42",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f34325afb793100a7242e0984b0b9c64b1b9f7ed669b75bcb1c770da726b4c54"
+  },
+  "id": "bHnoI8Z9R12Stheg",
+  "tags": []
+}
