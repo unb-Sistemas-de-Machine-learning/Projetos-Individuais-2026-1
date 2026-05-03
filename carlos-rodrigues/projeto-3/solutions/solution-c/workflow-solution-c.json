@@ -1,0 +1,333 @@
+{
+  "name": "solution-c",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "article-triage-full",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "7349fbf2-58a5-4d59-9ffb-b7eb30f8879d",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        -16
+      ],
+      "webhookId": "12f9bfd1-f9ba-4873-adaf-1d9ae1f1b813"
+    },
+    {
+      "parameters": {
+        "functionCode": "const input = $input.all()[0].json;\n\nconst data = input.body ?? input;\n\nconst title = data.title ?? '';\nconst abstract = data.abstract ?? '';\nconst doi = data.doi ?? '';\n\nif (!title || !abstract) {\n  return {\n    title,\n    abstract,\n    doi,\n    keywords: data.keywords ?? [],\n    decision: 'reject',\n    reason: 'Missing required fields',\n    confidence: 0,\n    timestamp: new Date().toISOString()\n  };\n}\n\nreturn {\n  title,\n  abstract,\n  doi,\n  keywords: data.keywords ?? [],\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "4f5e70e2-f564-4941-b769-f08187379463",
+      "name": "Validate & Normalize",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<API_GEMINI>",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"Classify article. Respond ONLY with JSON: {classification, confidence, reason}\\n\\nTitle: {{$json.title || $json.body?.title || ''}}\\n\\nAbstract: {{$json.abstract || $json.body?.abstract || ''}}\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "8b3c04eb-14fd-4d7e-9d17-a1f985759b69",
+      "name": "AI Classification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -720,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const response = $input.all()[0].json;\n\nlet content = response.candidates?.[0]?.content?.parts?.[0]?.text || '{}';\ncontent = content.replace(/```json|```/g, '').trim();\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(content);\n} catch (e) {\n  parsed = {\n    classification: 'potentially_relevant',\n    confidence: 0.5,\n    decision: 'request_human_review',\n    reason: 'Parse error'\n  };\n}\n\nconst original = $items(\"Validate & Normalize\", 0, 0)[0].json;\n\nconst confidence = Number(parsed.confidence ?? 0.5);\n\nreturn {\n  ...original,\n  ...parsed,\n  confidence\n};"
+      },
+      "id": "7059f14d-5806-4eb4-b697-dcec801a99dd",
+      "name": "Parse AI",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "=={{$json.doi}}",
+        "rules": {
+          "rules": [
+            {
+              "operation": "notEqual"
+            }
+          ]
+        },
+        "fallbackOutput": 1
+      },
+      "id": "ecb2fabd-1cb2-466b-82a2-bba9a880ffed",
+      "name": "Has DOI?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.crossref.org/works/{{$json.doi}}",
+        "options": {}
+      },
+      "id": "28ff2a50-6e5b-4e28-bb39-8132dc60f681",
+      "name": "Validate DOI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -112,
+        -160
+      ],
+      "retryOnFail": false,
+      "executeOnce": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "functionCode": "const base = $items('Parse AI', 0, 0)[0].json;\nconst doiResponse = $json;\n\nconst hasDoi = !!base.doi;\nconst doiValid = hasDoi ? doiResponse.status === 'ok' : false;\n\nconst aiConfidence = Number(base.confidence ?? 0.5);\nconst metaScore = (base.title && base.abstract) ? 1 : 0.5;\n\nconst final = (aiConfidence * 0.7) + (doiValid ? 0.2 : 0) + (metaScore * 0.1);\n\nlet decision = 'reject';\nif (final >= 0.75) decision = 'store';\nelse if (final >= 0.5) decision = 'request_human_review';\n\nreturn {\n  ...base,\n  doi_valid: doiValid,\n  final_confidence: Math.min(1, final),\n  decision\n};"
+      },
+      "id": "2fe844a2-4164-4f86-9f99-18b711a1d83e",
+      "name": "Recalc Confidence",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        96,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "rules": {
+          "rules": [
+            {
+              "value2": "request_human_review"
+            },
+            {
+              "value2": "reject",
+              "output": 1
+            }
+          ]
+        },
+        "fallbackOutput": 2
+      },
+      "id": "672dca4b-ebcc-4d78-ae00-b0f6677579aa",
+      "name": "Final Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "1723869906",
+        "text": "=⚠️ REVIEW {{$json.title}} Conf: {{$json.final_confidence}}",
+        "additionalFields": {}
+      },
+      "id": "2cd76ad9-85ba-4da2-b635-e3fd950bbd35",
+      "name": "Telegram Review",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        496,
+        -160
+      ],
+      "webhookId": "a99053ed-ed1d-4ff5-aa30-a6bede214795",
+      "credentials": {
+        "telegramApi": {
+          "id": "<CODIGO_CHAT_TELEGRAM>",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1723869906",
+        "text": "=❌ REJECT {{$json.title}} Conf: {{$json.final_confidence}}",
+        "additionalFields": {}
+      },
+      "id": "1c0373c1-02aa-4960-b47a-45446aa189c4",
+      "name": "Telegram Reject",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        496,
+        16
+      ],
+      "webhookId": "38137e23-5ba1-4fd8-b41b-ebc9040fbc3a",
+      "credentials": {
+        "telegramApi": {
+          "id": "<CODIGO_CHAT_TELEGRAM>",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1723869906",
+        "text": "=✅ STORE {{$json.title}} Conf: {{$json.final_confidence}}",
+        "additionalFields": {}
+      },
+      "id": "4be26c1e-baf2-4192-ad65-9591a4ef9581",
+      "name": "Telegram Store",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        496,
+        176
+      ],
+      "webhookId": "f5326fc4-35e5-44db-856a-5364abc13314",
+      "credentials": {
+        "telegramApi": {
+          "id": "<CODIGO_CHAT_TELEGRAM>",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate & Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Normalize": {
+      "main": [
+        [
+          {
+            "node": "AI Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Classification": {
+      "main": [
+        [
+          {
+            "node": "Parse AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI": {
+      "main": [
+        [
+          {
+            "node": "Has DOI?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has DOI?": {
+      "main": [
+        [
+          {
+            "node": "Validate DOI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Recalc Confidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate DOI": {
+      "main": [
+        [
+          {
+            "node": "Recalc Confidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recalc Confidence": {
+      "main": [
+        [
+          {
+            "node": "Final Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Router": {
+      "main": [
+        [
+          {
+            "node": "Telegram Review",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Reject",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "cb8dc290-0f7e-4e08-a9a2-15882b63c003",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f34325afb793100a7242e0984b0b9c64b1b9f7ed669b75bcb1c770da726b4c54"
+  },
+  "id": "fnOWRvijNAiLSKlq",
+  "tags": []
+}
