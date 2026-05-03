@@ -1,0 +1,42 @@
+[
+  {
+    "id": "FIN-001",
+    "category": "financeiro",
+    "title": "Renegociacao de mensalidade",
+    "keywords": ["mensalidade", "renegociar", "parcela", "financeiro", "pagamento"],
+    "action_template": "Encaminhar para negociacao financeira com validacao de RA.",
+    "sla_hours": 24
+  },
+  {
+    "id": "FIN-002",
+    "category": "financeiro",
+    "title": "Segunda via de boleto",
+    "keywords": ["segunda", "via", "boleto", "fatura", "vencimento"],
+    "action_template": "Gerar segunda via ou encaminhar para financeiro com RA.",
+    "sla_hours": 8
+  },
+  {
+    "id": "SUP-001",
+    "category": "suporte_tecnico",
+    "title": "Falha de acesso ao portal",
+    "keywords": ["acesso", "login", "senha", "portal", "moodle", "erro"],
+    "action_template": "Abrir ticket tecnico para reset de acesso e diagnostico.",
+    "sla_hours": 4
+  },
+  {
+    "id": "SEC-001",
+    "category": "secretaria_academica",
+    "title": "Emissao de documentos academicos",
+    "keywords": ["historico", "declaracao", "atestado", "documento", "matricula"],
+    "action_template": "Registrar solicitacao documental e validar identificacao do aluno.",
+    "sla_hours": 48
+  },
+  {
+    "id": "TCC-001",
+    "category": "estagio_tcc",
+    "title": "Demandas de estagio e TCC",
+    "keywords": ["estagio", "tcc", "orientador", "banca", "monografia"],
+    "action_template": "Encaminhar para coordenacao de TCC/estagio.",
+    "sla_hours": 72
+  }
+]
