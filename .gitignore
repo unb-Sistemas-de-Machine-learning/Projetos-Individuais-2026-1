@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+.env
+*.db
+node_modules/
+.DS_Store

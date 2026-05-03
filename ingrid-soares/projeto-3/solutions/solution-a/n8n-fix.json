@@ -1,0 +1,53 @@
+{
+  "name": "n8n-fix",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "redteam-start",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "id": "webhook-trigger",
+      "name": "Webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "SUA_CHAVE_GEMINI_AQUI"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Analise o alvo: exemplo.com. Gere um plano de ataque estruturado nas fases: fase_reconhecimento, fase_validacao, relatorio_riscos. Responda APENAS em JSON contendo os campos: fase_reconhecimento, fase_validacao, relatorio_riscos.\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300],
+      "id": "http-request-gemini",
+      "name": "Agente Analista"
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Agente Analista", "type": "main", "index": 0 }]] }
+  }
+}
