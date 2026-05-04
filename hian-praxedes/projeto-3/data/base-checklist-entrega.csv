@@ -1,0 +1,14 @@
+item,categoria,obrigatorio,peso,descricao
+README,documentacao,sim,10,Arquivo principal explicando o projeto e execução
+agent.md,documentacao,sim,10,Arquivo com regras de comportamento do agente
+mission-brief.md,documentacao,sim,10,Contrato entre humano e agente
+mentorship-pack.md,documentacao,sim,10,Diretrizes de qualidade e julgamento do agente
+workflow-runbook.md,documentacao,sim,10,Processo de execução do workflow
+tres solucoes,arquitetura,sim,15,Solution A, Solution B e Solution C documentadas
+workflow exportado json,n8n,sim,15,Arquivo JSON exportado do n8n
+prints de funcionamento,evidencias,sim,15,Evidências visuais do workflow funcionando
+google sheets,persistencia,sim,10,Registro das decisões tomadas pelo fluxo
+tratamento de erro,qualidade,sim,10,Fallback para baixa confiança ou entrada inválida
+adr,arquitetura,sim,5,Registro da decisão arquitetural
+merge-readiness-pack,documentacao,sim,5,Resumo final para revisão e merge
+relatorio tecnico,documentacao,sim,10,Relatório explicando problema, fluxo, IA, arquitetura, limitações e riscos
