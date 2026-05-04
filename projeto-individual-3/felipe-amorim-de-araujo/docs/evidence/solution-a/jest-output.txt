@@ -1,0 +1,67 @@
+
+> issuetriagebot@1.0.0 test
+> jest --verbose
+
+PASS tests/solution-a/utils.test.js
+  isValidIssue
+    ✓ returns true for issue with a title (2 ms)
+    ✓ returns false for missing title field (1 ms)
+    ✓ returns false for empty title string
+    ✓ returns false for null input
+    ✓ returns false for undefined input (1 ms)
+  buildPrompt
+    ✓ includes title in prompt
+    ✓ includes body in prompt
+    ✓ includes label names in prompt
+    ✓ includes repository name in prompt (1 ms)
+    ✓ handles missing body with placeholder
+    ✓ handles missing labels gracefully
+    ✓ handles string labels array
+    ✓ handles completely empty issue
+    ✓ prompt requests JSON-only response
+  parseGeminiResponse
+    ✓ parses valid JSON string (1 ms)
+    ✓ strips markdown code block before parsing
+    ✓ strips markdown code block without language hint (1 ms)
+    ✓ returns parse_error result for invalid JSON
+    ✓ returns error result for empty string
+    ✓ returns error result for non-string input (4 ms)
+    ✓ feature type parsed correctly
+    ✓ question type parsed correctly
+    ✓ sets low_confidence=true when confidence below 0.7 (1 ms)
+  validateClassification
+    ✓ accepts valid classification
+    ✓ rejects invalid type, falls back to unknown
+    ✓ rejects invalid severity, falls back to unknown (1 ms)
+    ✓ rejects invalid component, falls back to unknown
+    ✓ clamps confidence above 1.0
+    ✓ clamps confidence below 0.0 (1 ms)
+    ✓ handles null input gracefully
+    ✓ handles missing confidence field
+  routeToSlackChannel
+    ✓ routes critical bug to #incidents
+    ✓ routes medium bug to #backlog
+    ✓ routes low bug to #backlog
+    ✓ routes feature to #backlog
+    ✓ routes critical feature to #backlog (not #incidents) (1 ms)
+    ✓ routes question to #questions
+    ✓ routes unknown type to #backlog
+  formatSlackMessage
+    ✓ sets correct channel for critical bug
+    ✓ includes issue title in text (1 ms)
+    ✓ includes issue URL in blocks
+    ✓ adds low_confidence warning when applicable
+    ✓ no low_confidence warning for high confidence
+    ✓ routes question to #questions (1 ms)
+    ✓ uses 🔴 emoji for critical severity
+  formatSheetsRow
+    ✓ includes all required fields
+    ✓ ai_flagged is always false in solution-a (1 ms)
+    ✓ formats confidence as percentage string
+    ✓ uses current timestamp when not provided
+
+Test Suites: 1 passed, 1 total
+Tests:       49 passed, 49 total
+Snapshots:   0 total
+Time:        0.236 s, estimated 1 s
+Ran all test suites.
