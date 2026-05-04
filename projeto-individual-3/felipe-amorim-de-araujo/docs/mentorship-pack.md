@@ -34,7 +34,8 @@ _Convenções de código que o agente deve respeitar._
 
 - Linguagem: JavaScript (ES2020+, sem TypeScript) — tanto nos Code nodes do n8n quanto nos scripts utilitários
 - Estilo: funções puras em `utils.js`, sem side effects; Code nodes retornam sempre `return [{ json: ... }]`; nomes de variáveis descritivos
-- Testes: Jest em `tests/<solution>/` por solução, cobrindo os 3 tipos de issue (`bug`, `feature`, `question`) mais casos-limite (entrada vazia, `title` ausente, issue completamente ambígua)
+- Testes unitários: Jest em `tests/<solution>/` por solução, cobrindo os 3 tipos de issue (`bug`, `feature`, `question`) mais casos-limite (entrada vazia, `title` ausente, issue completamente ambígua)
+- Validação end-to-end: cada solução deve ser executada com o fluxo completo real — webhook do GitHub disparando via repositório de teste, Gemini classificando, Slack recebendo nos 3 canais, Sheets registrando a linha — antes de ser descartada; testes Jest passando sozinhos não validam a solução
 
 ---
 
@@ -43,8 +44,9 @@ _Convenções de código que o agente deve respeitar._
 _Como o agente deve documentar seu trabalho?_
 
 - Commits devem registrar a racionalidade da decisão, não apenas o que foi feito (ex: "Implementa solution-a com zero-shot — baseline para comparação" em vez de "adiciona arquivos")
-- Decisões arquiteturais relevantes vão em ADRs em `docs/adr/`
-- Alternativas descartadas devem ser registradas explicitamente — no ADR da solução final ou no commit da etapa de comparação
+- Decisões arquiteturais relevantes vão em ADRs em `docs/adr/` — cada ADR deve incluir contexto, alternativas consideradas com prós/contras, decisão tomada com base em evidências mensuráveis, e referências aos arquivos de `docs/evidence/`; um ADR sem evidências não é válido
+- Qualquer escolha que envolveu alternativas viáveis exige ADR — não só a escolha final da solução (ex: formato do prompt, estratégia de retry, estrutura do JSON de saída)
+- Alternativas descartadas devem ser registradas explicitamente no ADR — não basta mencionar o que foi escolhido
 - Marcar os checkboxes do workflow-runbook no commit correspondente a cada etapa concluída
 
 ---
@@ -53,11 +55,12 @@ _Como o agente deve documentar seu trabalho?_
 
 _Qual o nível de qualidade mínimo para considerar uma entrega aceitável?_
 
-- Cada solução tem protótipo funcional e resultado de teste documentado antes de ser descartada
+- Cada solução tem protótipo funcional validado com o fluxo end-to-end completo: GitHub webhook → Gemini → Slack (3 canais) + Sheets — "funcional" só é válido com screenshots de webhook entregue (200 OK), mensagens Slack e linhas no Sheets; testes unitários são condição necessária, não suficiente
 - Comparação entre soluções baseada em critérios mensuráveis — não em preferência subjetiva
 - Evidências reais (screenshots, exports `.json`, logs) para cada critério de aceitação do mission-brief
-- Testes Jest passando para os utilitários de cada solução
-- Ao menos um caso `ai_flagged=true` evidenciado (falha da API Gemini após retry)
+- Testes Jest passando para os utilitários de cada solução (condição necessária, não suficiente)
+- Ao menos um caso `ai_flagged=true` evidenciado com screenshot ou log (falha da API Gemini após retry na solution-c)
+- ADRs citam evidências de `docs/evidence/` — ADR sem evidência não passa na revisão
 
 ---
 
@@ -104,4 +107,6 @@ O agente não deve esconder incertezas.
 O agente deve registrar alternativas descartadas.
 O agente não deve pular etapas do workflow-runbook mesmo quando a solução parecer óbvia.
 O agente deve marcar os checkboxes do workflow-runbook conforme avança — ao menos um commit por solução implementada.
+O agente deve tratar "testes Jest passando" como condição necessária, não suficiente — a validação end-to-end com GitHub webhook real, Slack e Sheets é obrigatória antes de descartar qualquer solução.
+O agente deve criar um ADR sempre que descartar uma alternativa técnica viável — não apenas ao escolher a solução final. ADR sem evidências de docs/evidence/ não é válido.
 ```
