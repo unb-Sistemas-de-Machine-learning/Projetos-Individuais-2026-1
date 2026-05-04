@@ -1,0 +1,16 @@
+# Ignorar ambientes virtuais
+.venv/
+venv/
+env/
+
+# Ignorar pastas e bancos de dados do MLflow
+mlruns/
+mlartifacts/
+mlflow.db
+
+# Ignorar dados pesados (Opcional, mas recomendado)
+dados/
+
+# Ignorar arquivos temporários do Python
+__pycache__/
+*.pyc

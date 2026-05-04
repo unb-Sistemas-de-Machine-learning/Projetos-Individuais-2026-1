@@ -1,0 +1,23 @@
+artifact_path: /Users/joaofilipedeoliveirasouza/Projetos-Individuais-2026-1/projeto-individual-2/joao-filip-souza/mlruns/1/models/m-849e2512057847db966f9d8517be8a56/artifacts
+flavors:
+  python_function:
+    config:
+      device: null
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pytorch
+    pickle_module_name: mlflow.pytorch.pickle_module
+    python_version: 3.14.3
+  pytorch:
+    code: null
+    model_data: data
+    pytorch_version: 2.11.0
+mlflow_version: 3.11.1
+model_id: m-849e2512057847db966f9d8517be8a56
+model_size_bytes: 44802151
+model_uuid: m-849e2512057847db966f9d8517be8a56
+prompts: null
+run_id: 287eb01bd80e428b8434da459a9bd8ae
+utc_time_created: '2026-04-08 21:12:57.214766'

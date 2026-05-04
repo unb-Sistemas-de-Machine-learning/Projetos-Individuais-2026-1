@@ -1,0 +1,67 @@
+{
+  "name": "RedTeam-Orchestrator-C",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "redteam-orchestrator",
+        "options": {
+          "responseMode": "onReceived"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "id": "webhook-trigger",
+      "name": "Webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ingrdsoares.app.n8n.cloud/webhook/redteam-start",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"alvo\": \"{{ $json.body.alvo }}\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300],
+      "id": "sol-a-start",
+      "name": "Dispara A (Planejamento)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ingrdsoares.app.n8n.cloud/webhook/redteam-validate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"alvo\": \"{{ $json.body.alvo }}\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 450],
+      "id": "sol-b-start",
+      "name": "Dispara B (Validacao)"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Dispara A (Planejamento)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Dispara B (Validacao)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

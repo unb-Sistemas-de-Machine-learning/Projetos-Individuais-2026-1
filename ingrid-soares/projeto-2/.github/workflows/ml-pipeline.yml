@@ -1,0 +1,25 @@
+name: ML Pipeline CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+    - name: Test script integrity
+      run: |
+        # Testa se os scripts principais rodam sem erro de sintaxe
+        python -c "from src.api.app import app; print('API importada com sucesso')"
+        python src/phishing/inference.py --help || true

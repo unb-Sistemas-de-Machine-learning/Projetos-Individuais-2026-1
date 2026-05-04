@@ -1,0 +1,13 @@
+mlflow
+transformers
+torch
+datasets
+pandas
+numpy
+scikit-learn
+matplotlib
+pyyaml
+fastapi
+uvicorn
+pytest
+requests

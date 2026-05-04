@@ -1,0 +1,5 @@
+url,label
+http://phishing-site.com,1
+http://legit-site.com,0
+http://another-malicious-url.net,1
+http://safe-domain.org,0
