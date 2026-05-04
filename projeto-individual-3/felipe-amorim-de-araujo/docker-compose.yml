@@ -7,12 +7,10 @@ services:
     ports:
       - "5678:5678"
     environment:
-      - N8N_TUNNEL_ENABLED=true
       - N8N_LOG_LEVEL=info
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=admin
       - N8N_BASIC_AUTH_PASSWORD=changeme
-      - EXECUTIONS_PROCESS=main
       - GENERIC_TIMEZONE=America/Sao_Paulo
       # Paste your Gemini API key here or set via .env
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}

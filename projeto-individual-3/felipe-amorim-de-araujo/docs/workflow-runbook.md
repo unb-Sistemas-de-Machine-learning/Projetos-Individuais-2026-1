@@ -47,14 +47,15 @@ Siga as etapas abaixo na ordem indicada. Cada etapa deve gerar pelo menos um com
 Para cada solução, executar o fluxo completo com integrações reais antes de descartá-la:
 
 **Setup (uma vez por solução):**
-- [ ] Garantir que `N8N_TUNNEL_ENABLED=true` está no `docker-compose.yml` (env do serviço n8n)
 - [ ] Subir o ambiente: `docker-compose up -d`
-- [ ] Aguardar o log de startup do n8n e copiar a URL pública gerada (formato `https://<random>.loca.lt`) — ela muda a cada restart
+- [ ] Em outro terminal, iniciar o tunnel: `ngrok http 5678`
+- [ ] Copiar a URL pública gerada pelo ngrok (formato `https://<random>.ngrok-free.app`) — ela muda a cada restart do ngrok
 - [ ] Importar o workflow `.json` da solução no n8n e ativar o workflow
 - [ ] Criar um repositório de teste no GitHub (ex: `issuetriagebot-test-<solution>`)
-- [ ] Registrar um webhook no repositório de teste: URL = `<tunnel-url>/webhook/<id>`, evento = `Issues`, content type = `application/json`
-  - **Atenção:** a URL do tunnel muda a cada `docker-compose up` — se reiniciar o stack, atualize o webhook no GitHub antes de testar novamente
+- [ ] Registrar um webhook no repositório de teste: URL = `<ngrok-url>/webhook/github-issues`, evento = `Issues`, content type = `application/json`
+  - **Atenção:** a URL do ngrok muda a cada restart — se reiniciar o ngrok, atualize o webhook no GitHub antes de testar novamente
 - [ ] Confirmar que as credenciais Gemini, Slack e Google Sheets estão configuradas no n8n
+- [ ] _(Contexto: o tunnel nativo do n8n `N8N_TUNNEL_ENABLED` foi removido na v2.x — ver ADR-001)_
 
 **Execução dos casos de teste:**
 - [ ] Abrir issue no repositório de teste com título `"[TEST] App crashes on login"` e corpo descritivo → deve rotear para `#incidents` (critical) ou `#backlog` (bug não-crítico) e gerar linha no Sheets
@@ -93,7 +94,7 @@ Para cada solução, executar o fluxo completo com integrações reais antes de 
 
 ### Etapa 8: Registrar a decisão em ADR
 
-- [ ] Criar `docs/adr/001-escolha-da-solucao.md` seguindo o template abaixo
+- [ ] Criar `docs/adr/XXX-escolha-da-solucao.md` seguindo o template abaixo
 - [ ] Confirmar que a decisão cita evidências de `docs/evidence/` — ADR sem evidência não é válido
 - [ ] Verificar se alguma outra decisão técnica tomada durante o projeto exige ADR adicional (ver regras abaixo)
 
