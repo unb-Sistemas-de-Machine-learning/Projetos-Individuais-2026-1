@@ -1,0 +1,26 @@
+[
+  {
+    "caso": "entrega_completa",
+    "entrada": {
+      "aluno": "Hian Praxedes",
+      "projeto": "Projeto Individual 3",
+      "descricao_entrega": "Concluí README, agent.md, mission brief, mentorship pack, workflow runbook, três soluções, workflow n8n exportado em JSON, prints de funcionamento, ADR, relatório técnico e merge-readiness-pack."
+    }
+  },
+  {
+    "caso": "entrega_incompleta",
+    "entrada": {
+      "aluno": "Hian Praxedes",
+      "projeto": "Projeto Individual 3",
+      "descricao_entrega": "Fiz o README e o fluxo no n8n, mas ainda não exportei o JSON nem tirei prints."
+    }
+  },
+  {
+    "caso": "entrada_invalida",
+    "entrada": {
+      "aluno": "Hian Praxedes",
+      "projeto": "Projeto Individual 3",
+      "descricao_entrega": ""
+    }
+  }
+]

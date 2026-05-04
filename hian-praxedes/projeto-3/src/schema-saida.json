@@ -1,0 +1,64 @@
+{
+  "type": "object",
+  "required": [
+    "status",
+    "percentual_prontidao",
+    "itens_identificados",
+    "pendencias",
+    "riscos",
+    "acao_recomendada",
+    "confianca",
+    "justificativa"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "completa",
+        "incompleta",
+        "critica",
+        "invalida"
+      ]
+    },
+    "percentual_prontidao": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "itens_identificados": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pendencias": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "riscos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "acao_recomendada": {
+      "type": "string",
+      "enum": [
+        "registrar",
+        "solicitar_correcoes",
+        "notificar_responsavel",
+        "revisao_humana"
+      ]
+    },
+    "confianca": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "justificativa": {
+      "type": "string"
+    }
+  }
+}
