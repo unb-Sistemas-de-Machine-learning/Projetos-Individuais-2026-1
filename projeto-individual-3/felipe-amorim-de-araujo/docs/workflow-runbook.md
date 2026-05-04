@@ -46,6 +46,8 @@ Siga as etapas abaixo na ordem indicada. Cada etapa deve gerar pelo menos um com
 
 Para cada solução, executar o fluxo completo com integrações reais antes de descartá-la:
 
+> **Formato do payload no n8n:** o GitHub envia o evento como body HTTP, mas o nó Webhook do n8n envelopa o request completo. O payload real da issue fica em `$input.first().json.body` — não em `$input.first().json` diretamente. Exemplo em `docs/evidence/solution-a/github-webhook-payload-sample.json`.
+
 **Setup (uma vez por solução):**
 - [ ] Subir o ambiente: `docker-compose up -d`
 - [ ] Em outro terminal, iniciar o tunnel: `ngrok http 5678`

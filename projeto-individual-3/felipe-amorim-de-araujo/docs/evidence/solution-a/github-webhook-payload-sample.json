@@ -1,0 +1,30 @@
+{
+  "note": "Payload real recebido pelo n8n ao criar uma issue no GitHub. O GitHub envia o evento em .body — o n8n envelopa o request completo com headers, params, query e body.",
+  "headers": {
+    "host": "unlocked-ascend-percolate.ngrok-free.dev",
+    "user-agent": "GitHub-Hookshot/88acc88",
+    "content-type": "application/json",
+    "x-github-delivery": "e18c2232-47a3-11f1-944d-9f4a84765525",
+    "x-github-event": "issues",
+    "x-github-hook-id": "617036601"
+  },
+  "body": {
+    "action": "opened",
+    "issue": {
+      "number": 1,
+      "title": "[TEST] App crashes on login",
+      "body": null,
+      "html_url": "https://github.com/lipeaaraujo/test-project-repo/issues/1",
+      "url": "https://api.github.com/repos/lipeaaraujo/test-project-repo/issues/1",
+      "labels": [],
+      "state": "open"
+    },
+    "repository": {
+      "name": "test-project-repo",
+      "full_name": "lipeaaraujo/test-project-repo"
+    },
+    "sender": {
+      "login": "lipeaaraujo"
+    }
+  }
+}
