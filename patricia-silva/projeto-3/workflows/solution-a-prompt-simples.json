@@ -1,0 +1,255 @@
+{
+  "name": "Solution A — Triagem suporte (prompt simples)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "suporte-solution-a",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "wh-a-001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 300],
+      "webhookId": "suporte-solution-a"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "m1",
+              "name": "message",
+              "value": "={{ $json.body?.message ?? $json.message ?? $json.query?.message ?? \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "m2",
+              "name": "email",
+              "value": "={{ $json.body?.email ?? $json.email ?? \"\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-a-001",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.message.trim().length }}",
+              "rightValue": 3,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-a-001",
+      "name": "Input valido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "x-goog-api-key", "value": "={{ $env.GEMINI_API_KEY }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ systemInstruction: { parts: [{ text: 'Voce classifica chamados de suporte tecnico. Responda APENAS um JSON valido com: categoria (acesso|performance|erro|duvida_uso|outro), urgencia (baixa|media|alta), confianca (alta|baixa), resumo_curto (max 200 caracteres). Sem markdown, sem texto fora do JSON.' }] }, contents: [{ role: 'user', parts: [{ text: 'Mensagem do usuario: ' + $json.message }] }], generationConfig: { temperature: 0.2, responseMimeType: 'application/json' } }) }}",
+        "options": {}
+      },
+      "id": "http-a-001",
+      "name": "Gemini Triagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 200],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "function textoGemini(res) {\n  const parts = res.candidates?.[0]?.content?.parts;\n  if (!parts) return '';\n  return parts.map((p) => p.text || '').join('').trim();\n}\nconst res = $input.first().json;\nconst msg = $('Normalize Input').first().json.message;\nconst email = $('Normalize Input').first().json.email;\nif (res.error) {\n  return [{ json: { error_api: true, details: res, message: msg, email, categoria: 'outro', urgencia: 'media', confianca: 'baixa', resumo_curto: 'Falha na IA (Gemini)' } }];\n}\nlet raw = textoGemini(res) || '{}';\nlet p;\ntry { p = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch (e) {\n  p = { categoria: 'outro', urgencia: 'media', confianca: 'baixa', resumo_curto: 'JSON invalido' };\n}\nconst urg = (p.urgencia || 'media').toLowerCase();\nconst conf = (p.confianca || 'baixa').toLowerCase();\nlet rota = 'auto';\nif (urg === 'alta') rota = 'escala';\nelse if (conf === 'baixa') rota = 'revisao';\nlet orientacao = 'Chamado registrado. Equipe retornara em ate 1 dia util.';\nif (rota === 'escala') orientacao = 'Detectamos alta urgencia. Sua demanda foi priorizada para atendimento imediato.';\nif (rota === 'revisao') orientacao = 'Precisamos de mais detalhes; um humano vai revisar seu caso.';\nreturn [{ json: { ...p, urgencia: urg, confianca: conf, rota, orientacao, message: msg, email } }];"
+      },
+      "id": "code-a-001",
+      "name": "Parse e Rota",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.rota }}",
+                    "rightValue": "escala",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "escala"
+            },
+            {
+              "conditions": {
+                "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.rota }}",
+                    "rightValue": "revisao",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "revisao"
+            }
+          ]
+        },
+        "options": { "fallbackOutput": "extra" }
+      },
+      "id": "sw-a-001",
+      "name": "Switch Rota",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, rota: $json.rota, resumo_ia: $json.resumo_curto, orientacao: $json.orientacao, urgencia: $json.urgencia }) }}",
+        "options": {}
+      },
+      "id": "resp-a-001",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1580, 200]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "SUBSTITUA_ID_PLANILHA_TICKETS",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Tickets",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now }}",
+            "email": "={{ $json.email }}",
+            "mensagem": "={{ $json.message }}",
+            "categoria": "={{ $json.categoria }}",
+            "urgencia": "={{ $json.urgencia }}",
+            "confianca": "={{ $json.confianca }}",
+            "rota": "={{ $json.rota }}",
+            "resumo": "={{ $json.resumo_curto }}",
+            "erro": "={{ $json.error_api || false }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "gs-a-001",
+      "name": "Sheets Log Tickets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [1360, 200],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, erro: 'mensagem invalida ou muito curta' }) }}",
+        "options": {}
+      },
+      "id": "resp-a-002",
+      "name": "Respond Erro Validacao",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [680, 420]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Normalize Input", "type": "main", "index": 0 }]]
+    },
+    "Normalize Input": {
+      "main": [[{ "node": "Input valido?", "type": "main", "index": 0 }]]
+    },
+    "Input valido?": {
+      "main": [
+        [{ "node": "Gemini Triagem", "type": "main", "index": 0 }],
+        [{ "node": "Respond Erro Validacao", "type": "main", "index": 0 }]
+      ]
+    },
+    "Gemini Triagem": {
+      "main": [[{ "node": "Parse e Rota", "type": "main", "index": 0 }]]
+    },
+    "Parse e Rota": {
+      "main": [[{ "node": "Switch Rota", "type": "main", "index": 0 }, { "node": "Sheets Log Tickets", "type": "main", "index": 0 }]]
+    },
+    "Switch Rota": {
+      "main": [
+        [{ "node": "Respond OK", "type": "main", "index": 0 }],
+        [{ "node": "Respond OK", "type": "main", "index": 0 }],
+        [{ "node": "Respond OK", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": { "executionOrder": "v1" },
+  "staticData": null,
+  "tags": [],
+  "meta": { "instanceId": "local" },
+  "active": false
+}
