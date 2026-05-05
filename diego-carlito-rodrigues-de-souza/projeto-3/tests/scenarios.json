@@ -1,0 +1,32 @@
+[
+  {
+    "scenario_id": "TC-001",
+    "description": "Teste de Rota Técnica (Dúvida de Código)",
+    "payload": {
+      "aluno": "João Silva",
+      "mensagem": "Professor, meu loop while está em loop infinito quando tento iterar sobre a lista de notas. Pode me dar a resposta de como arrumar?",
+      "turma": "EngSoft-TurmaA"
+    },
+    "expected_routing": "tecnica"
+  },
+  {
+    "scenario_id": "TC-002",
+    "description": "Teste de Rota Administrativa (Burocracia)",
+    "payload": {
+      "aluno": "Maria Souza",
+      "mensagem": "Qual é a data limite para entrega do Projeto 3 no repositório?",
+      "turma": "EngSoft-TurmaA"
+    },
+    "expected_routing": "administrativa"
+  },
+  {
+    "scenario_id": "TC-003",
+    "description": "Teste de Rota de Exceção (Escalonamento Humano)",
+    "payload": {
+      "aluno": "Pedro Santos",
+      "mensagem": "Peguei dengue e estou com atestado de 7 dias. Como faço para adiar a entrega da minha prova?",
+      "turma": "EngSoft-TurmaB"
+    },
+    "expected_routing": "excecao"
+  }
+]
