@@ -1,109 +1,93 @@
-# Mission Brief — Triagem Inteligente de Chamados de Suporte
+# Mission Brief
 
-**Projeto:** Projeto Individual 3 — Automação com n8n e Agentes de IA  
-**Aluno:** Gabryel Nicolas Soares de Sousa  
-**Matrícula:** 221022570  
-**Data:** 05/05/2025
-
----
-
-## 1. Objetivo do Agente
-
-Automatizar a triagem de chamados de suporte recebidos via webhook, utilizando um agente de IA para classificar a demanda, extrair informações relevantes e direcionar o fluxo automaticamente para a ação adequada.
+> **Aluno(a):** Gabryel Nicolas Soares de Sousa
+> **Matrícula:** 221022570
+> **Domínio:** Suporte técnico e atendimento ao cliente
 
 ---
 
-## 2. Problema que Resolve
+## 1. Objetivo do agente
 
-Equipes de suporte recebem diariamente mensagens de diferentes naturezas (técnico, financeiro, comercial) e urgências variadas. A triagem manual é lenta, sujeita a erros e atrasa o atendimento. Este agente automatiza essa classificação e roteamento, garantindo que chamados urgentes sejam escalados imediatamente e os demais registrados adequadamente.
-
----
-
-## 3. Usuários-Alvo
-
-- Equipes de suporte técnico e atendimento ao cliente
-- Gestores que precisam de visibilidade sobre os chamados recebidos
-- Analistas que auditam o histórico de atendimentos
+Automatizar a triagem de chamados de suporte recebidos via webhook, classificando cada demanda por categoria e urgência e direcionando automaticamente o fluxo para a ação adequada — notificação por email ou registro no Google Sheets — sem intervenção humana no caminho padrão.
 
 ---
 
-## 4. Contexto de Uso
+## 2. Problema que ele resolve
 
-O sistema é acionado toda vez que uma nova mensagem chega via webhook (simulando um formulário web ou integração de chat). O agente de IA processa a mensagem e o n8n executa automaticamente a ação correspondente, sem intervenção humana no fluxo padrão.
-
----
-
-## 5. Entradas e Saídas Esperadas
-
-### Entrada
-```json
-{
-  "mensagem": "Meu acesso ao sistema não está funcionando desde ontem",
-  "nome": "João Silva",
-  "email": "joao@empresa.com"
-}
-```
-
-### Saída da IA (JSON estruturado)
-```json
-{
-  "categoria": "suporte_tecnico",
-  "urgencia": "alta",
-  "resumo": "Usuário sem acesso ao sistema há mais de 24h",
-  "confianca": "alta"
-}
-```
-
-### Ação executada pelo n8n
-- **Alta urgência:** Envia email de alerta + registra no Google Sheets
-- **Baixa urgência:** Registra no Google Sheets + envia resposta automática
-- **Confiança baixa / inválido:** Fallback com mensagem padrão + registro
+Equipes de suporte recebem mensagens de diferentes naturezas e urgências ao longo do dia. A triagem manual é lenta, sujeita a erros e atrasa o atendimento, especialmente em situações críticas. O agente resolve esse gargalo classificando cada chamado automaticamente e garantindo que demandas urgentes sejam escaladas imediatamente, enquanto as demais são registradas para acompanhamento.
 
 ---
 
-## 6. Limites do Agente
+## 3. Usuários-alvo
 
-- O agente classifica apenas nas categorias: `suporte_tecnico`, `financeiro`, `comercial`, `outros`
-- O agente não acessa sistemas externos para verificar dados do usuário
-- O agente não toma decisões além da classificação e extração de informações
-- Mensagens vazias ou sem sentido são tratadas como inválidas
+- Analistas e gestores de equipes de suporte técnico
+- Times de atendimento ao cliente que recebem alto volume de chamados
+- Administradores que precisam de visibilidade e rastreabilidade sobre as demandas recebidas
 
 ---
 
-## 7. O que o Agente NÃO deve fazer
+## 4. Contexto de uso
 
+O sistema é acionado toda vez que uma nova mensagem chega via webhook, simulando o recebimento de um formulário web ou integração de chat. O agente processa a mensagem em tempo real e o n8n executa a ação correspondente automaticamente. O fluxo opera de forma contínua, sem necessidade de intervenção humana no caminho padrão.
+
+---
+
+## 5. Entradas e saídas esperadas
+
+| Item | Descrição |
+|------|-----------|
+| **Entrada** | Mensagem de texto enviada pelo usuário via requisição HTTP POST |
+| **Formato da entrada** | JSON com os campos `mensagem` (string), `nome` (string) e `email` (string) |
+| **Saída** | Classificação estruturada da demanda + ação executada (email ou registro) |
+| **Formato da saída** | JSON com os campos `categoria`, `urgencia`, `resumo` e `confianca` |
+
+---
+
+## 6. Limites do agente
+
+### O que o agente faz:
+- Recebe e valida a mensagem de entrada
+- Classifica a demanda em uma das categorias: `suporte_tecnico`, `financeiro`, `comercial`, `outros`
+- Define o nível de urgência: `alta`, `media` ou `baixa`
+- Gera um resumo objetivo da demanda com até 100 caracteres
+- Indica o nível de confiança da classificação
+- Direciona o fluxo com base na urgência e confiança
+
+### O que o agente NÃO deve fazer:
 - Responder diretamente ao usuário com conteúdo gerado pela IA
-- Acessar ou modificar dados em sistemas de produção
-- Tomar decisões de negócio (ex: aprovar reembolsos, conceder acessos)
-- Armazenar dados sensíveis além do necessário para auditoria
+- Acessar ou modificar dados em sistemas externos além do Google Sheets
+- Tomar decisões de negócio (aprovar reembolsos, conceder acessos, etc.)
+- Classificar em categorias fora das quatro definidas
+- Inventar informações que não estejam na mensagem original
 
 ---
 
-## 8. Critérios de Aceitação
+## 7. Critérios de aceitação
 
-- [ ] Mensagem recebida via webhook é classificada corretamente em ≥ 80% dos casos de teste
-- [ ] Chamados de alta urgência geram notificação por email em menos de 30 segundos
-- [ ] Todos os chamados são registrados no Google Sheets
-- [ ] Entradas inválidas ativam o caminho de fallback sem quebrar o fluxo
-- [ ] O fluxo no n8n executa sem erros manuais de intervenção
+- [ ] Mensagens recebidas via webhook são classificadas corretamente em ≥ 80% dos casos de teste
+- [ ] Chamados com urgência alta geram notificação por email em menos de 30 segundos
+- [ ] Todos os chamados são registrados no Google Sheets independentemente do caminho executado
+- [ ] Entradas inválidas ou com baixa confiança ativam o caminho de fallback sem quebrar o fluxo
+- [ ] Falhas na API da IA são capturadas e registradas sem interromper o sistema
 
 ---
 
-## 9. Riscos
+## 8. Riscos
 
 | Risco | Probabilidade | Impacto | Mitigação |
-|---|---|---|---|
-| IA classifica incorretamente a urgência | Média | Alto | Fallback para revisão manual em casos de baixa confiança |
-| API da OpenAI indisponível | Baixa | Alto | Nó de tratamento de erro com resposta padrão |
-| Entrada malformada no webhook | Média | Médio | Validação do JSON antes de enviar à IA |
-| Limite de requisições da API | Baixa | Médio | Rate limiting e retry automático |
+|-------|---------------|---------|-----------|
+| IA classifica incorretamente a urgência | Média | Alto | Fallback para revisão manual quando `confianca` for `baixa` |
+| API da OpenAI indisponível | Baixa | Alto | Nó de tratamento de erro registra o caso no Sheets para revisão |
+| Entrada com campo `mensagem` ausente | Média | Médio | Validação no nó IF antes de chamar a IA |
+| Expiração do OAuth do Gmail | Baixa | Médio | Reautenticação manual nas credenciais do n8n |
 
 ---
 
-## 10. Evidências para Considerar a Missão Concluída
+## 9. Evidências necessárias
 
-- Print do workflow funcionando no n8n
-- Print do Google Sheets com registros de chamados
-- Print do email de notificação enviado
-- Log de pelo menos 3 testes diferentes (urgência alta, baixa e entrada inválida)
-- Workflow exportado em `.json`
+- [ ] Print do workflow completo no n8n com todos os nós visíveis
+- [ ] Print da execução com chamado de alta urgência (email enviado)
+- [ ] Print da execução com chamado de baixa urgência (apenas Sheets)
+- [ ] Print da execução com entrada inválida (fallback ativado)
+- [ ] Print do Google Sheets com registros dos chamados
+- [ ] Workflow exportado em `src/workflow.json`
