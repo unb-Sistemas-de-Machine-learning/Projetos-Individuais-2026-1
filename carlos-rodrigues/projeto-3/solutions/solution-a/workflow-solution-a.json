@@ -1,0 +1,241 @@
+{
+  "name": "solution-a",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "article-triage",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "7eede052-8c28-4839-8f48-72ac5c10b575",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -4304,
+        1360
+      ],
+      "webhookId": "webhook-a"
+    },
+    {
+      "parameters": {
+        "functionCode": "const input = $input.all()[0].json;\n\nconst data = input.body || input;\n\nreturn {\n  title: data.title || '',\n  abstract: data.abstract || '',\n  keywords: data.keywords || [],\n  doi: data.doi || '',\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "da2271ec-c1f1-4a8a-92f8-3a0ff74e65a3",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -4048,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=<API_GEMINI>",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"Classify article. Respond ONLY with JSON: {classification, confidence, decision, reason}\\n\\nTitle: {{$json.title}}\\n\\nAbstract: {{$json.abstract}}\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "1290aa1c-2da1-4ed0-bef7-d4914b756180",
+      "name": "AI Classification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -3808,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const response = $input.all()[0].json;\n\nlet content =\n  response.candidates?.[0]?.content?.parts?.[0]?.text || '{}';\n\n// 🔥 remove markdown\ncontent = content.replace(/```json|```/g, '').trim();\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(content);\n} catch (e) {\n  parsed = {\n    classification: 'potentially_relevant',\n    confidence: 0.5,\n    decision: 'request_human_review',\n    reason: 'Parse error'\n  };\n}\n\nconst confidence = Number(parsed.confidence ?? 0.5);\n\nconst decision =\n  confidence < 0.5 ? 'reject' :\n  confidence < 0.7 ? 'request_human_review' :\n  'store';\n\nreturn {\n  ...$input.all()[0].json,\n  ...parsed,\n  confidence,\n  decision\n};"
+      },
+      "id": "46cc84a9-df03-420b-bba2-d934eb9cde1e",
+      "name": "Parse AI Output",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -3552,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "rules": {
+          "rules": [
+            {
+              "value2": "request_human_review"
+            },
+            {
+              "value2": "reject",
+              "output": 1
+            }
+          ]
+        },
+        "fallbackOutput": 2
+      },
+      "id": "a8ec9170-aa77-4736-b066-9424c0064ec5",
+      "name": "Route Decision",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        -3312,
+        1360
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "1723869906",
+        "text": "=✅ APROVADO  📄 {{$json.title}}  🏷 {{$json.classification}} 📊 Confiança: {{$json.confidence}}  🧠 {{$json.reason}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3040,
+        1568
+      ],
+      "id": "907149fb-3080-4412-a3b6-edc2d3c6a564",
+      "name": "Send a text message",
+      "webhookId": "f27b89a3-0461-4957-8c9e-7ba96d997e09",
+      "credentials": {
+        "telegramApi": {
+          "id": "<CODIGO_CHAT_TELEGRAM>",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1723869906",
+        "text": "=⚠️ REVISÃO NECESSÁRIA  📄 {{$json.title}}  🏷 {{$json.classification}} 📊 Confiança: {{$json.confidence}}  🧠 {{$json.reason}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3056,
+        1200
+      ],
+      "id": "2ea54e5b-b5b8-4f92-9c63-792d79e59866",
+      "name": "Send a text message1",
+      "webhookId": "bd6ece45-c7b1-4ef3-9d59-b3c12e32f5c9",
+      "credentials": {
+        "telegramApi": {
+          "id": "<CODIGO_CHAT_TELEGRAM>",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1723869906",
+        "text": "=❌ REJEITADO  📄 {{$json.title}}  🏷 {{$json.classification}} 📊 Confiança: {{$json.confidence}}  🧠 {{$json.reason}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3056,
+        1376
+      ],
+      "id": "aff685ca-872b-40cf-814e-c848c9dba61d",
+      "name": "Send a text message2",
+      "webhookId": "cc72e2c4-e713-4aa2-ae1a-a3b4f6abf13d",
+      "credentials": {
+        "telegramApi": {
+          "id": "<CODIGO_CHAT_TELEGRAM>",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Input": {
+      "main": [
+        [
+          {
+            "node": "AI Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Classification": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Decision": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Output": {
+      "main": [
+        [
+          {
+            "node": "Route Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "fdebdc43-049c-48f6-b82d-665b78e670d0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f34325afb793100a7242e0984b0b9c64b1b9f7ed669b75bcb1c770da726b4c54"
+  },
+  "id": "Zw7K53gaewGQYt1A",
+  "tags": []
+}
