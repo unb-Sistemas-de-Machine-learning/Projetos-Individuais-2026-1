@@ -1,4 +1,4 @@
-# Agent.md
+# [Agent.md](http://Agent.md)
 
 > **Projeto:** Triagem de suporte técnico (n8n + IA)
 > **Aluno(a):** Patricia Helena Macedo da Silva
@@ -37,11 +37,13 @@ As três soluções devem ser executáveis ou demonstráveis e comparadas ao fin
 ## 3. Ferramentas que pode usar
 
 
-| Ferramenta                              | Finalidade                           | Quando usar                                    |
-| --------------------------------------- | ------------------------------------ | ----------------------------------------------- |
+| Ferramenta                              | Finalidade                           | Quando usar                                           |
+| --------------------------------------- | ------------------------------------ | ----------------------------------------------------- |
 | Modelo de linguagem (Google Gemini API) | Classificação e extração estruturada | Sempre na triagem (modelo padrão: `gemini-2.5-flash`) |
-| Google Sheets (via n8n)                 | Ler FAQs e gravar auditoria          | registro de eventos                 |
-| Webhook n8n                             | Receber chamados externos            | Entrada de mensagens para execução do fluxo     |
+| Google Sheets (via n8n)                 | Ler FAQs e gravar auditoria          | registro de eventos                                   |
+| Webhook n8n                             | Receber chamados externos            | Entrada de mensagens para execução do fluxo           |
+
+
 ---
 
 ## 4. Restrições
