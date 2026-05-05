@@ -20,4 +20,4 @@ n8n Form Trigger → AI Agent (Gemini) → Google Sheets.
 - **Falta de Rastreabilidade:** Não há distinção entre casos urgentes e dúvidas simples na execução do fluxo.
 
 ## Motivo do Descarte
-Foi descartada por ser passiva demais. O projeto exige que a IA influencie o fluxo, e na Solution A, ela apenas gera texto, deixando toda a carga de decisão para o humano que lerá a planilha.
+Foi descartada por ser passiva demais. O projeto exige que a IA influencie o fluxo, e na Solution A, ela apenas gera texto, deixando toda a carga de decisão para o humano que lerá a planilha..
