@@ -1,0 +1,218 @@
+{
+  "name": "Solution C — Classificar depois redigir (multi-etapas)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "suporte-solution-c",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "wh-c-001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 300],
+      "webhookId": "suporte-solution-c"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "m1", "name": "message", "value": "={{ $json.body?.message ?? $json.message ?? \"\" }}", "type": "string" },
+            { "id": "m2", "name": "email", "value": "={{ $json.body?.email ?? $json.email ?? \"\" }}", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-c-001",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 },
+          "conditions": [
+            { "id": "c1", "leftValue": "={{ $json.message }}", "rightValue": "", "operator": { "type": "string", "operation": "notEquals" } },
+            { "id": "c2", "leftValue": "={{ $json.message.trim().length }}", "rightValue": 3, "operator": { "type": "number", "operation": "gt" } }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-c-001",
+      "name": "Input valido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "x-goog-api-key", "value": "={{ $env.GEMINI_API_KEY }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ systemInstruction: { parts: [{ text: 'Apenas classifique. Responda APENAS JSON valido: categoria, urgencia, confianca, resumo_curto. Sem markdown.' }] }, contents: [{ role: 'user', parts: [{ text: $json.message }] }], generationConfig: { temperature: 0.1, responseMimeType: 'application/json' } }) }}",
+        "options": {}
+      },
+      "id": "http-c-001",
+      "name": "Gemini Classificacao",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 200],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "function textoGemini(res) {\n  const parts = res.candidates?.[0]?.content?.parts;\n  if (!parts) return '';\n  return parts.map((p) => p.text || '').join('').trim();\n}\nconst res = $input.first().json;\nconst base = $('Normalize Input').first().json;\nif (res.error) return [{ json: { error_api: true, message: base.message, email: base.email } }];\nconst raw = textoGemini(res) || '{}';\nlet p;\ntry { p = JSON.parse(raw); } catch { p = { categoria: 'outro', urgencia: 'media', confianca: 'baixa', resumo_curto: 'parse' }; }\nreturn [{ json: { ...p, message: base.message, email: base.email } }];"
+      },
+      "id": "code-c-001",
+      "name": "Parse Classificacao",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "x-goog-api-key", "value": "={{ $env.GEMINI_API_KEY }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ systemInstruction: { parts: [{ text: 'Voce redige respostas de primeiro nivel para suporte tecnico. Responda APENAS JSON valido com orientacao (texto ao usuario) e tone (neutro|empatico). Sem markdown.' }] }, contents: [{ role: 'user', parts: [{ text: 'Usuario disse: ' + $json.message + '\\nClassificacao preliminar: ' + JSON.stringify({ categoria: $json.categoria, urgencia: $json.urgencia, confianca: $json.confianca, resumo: $json.resumo_curto }) }] }], generationConfig: { temperature: 0.5, responseMimeType: 'application/json' } }) }}",
+        "options": {}
+      },
+      "id": "http-c-002",
+      "name": "Gemini Redacao",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 200],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "function textoGemini(res) {\n  const parts = res.candidates?.[0]?.content?.parts;\n  if (!parts) return '';\n  return parts.map((p) => p.text || '').join('').trim();\n}\nconst res = $input.first().json;\nconst cls = $('Parse Classificacao').first().json;\nif (res.error || cls.error_api) {\n  return [{ json: { ...cls, orientacao: 'Nao foi possivel gerar resposta automatica.', rota: 'revisao' } }];\n}\nconst raw = textoGemini(res) || '{}';\nlet o;\ntry { o = JSON.parse(raw); } catch { o = { orientacao: String(raw) }; }\nconst urg = (cls.urgencia || 'media').toLowerCase();\nconst conf = (cls.confianca || 'baixa').toLowerCase();\nlet rota = 'auto';\nif (urg === 'alta') rota = 'escala';\nelse if (conf === 'baixa') rota = 'revisao';\nreturn [{ json: { ...cls, orientacao: o.orientacao || 'Chamado registrado.', rota } }];"
+      },
+      "id": "code-c-002",
+      "name": "Parse Etapa 2 + Rota",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            { "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" }, "conditions": [{ "leftValue": "={{ $json.rota }}", "rightValue": "escala", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "escala" },
+            { "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" }, "conditions": [{ "leftValue": "={{ $json.rota }}", "rightValue": "revisao", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "revisao" }
+          ]
+        },
+        "options": { "fallbackOutput": "extra" }
+      },
+      "id": "sw-c-001",
+      "name": "Switch Rota",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "value": "SUBSTITUA_ID_PLANILHA", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "Tickets", "mode": "name" },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now }}",
+            "email": "={{ $json.email }}",
+            "mensagem": "={{ $json.message }}",
+            "categoria": "={{ $json.categoria }}",
+            "urgencia": "={{ $json.urgencia }}",
+            "confianca": "={{ $json.confianca }}",
+            "rota": "={{ $json.rota }}",
+            "resumo": "={{ $json.resumo_curto }}",
+            "orientacao": "={{ $json.orientacao }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "gs-c-001",
+      "name": "Sheets Log Tickets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [1780, 200],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, modo: 'multietapas', rota: $json.rota, resumo_ia: $json.resumo_curto, orientacao: $json.orientacao }) }}",
+        "options": {}
+      },
+      "id": "resp-c-ok",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2000, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, erro: 'mensagem invalida' }) }}",
+        "options": {}
+      },
+      "id": "resp-c-err",
+      "name": "Respond Erro Validacao",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [680, 420]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Normalize Input", "type": "main", "index": 0 }]] },
+    "Normalize Input": { "main": [[{ "node": "Input valido?", "type": "main", "index": 0 }]] },
+    "Input valido?": {
+      "main": [
+        [{ "node": "Gemini Classificacao", "type": "main", "index": 0 }],
+        [{ "node": "Respond Erro Validacao", "type": "main", "index": 0 }]
+      ]
+    },
+    "Gemini Classificacao": { "main": [[{ "node": "Parse Classificacao", "type": "main", "index": 0 }]] },
+    "Parse Classificacao": { "main": [[{ "node": "Gemini Redacao", "type": "main", "index": 0 }]] },
+    "Gemini Redacao": { "main": [[{ "node": "Parse Etapa 2 + Rota", "type": "main", "index": 0 }]] },
+    "Parse Etapa 2 + Rota": {
+      "main": [[{ "node": "Switch Rota", "type": "main", "index": 0 }, { "node": "Sheets Log Tickets", "type": "main", "index": 0 }]]
+    },
+    "Switch Rota": {
+      "main": [
+        [{ "node": "Respond OK", "type": "main", "index": 0 }],
+        [{ "node": "Respond OK", "type": "main", "index": 0 }],
+        [{ "node": "Respond OK", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": { "executionOrder": "v1" },
+  "staticData": null,
+  "tags": [],
+  "meta": { "instanceId": "local" },
+  "active": false
+}

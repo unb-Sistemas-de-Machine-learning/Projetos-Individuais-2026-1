@@ -1,0 +1,275 @@
+{
+  "name": "Solution B — FAQ Google Sheets + triagem",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "suporte-solution-b",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "wh-b-001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 400],
+      "webhookId": "suporte-solution-b"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "m1", "name": "message", "value": "={{ $json.body?.message ?? $json.message ?? \"\" }}", "type": "string" },
+            { "id": "m2", "name": "email", "value": "={{ $json.body?.email ?? $json.email ?? \"\" }}", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-b-001",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 },
+          "conditions": [
+            { "id": "c1", "leftValue": "={{ $json.message }}", "rightValue": "", "operator": { "type": "string", "operation": "notEquals" } },
+            { "id": "c2", "leftValue": "={{ $json.message.trim().length }}", "rightValue": 3, "operator": { "type": "number", "operation": "gt" } }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-b-001",
+      "name": "Input valido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [440, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "x-goog-api-key", "value": "={{ $env.GEMINI_API_KEY }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ systemInstruction: { parts: [{ text: 'Classifique chamados de suporte. Responda APENAS JSON valido: categoria, urgencia, confianca, resumo_curto. Sem markdown.' }] }, contents: [{ role: 'user', parts: [{ text: $json.message }] }], generationConfig: { temperature: 0.2, responseMimeType: 'application/json' } }) }}",
+        "options": {}
+      },
+      "id": "http-b-001",
+      "name": "Gemini Triagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [700, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "function textoGemini(res) {\n  const parts = res.candidates?.[0]?.content?.parts;\n  if (!parts) return '';\n  return parts.map((p) => p.text || '').join('').trim();\n}\nconst res = $input.first().json;\nconst base = $('Normalize Input').first().json;\nif (res.error) {\n  return [{ json: { error_api: true, message: base.message, email: base.email, categoria: 'outro', urgencia: 'media', confianca: 'baixa', resumo_curto: 'Falha Gemini 1' } }];\n}\nconst raw = textoGemini(res) || '{}';\nlet p;\ntry { p = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch (e) {\n  p = { categoria: 'outro', urgencia: 'media', confianca: 'baixa', resumo_curto: 'parse' };\n}\nreturn [{ json: { ...p, message: base.message, email: base.email } }];"
+      },
+      "id": "code-b-parse1",
+      "name": "Parse Triagem",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [920, 300]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": { "__rl": true, "value": "SUBSTITUA_ID_PLANILHA", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "FAQ", "mode": "name" },
+        "options": {
+          "dataLocationOnSheet": "defineBelow",
+          "rangeDefinition": "specifyRangeA1",
+          "range": "A2:B100"
+        }
+      },
+      "id": "gs-b-faq",
+      "name": "Ler FAQ Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [700, 520],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const all = $input.all();\nconst lines = [];\nfor (const it of all) {\n  const j = it.json;\n  const titulo = j.titulo ?? j.Titulo ?? j.col_1 ?? Object.values(j)[0];\n  const resp = j.resposta ?? j.Resposta ?? j.col_2 ?? Object.values(j)[1];\n  if (titulo && resp) lines.push(`- ${titulo}: ${resp}`);\n}\nconst faqText = lines.length ? lines.join('\\n') : 'Nenhuma entrada de FAQ encontrada.';\nreturn [{ json: { faqText } }];"
+      },
+      "id": "code-b-faqtxt",
+      "name": "FAQ para Texto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [920, 520]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "merge-b-001",
+      "name": "Merge Triagem e FAQ",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [1140, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nlet tri = {};\nlet faqText = '';\nfor (const it of items) {\n  const j = it.json;\n  if (j.faqText) faqText = j.faqText;\n  if (j.categoria || j.urgencia) tri = { ...tri, ...j };\n}\nreturn [{ json: { ...tri, faqText } }];"
+      },
+      "id": "code-b-join",
+      "name": "Juntar Campos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1360, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "x-goog-api-key", "value": "={{ $env.GEMINI_API_KEY }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ systemInstruction: { parts: [{ text: 'Voce ajuda usuarios com suporte. Use o FAQ como fonte oficial quando possivel. Se faltar informacao diga que um humano dara continuidade. Responda APENAS JSON valido com orientacao_usuario (texto curto) e confianca_resposta (alta|baixa). Sem markdown.' }] }, contents: [{ role: 'user', parts: [{ text: 'Mensagem usuario: ' + $json.message + '\\nClassificacao: ' + JSON.stringify({ categoria: $json.categoria, urgencia: $json.urgencia, confianca: $json.confianca, resumo: $json.resumo_curto }) + '\\nFAQ:\\n' + $json.faqText }] }], generationConfig: { temperature: 0.4, responseMimeType: 'application/json' } }) }}",
+        "options": {}
+      },
+      "id": "http-b-002",
+      "name": "Gemini Com FAQ",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1580, 400],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "function textoGemini(res) {\n  const parts = res.candidates?.[0]?.content?.parts;\n  if (!parts) return '';\n  return parts.map((p) => p.text || '').join('').trim();\n}\nconst res = $input.first().json;\nconst prev = $('Juntar Campos').first().json;\nlet orient = 'Registramos seu chamado.';\nlet confResp = 'baixa';\nif (!res.error) {\n  const raw = textoGemini(res) || '{}';\n  try {\n    const p = typeof raw === 'string' ? JSON.parse(raw) : raw;\n    orient = p.orientacao_usuario || orient;\n    confResp = (p.confianca_resposta || 'baixa').toLowerCase();\n  } catch (e) { orient = raw; }\n}\nconst urg = (prev.urgencia || 'media').toLowerCase();\nconst conf = (prev.confianca || 'baixa').toLowerCase();\nlet rota = 'auto';\nif (urg === 'alta') rota = 'escala';\nelse if (conf === 'baixa' || confResp === 'baixa') rota = 'revisao';\nreturn [{ json: { ...prev, orientacao: orient, rota, confianca_resposta: confResp } }];"
+      },
+      "id": "code-b-final",
+      "name": "Parse Resposta Final",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1800, 400]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            { "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" }, "conditions": [{ "leftValue": "={{ $json.rota }}", "rightValue": "escala", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "escala" },
+            { "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" }, "conditions": [{ "leftValue": "={{ $json.rota }}", "rightValue": "revisao", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" }, "renameOutput": true, "outputKey": "revisao" }
+          ]
+        },
+        "options": { "fallbackOutput": "extra" }
+      },
+      "id": "sw-b-001",
+      "name": "Switch Rota",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [2020, 400]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "value": "SUBSTITUA_ID_PLANILHA", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "Tickets", "mode": "name" },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $now }}",
+            "email": "={{ $json.email }}",
+            "mensagem": "={{ $json.message }}",
+            "categoria": "={{ $json.categoria }}",
+            "urgencia": "={{ $json.urgencia }}",
+            "confianca": "={{ $json.confianca }}",
+            "rota": "={{ $json.rota }}",
+            "resumo": "={{ $json.resumo_curto }}",
+            "orientacao": "={{ $json.orientacao }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "gs-b-log",
+      "name": "Sheets Log Tickets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [2240, 400],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, rota: $json.rota, resumo_ia: $json.resumo_curto, orientacao: $json.orientacao, urgencia: $json.urgencia }) }}",
+        "options": {}
+      },
+      "id": "resp-b-ok",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2460, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, erro: 'mensagem invalida' }) }}",
+        "options": {}
+      },
+      "id": "resp-b-err",
+      "name": "Respond Erro Validacao",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [700, 620]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Normalize Input", "type": "main", "index": 0 }]] },
+    "Normalize Input": { "main": [[{ "node": "Input valido?", "type": "main", "index": 0 }]] },
+    "Input valido?": {
+      "main": [
+        [
+          { "node": "Gemini Triagem", "type": "main", "index": 0 },
+          { "node": "Ler FAQ Sheet", "type": "main", "index": 0 }
+        ],
+        [{ "node": "Respond Erro Validacao", "type": "main", "index": 0 }]
+      ]
+    },
+    "Gemini Triagem": { "main": [[{ "node": "Parse Triagem", "type": "main", "index": 0 }]] },
+    "Parse Triagem": { "main": [[{ "node": "Merge Triagem e FAQ", "type": "main", "index": 0 }]] },
+    "Ler FAQ Sheet": { "main": [[{ "node": "FAQ para Texto", "type": "main", "index": 0 }]] },
+    "FAQ para Texto": { "main": [[{ "node": "Merge Triagem e FAQ", "type": "main", "index": 1 }]] },
+    "Merge Triagem e FAQ": { "main": [[{ "node": "Juntar Campos", "type": "main", "index": 0 }]] },
+    "Juntar Campos": { "main": [[{ "node": "Gemini Com FAQ", "type": "main", "index": 0 }]] },
+    "Gemini Com FAQ": { "main": [[{ "node": "Parse Resposta Final", "type": "main", "index": 0 }]] },
+    "Parse Resposta Final": {
+      "main": [[{ "node": "Switch Rota", "type": "main", "index": 0 }, { "node": "Sheets Log Tickets", "type": "main", "index": 0 }]]
+    },
+    "Switch Rota": {
+      "main": [
+        [{ "node": "Respond OK", "type": "main", "index": 0 }],
+        [{ "node": "Respond OK", "type": "main", "index": 0 }],
+        [{ "node": "Respond OK", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": { "executionOrder": "v1" },
+  "staticData": null,
+  "tags": [],
+  "meta": { "instanceId": "local" },
+  "active": false
+}
