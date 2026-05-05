@@ -173,9 +173,9 @@ Observação: os diferenciais marcados foram implementados e demonstrados nas ev
 
 ## 13. Checklist de entrega
 
-- Workflow exportado do n8n (`src/workflows/*.json`)
-- Scripts auxiliares / testes manuais (`tests/`)
-- Demonstração do fluxo — evidências em [evidence/](evidence/)
-- Relatório de entrega preenchido
-- Pull Request aberto (conforme repositório da disciplina)
+- [x] Workflow exportado do n8n (`src/workflows/*.json`)
+- [x] Scripts auxiliares / testes manuais (`tests/`)
+- [x] Demonstração do fluxo — evidências em [evidence/](evidence/)
+- [x] Relatório de entrega preenchido
+- [x] Pull Request aberto (conforme repositório da disciplina)
 
