@@ -1,0 +1,916 @@
+{
+  "name": "Triagem Inteligente de Chamados de Suporte",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "triagem",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "de00a189-d9ce-45b2-b2bc-dfed61ef234e",
+      "name": "Receber Chamado",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1104,
+        192
+      ],
+      "webhookId": "08253998-28be-426c-9aa4-b26d6b3ccda6"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-mensagem",
+              "leftValue": "={{ $json.body.mensagem }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a272d3d0-94d1-42c3-a217-e2619bc221b8",
+      "name": "Validar Entrada",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $credentials.openaiApiKey }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-3.5-turbo\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Você é um agente de triagem de chamados de suporte. Sua única função é analisar a mensagem recebida e retornar um JSON com a classificação.\\n\\nCategorias disponíveis: suporte_tecnico, financeiro, comercial, outros\\nNíveis de urgência: alta, media, baixa\\nConfiança: alta, media, baixa (use baixa se a mensagem for vaga ou incompleta)\\n\\nResponda APENAS com o JSON, sem texto adicional, sem markdown, sem explicações.\\n\\nFormato obrigatório:\\n{\\\"categoria\\\": \\\"...\\\", \\\"urgencia\\\": \\\"...\\\", \\\"resumo\\\": \\\"...\\\", \\\"confianca\\\": \\\"...\\\"}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $('Receber Chamado').item.json.body.mensagem }}\"\n    }\n  ],\n  \"max_tokens\": 200,\n  \"temperature\": 0\n}",
+        "options": {}
+      },
+      "id": "c9268c06-298b-4768-abdd-43c23030e908",
+      "name": "Classificar com IA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -656,
+        112
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "3C9xO9kEzIJbviAB",
+          "name": "Header Auth account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawContent = $input.item.json.choices[0].message.content.trim();\n\nlet parsed;\ntry {\n  parsed = JSON.parse(rawContent);\n} catch (e) {\n  return [{\n    json: {\n      categoria: 'outros',\n      urgencia: 'baixa',\n      resumo: 'Resposta da IA em formato inválido',\n      confianca: 'baixa',\n      erro: 'json_parse_error',\n      raw: rawContent\n    }\n  }];\n}\n\nconst camposValidos = ['suporte_tecnico', 'financeiro', 'comercial', 'outros'];\nconst urgenciasValidas = ['alta', 'media', 'baixa'];\nconst confiancasValidas = ['alta', 'media', 'baixa'];\n\nif (!camposValidos.includes(parsed.categoria)) parsed.categoria = 'outros';\nif (!urgenciasValidas.includes(parsed.urgencia)) parsed.urgencia = 'baixa';\nif (!confiancasValidas.includes(parsed.confianca)) parsed.confianca = 'baixa';\nif (!parsed.resumo) parsed.resumo = 'Sem resumo disponível';\n\nreturn [{ json: parsed }];"
+      },
+      "id": "c7c3ce94-94fe-4c8a-bffb-16ded711271f",
+      "name": "Extrair e Validar JSON da IA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.urgencia }}",
+                    "rightValue": "alta",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $json.confianca }}",
+                    "rightValue": "baixa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "alta_urgencia"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.confianca }}",
+                    "rightValue": "baixa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "fallback"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "allMatchingOutputs": false
+        }
+      },
+      "id": "284913e1-79b1-4c23-91f9-16c205b1f357",
+      "name": "Switch: Urgência e Confiança",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -224,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "gabryelnick91@gmail.com",
+        "subject": "=🚨 Chamado Urgente: {{ $('Extrair e Validar JSON da IA').item.json.categoria }}",
+        "emailType": "text",
+        "message": "=Um novo chamado urgente foi recebido e precisa de atenção imediata.\n\n📋 DETALHES DO CHAMADO\n----------------------------\nNome: {{ $('Receber Chamado').item.json.body.nome }}\nEmail: {{ $('Receber Chamado').item.json.body.email }}\nMensagem original: {{ $('Receber Chamado').item.json.body.mensagem }}\n\n🤖 CLASSIFICAÇÃO DA IA\n----------------------------\nCategoria: {{ $('Extrair e Validar JSON da IA').item.json.categoria }}\nUrgência: {{ $('Extrair e Validar JSON da IA').item.json.urgencia }}\nResumo: {{ $('Extrair e Validar JSON da IA').item.json.resumo }}\nConfiança: {{ $('Extrair e Validar JSON da IA').item.json.confianca }}\n\nEste chamado foi gerado automaticamente pelo sistema de triagem.",
+        "options": {}
+      },
+      "id": "135a0f9d-6e93-4b5c-b079-1c8b131eb119",
+      "name": "Enviar Email de Alerta",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "0b5ab807-921c-494c-93cf-a6a0368e04f4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3ThMhMjF5CwnqDra",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/15SYLk4wRt4vQ7BQd_oqf-48oeoY2JzIW_iC4V3WirZ0/edit?gid=0#gid=0",
+          "__regex": "https:\\/\\/(?:drive|docs)\\.google\\.com(?:\\/.*|)\\/d\\/([0-9a-zA-Z\\-_]+)(?:\\/.*|)"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ new Date().toISOString() }}",
+            "Nome": "={{ $('Receber Chamado').item.json.body.nome }}",
+            "Email": "={{ $('Receber Chamado').item.json.body.email }}",
+            "Mensagem": "={{ $('Receber Chamado').item.json.body.mensagem }}",
+            "Categoria": "={{ $('Extrair e Validar JSON da IA').item.json.categoria }}",
+            "Urgencia": "={{ $('Extrair e Validar JSON da IA').item.json.urgencia }}",
+            "Resumo": "={{ $('Extrair e Validar JSON da IA').item.json.resumo }}",
+            "Confianca": "={{ $('Extrair e Validar JSON da IA').item.json.confianca }}",
+            "Caminho": "alta_urgencia"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mensagem",
+              "displayName": "Mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Urgencia",
+              "displayName": "Urgencia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Resumo",
+              "displayName": "Resumo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confianca",
+              "displayName": "Confianca",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Caminho",
+              "displayName": "Caminho",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "141cdfc1-2b90-411f-bd93-558ad5020073",
+      "name": "Registrar no Sheets (Urgente)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "G0EmEEZ8GgGRUhZu",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/15SYLk4wRt4vQ7BQd_oqf-48oeoY2JzIW_iC4V3WirZ0/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ new Date().toISOString() }}",
+            "Nome": "={{ $('Receber Chamado').item.json.body.nome }}",
+            "Email": "={{ $('Receber Chamado').item.json.body.email }}",
+            "Mensagem": "={{ $('Receber Chamado').item.json.body.mensagem }}",
+            "Categoria": "={{ $('Extrair e Validar JSON da IA').item.json.categoria }}",
+            "Urgencia": "={{ $('Extrair e Validar JSON da IA').item.json.urgencia }}",
+            "Resumo": "={{ $('Extrair e Validar JSON da IA').item.json.resumo }}",
+            "Confianca": "={{ $('Extrair e Validar JSON da IA').item.json.confianca }}",
+            "Caminho": "normal"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mensagem",
+              "displayName": "Mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Urgencia",
+              "displayName": "Urgencia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Resumo",
+              "displayName": "Resumo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confianca",
+              "displayName": "Confianca",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Caminho",
+              "displayName": "Caminho",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6dc00fa7-208e-467c-beb6-3d990606152c",
+      "name": "Registrar no Sheets (Normal)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        0,
+        192
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "G0EmEEZ8GgGRUhZu",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/15SYLk4wRt4vQ7BQd_oqf-48oeoY2JzIW_iC4V3WirZ0/edit?gid=0#gid=0",
+          "__regex": "https:\\/\\/(?:drive|docs)\\.google\\.com(?:\\/.*|)\\/d\\/([0-9a-zA-Z\\-_]+)(?:\\/.*|)"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ new Date().toISOString() }}",
+            "Nome": "={{ $('Receber Chamado').item.json.body.nome }}",
+            "Email": "={{ $('Receber Chamado').item.json.body.email }}",
+            "Mensagem": "={{ $('Receber Chamado').item.json.body.mensagem }}",
+            "Categoria": "outros",
+            "Urgencia": "baixa",
+            "Resumo": "Entrada inválida ou confiança baixa — revisar manualmente",
+            "Confianca": "baixa",
+            "Caminho": "fallback_revisao_manual"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mensagem",
+              "displayName": "Mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Urgencia",
+              "displayName": "Urgencia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Resumo",
+              "displayName": "Resumo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confianca",
+              "displayName": "Confianca",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Caminho",
+              "displayName": "Caminho",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "38a8d9b1-0b23-4983-bc65-16fc96f73fd6",
+      "name": "Registrar no Sheets (Fallback)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        0,
+        352
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "G0EmEEZ8GgGRUhZu",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/15SYLk4wRt4vQ7BQd_oqf-48oeoY2JzIW_iC4V3WirZ0/edit?gid=0#gid=0",
+          "__regex": "https:\\/\\/(?:drive|docs)\\.google\\.com(?:\\/.*|)\\/d\\/([0-9a-zA-Z\\-_]+)(?:\\/.*|)"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ new Date().toISOString() }}",
+            "Nome": "={{ $('Receber Chamado').item.json.body.nome }}",
+            "Email": "={{ $('Receber Chamado').item.json.body.email }}",
+            "Mensagem": "={{ $('Receber Chamado').item.json.body.mensagem }}",
+            "Categoria": "erro",
+            "Urgencia": "desconhecida",
+            "Resumo": "Falha na chamada à API da IA",
+            "Confianca": "nenhuma",
+            "Caminho": "erro_api"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mensagem",
+              "displayName": "Mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Urgencia",
+              "displayName": "Urgencia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Resumo",
+              "displayName": "Resumo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confianca",
+              "displayName": "Confianca",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Caminho",
+              "displayName": "Caminho",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "bd9250d9-764d-40bc-9d33-9f09b435eab6",
+      "name": "Registrar Erro da API",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -448,
+        320
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "G0EmEEZ8GgGRUhZu",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"recebido\", \"mensagem\": \"Chamado registrado com sucesso\" }",
+        "options": {}
+      },
+      "id": "1cc6353d-e984-4f6f-ae26-66fbf640b8fa",
+      "name": "Responder OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"fallback\", \"mensagem\": \"Chamado registrado para revisão manual\" }",
+        "options": {}
+      },
+      "id": "bafa7a75-3442-4497-8246-3244e9946f65",
+      "name": "Responder Fallback",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"erro\", \"mensagem\": \"Entrada inválida: campo mensagem obrigatório\" }",
+        "options": {}
+      },
+      "id": "4f34dea5-2301-4266-a2fa-407c3307d5ef",
+      "name": "Responder Inválido",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -656,
+        352
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receber Chamado": {
+      "main": [
+        [
+          {
+            "node": "Validar Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Entrada": {
+      "main": [
+        [
+          {
+            "node": "Classificar com IA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder Inválido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classificar com IA": {
+      "main": [
+        [
+          {
+            "node": "Extrair e Validar JSON da IA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar Erro da API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair e Validar JSON da IA": {
+      "main": [
+        [
+          {
+            "node": "Switch: Urgência e Confiança",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch: Urgência e Confiança": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email de Alerta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar no Sheets (Fallback)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar no Sheets (Normal)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Email de Alerta": {
+      "main": [
+        [
+          {
+            "node": "Registrar no Sheets (Urgente)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar no Sheets (Urgente)": {
+      "main": [
+        [
+          {
+            "node": "Responder OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar no Sheets (Normal)": {
+      "main": [
+        [
+          {
+            "node": "Responder OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar no Sheets (Fallback)": {
+      "main": [
+        [
+          {
+            "node": "Responder Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "77538f1d-c6c2-4c7f-b72b-e20b12819faf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "419c785a80719ffaeb711cc85c1b1b25610b8105e73383a036f3c11bf702bda8"
+  },
+  "id": "pgTFaU3ju5Uu0Y7K",
+  "tags": []
+}
