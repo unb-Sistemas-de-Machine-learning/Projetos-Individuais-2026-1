@@ -88,7 +88,8 @@ A planilha registra:
     ├── README.md
     ├── relatorio-entrega.md
     ├── data/
-    │   └── base-checklist-entrega.csv
+    │   ├── base-checklist-entrega.csv
+    │   └── modelo-planilha-auditoria.csv
     ├── docs/
     │   ├── mission-brief.md
     │   ├── mentorship-pack.md
@@ -160,7 +161,11 @@ Para configurar:
 
 Observação: a API Key não é versionada no repositório por segurança.
 
-### 3. Criar a planilha de auditoria
+### 3. Configurar a planilha de auditoria
+
+O workflow utiliza Google Sheets para persistência e rastreabilidade.
+
+Por segurança, as credenciais Google e o acesso à planilha original não são versionados no repositório. Portanto, ao importar o workflow em outro ambiente, é necessário configurar uma nova credencial Google Sheets e selecionar uma planilha própria.
 
 Criar uma planilha no Google Sheets chamada:
 
@@ -186,15 +191,38 @@ A primeira linha da aba deve conter exatamente as seguintes colunas:
     justificativa
     rota_executada
 
+Também foi incluído um modelo em:
+
+    data/modelo-planilha-auditoria.csv
+
+Esse arquivo contém o cabeçalho necessário para criar a planilha de auditoria. O avaliador pode usar esse CSV como referência para montar a primeira linha da aba `Auditoria`.
+
 ### 4. Configurar o nó Google Sheets
 
 No n8n:
 
 1. Abrir o nó `Append row in sheet`.
-2. Configurar a credencial Google.
+2. Configurar a credencial Google Sheets.
 3. Selecionar a planilha `Auditoria - Validador de Entregas Acadêmicas`.
 4. Selecionar a aba `Auditoria`.
 5. Conferir o mapeamento das colunas.
+6. Garantir que a operação está configurada como `Append Row`.
+
+O nó deve mapear os campos do fluxo para as colunas da planilha:
+
+    data_hora → {{$json.data_hora}}
+    aluno → {{$json.aluno}}
+    projeto → {{$json.projeto}}
+    descricao_entrega → {{$json.descricao_entrega}}
+    status → {{$json.status}}
+    percentual_prontidao → {{$json.percentual_prontidao}}
+    itens_identificados → {{$json.itens_identificados}}
+    pendencias → {{$json.pendencias}}
+    riscos → {{$json.riscos}}
+    acao_recomendada → {{$json.acao_recomendada}}
+    confianca → {{$json.confianca}}
+    justificativa → {{$json.justificativa}}
+    rota_executada → {{$json.resultado_fluxo}}
 
 ### 5. Executar o workflow
 
@@ -248,6 +276,20 @@ As evidências de funcionamento estão disponíveis em:
 
 Essa pasta contém prints do workflow, execução da IA, decisões condicionais e registros no Google Sheets.
 
+Evidências principais esperadas:
+
+- workflow completo simplificado;
+- Webhook configurado;
+- validação de entrada;
+- IF de entrada válida;
+- nó de IA;
+- normalização da IA;
+- IF de necessidade de correção;
+- Google Sheets com registros;
+- teste de entrega incompleta;
+- teste de entrada inválida;
+- teste de entrega completa.
+
 ## Decisão arquitetural
 
 A decisão pela Solution C está registrada em:
@@ -261,6 +303,12 @@ A decisão pela Solution C está registrada em:
 - O fluxo depende das credenciais do Gemini e do Google Sheets.
 - A automação não substitui a avaliação humana final.
 - A solução não envia notificações por e-mail ou Telegram.
+
+## Segurança e credenciais
+
+As credenciais do Gemini e do Google Sheets não são versionadas no repositório.
+
+Ao importar o workflow em outro ambiente, o avaliador deve configurar suas próprias credenciais nos nós correspondentes.
 
 ## Resultado
 
