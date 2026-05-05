@@ -29,7 +29,6 @@ projeto-4/
 │   ├── mentorship-pack.md          # Guia de estilo e julgamento
 │   ├── workflow-runbook.md         # Processo de execução
 │   ├── merge-readiness-pack.md     # Evidências de prontidão
-│   ├── relatorio-entrega.md        # Relatório técnico
 │   ├── adr/
 │   │   └── 001-escolha-da-solucao.md
 │   └── evidence/
@@ -42,6 +41,7 @@ projeto-4/
 │   └── workflow.json               # Workflow exportado do n8n
 ├── tests/
 │   └── test-cases.md               # Casos de teste documentados
+├── relatorio-entrega.md            # Relatório técnico
 └── README.md
 ```
 
