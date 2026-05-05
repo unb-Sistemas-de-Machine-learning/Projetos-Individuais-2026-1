@@ -1,0 +1,491 @@
+{
+  "name": "Agente de Validação de Entrega Acadêmica",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "validar-entrega-academica",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "55434667-fbca-432e-9818-ba2ed7a32699",
+      "name": "Webhook",
+      "webhookId": "44c06d67-cb4d-42c7-b5a0-d092e55a629f"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\n\nconst aluno = body.aluno || \"\";\nconst projeto = body.projeto || \"\";\nconst descricao = body.descricao_entrega || \"\";\nconst link = body.link_repositorio || \"\";\n\nconst entradaValida = descricao.trim().length >= 20;\n\nreturn [\n  {\n    json: {\n      aluno,\n      projeto,\n      descricao_entrega: descricao,\n      link_repositorio: link,\n      entrada_valida: entradaValida,\n      data_hora: new Date().toISOString()\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "32044744-58b3-4bad-b43d-5b1c0a0d9286",
+      "name": "Validar entrada"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "645f1fe8-43d3-4036-865c-8840961de89b",
+              "leftValue": "={{$json.entrada_valida}}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "={{ true }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "8b707360-c283-4a9f-9c0f-f5dafca95e84",
+      "name": "Entrada válida?"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      ...$json,\n      status: \"invalida\",\n      percentual_prontidao: 0,\n      itens_identificados: \"\",\n      pendencias: \"Descrição da entrega ausente ou insuficiente.\",\n      riscos: \"Não foi possível validar a entrega com as informações enviadas.\",\n      acao_recomendada: \"revisao_humana\",\n      confianca: 0,\n      justificativa: \"A entrada não possui informações suficientes para análise automática.\",\n      resultado_fluxo: \"Entrada inválida registrada para revisão humana.\"\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        96
+      ],
+      "id": "b1f5d31f-356f-4630-b2f1-0271b7dd9331",
+      "name": "Montar resultado inválido"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Você é um agente de validação de entregas acadêmicas.\n\nAnalise a descrição enviada pelo aluno e classifique a entrega como completa, incompleta, critica ou invalida.\n\nConsidere como itens importantes:\n- README;\n- agent.md;\n- mission-brief.md;\n- mentorship-pack.md;\n- workflow-runbook.md;\n- três soluções: solution-a, solution-b e solution-c;\n- workflow n8n exportado em JSON;\n- evidências ou prints;\n- Google Sheets ou outra persistência;\n- tratamento de erro;\n- ADR;\n- merge-readiness-pack;\n- relatório técnico;\n- commits organizados;\n- Pull Request.\n\nEntrada:\nAluno: {{$json.aluno}}\nProjeto: {{$json.projeto}}\nDescrição da entrega: {{$json.descricao_entrega}}\nLink do repositório: {{$json.link_repositorio}}\n\nResponda exclusivamente com JSON válido, sem markdown, neste formato:\n\n{\n  \"status\": \"completa\",\n  \"percentual_prontidao\": 0,\n  \"itens_identificados\": [],\n  \"pendencias\": [],\n  \"riscos\": [],\n  \"acao_recomendada\": \"registrar\",\n  \"confianca\": 0.0,\n  \"justificativa\": \"\"\n}\n\nRegras:\n- status deve ser apenas: completa, incompleta, critica ou invalida.\n- acao_recomendada deve ser apenas: registrar, solicitar_correcoes, notificar_responsavel ou revisao_humana.\n- Se faltarem prints, workflow exportado ou documentação obrigatória, não classifique como completa.\n- Não invente arquivos ou evidências.\n- Se a descrição for ambígua, use confiança baixa."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "05cfb77f-94d1-42c8-8026-d7855916ce86",
+      "name": "IA - Validar entrega",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DZRsrSbJhg37R4uf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const entrada = $(\"Validar entrada\").first().json;\n\nlet raw =\n  $json.content?.parts?.[0]?.text ||\n  $json.output ||\n  $json.text ||\n  $json.response ||\n  $json.message ||\n  $json.choices?.[0]?.message?.content ||\n  $json.candidates?.[0]?.content?.parts?.[0]?.text ||\n  JSON.stringify($json);\n\nif (typeof raw !== \"string\") {\n  raw = JSON.stringify(raw);\n}\n\nraw = raw\n  .replace(/```json/g, \"\")\n  .replace(/```/g, \"\")\n  .trim();\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(raw);\n} catch (error) {\n  parsed = {\n    status: \"invalida\",\n    percentual_prontidao: 0,\n    itens_identificados: [],\n    pendencias: [\"A IA retornou resposta fora do formato JSON.\"],\n    riscos: [\"Não foi possível interpretar automaticamente a resposta da IA.\"],\n    acao_recomendada: \"revisao_humana\",\n    confianca: 0,\n    justificativa: \"Falha ao converter a saída da IA para JSON.\"\n  };\n}\n\nconst status = parsed.status || \"invalida\";\nconst confianca = Number(parsed.confianca ?? 0);\nconst acao = parsed.acao_recomendada || \"revisao_humana\";\n\nconst precisaCorrecao =\n  status !== \"completa\" ||\n  acao !== \"registrar\" ||\n  confianca < 0.7;\n\nreturn [\n  {\n    json: {\n      ...entrada,\n      status,\n      percentual_prontidao: parsed.percentual_prontidao ?? 0,\n      itens_identificados: Array.isArray(parsed.itens_identificados)\n        ? parsed.itens_identificados.join(\"; \")\n        : String(parsed.itens_identificados || \"\"),\n      pendencias: Array.isArray(parsed.pendencias)\n        ? parsed.pendencias.join(\"; \")\n        : String(parsed.pendencias || \"\"),\n      riscos: Array.isArray(parsed.riscos)\n        ? parsed.riscos.join(\"; \")\n        : String(parsed.riscos || \"\"),\n      acao_recomendada: acao,\n      confianca,\n      justificativa: parsed.justificativa || \"\",\n      precisa_correcao: precisaCorrecao\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        -96
+      ],
+      "id": "805774a0-f000-4b68-b5ac-4951c552656b",
+      "name": "Normalizar IA"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "43c7de35-4347-419d-9518-cd9061c1716c",
+              "leftValue": "={{$json.precisa_correcao}}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "={{ true }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1184,
+        -96
+      ],
+      "id": "498df428-1045-49f8-86a0-790fd3fd5d2b",
+      "name": "Precisa de correção?"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      ...$json,\n      resultado_fluxo: \"Entrega precisa de correções ou revisão humana.\"\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        -192
+      ],
+      "id": "07b83ea2-12ba-41f0-bba0-56229f06dc89",
+      "name": "Montar resultado pendente"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      ...$json,\n      resultado_fluxo: \"Entrega validada sem pendências críticas.\"\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        0
+      ],
+      "id": "bbe9f0c5-b7b4-490b-8c21-995c438a565a",
+      "name": "Montar resultado ok"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "13PCVF30MVvNmiPQGfsCeToUzkJpn_mZDF4bKjQNvjOA",
+          "mode": "list",
+          "cachedResultName": "Auditoria - Validador de Entregas Acadêmicas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13PCVF30MVvNmiPQGfsCeToUzkJpn_mZDF4bKjQNvjOA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 675262302,
+          "mode": "list",
+          "cachedResultName": "Auditoria",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13PCVF30MVvNmiPQGfsCeToUzkJpn_mZDF4bKjQNvjOA/edit#gid=675262302"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "data_hora": "={{$json.data_hora}}",
+            "aluno": "={{$json.aluno}}",
+            "projeto": "={{$json.projeto}}",
+            "descricao_entrega": "={{$json.descricao_entrega}}",
+            "status": "={{$json.status}}",
+            "percentual_prontidao": "={{$json.percentual_prontidao}}",
+            "itens_identificados": "={{$json.itens_identificados}}",
+            "pendencias": "={{$json.pendencias}}",
+            "riscos": "={{$json.riscos}}",
+            "acao_recomendada": "={{$json.acao_recomendada}}",
+            "confianca": "={{$json.confianca}}",
+            "justificativa": "={{$json.justificativa}}",
+            "rota_executada": "={{$json.resultado_fluxo}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "data_hora",
+              "displayName": "data_hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "aluno",
+              "displayName": "aluno",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "projeto",
+              "displayName": "projeto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "descricao_entrega",
+              "displayName": "descricao_entrega",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "percentual_prontidao",
+              "displayName": "percentual_prontidao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "itens_identificados",
+              "displayName": "itens_identificados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pendencias",
+              "displayName": "pendencias",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "riscos",
+              "displayName": "riscos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "acao_recomendada",
+              "displayName": "acao_recomendada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "confianca",
+              "displayName": "confianca",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "justificativa",
+              "displayName": "justificativa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rota_executada",
+              "displayName": "rota_executada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1648,
+        144
+      ],
+      "id": "c7d20aef-7dcd-4a31-9be7-0d30e7e52bc8",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IW1cxFWJTdpdn0OV",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validar entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar entrada": {
+      "main": [
+        [
+          {
+            "node": "Entrada válida?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entrada válida?": {
+      "main": [
+        [
+          {
+            "node": "IA - Validar entrega",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Montar resultado inválido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA - Validar entrega": {
+      "main": [
+        [
+          {
+            "node": "Normalizar IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar IA": {
+      "main": [
+        [
+          {
+            "node": "Precisa de correção?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Precisa de correção?": {
+      "main": [
+        [
+          {
+            "node": "Montar resultado pendente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Montar resultado ok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar resultado pendente": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar resultado ok": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar resultado inválido": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "122dd84c-0b1f-4880-87dd-cf7743697cb7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "643909bc890c8a3b5977a0ec09f3866930f372b0e1ecb24f71a8c72e598ed951"
+  },
+  "id": "oyznTA1VsrHTxXJK",
+  "tags": []
+}
