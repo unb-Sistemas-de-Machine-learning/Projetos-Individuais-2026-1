@@ -1,0 +1,119 @@
+{
+  "_meta": {
+    "purpose": "Few-shot examples for IssueTriageBot solution-b",
+    "coverage_invariants": [
+      "all 3 types appear (bug, feature, question)",
+      "all 3 severities appear (critical, medium, low)",
+      "at least 3 distinct components appear (backend, frontend, unknown)",
+      "first 3 entries span all 3 types (fallback safety when no token overlap)"
+    ],
+    "last_reviewed_at": "2026-05-05"
+  },
+  "examples": [
+    {
+      "issue": {
+        "title": "Authentication service fails in production after deployment",
+        "body": "After the v2.3.1 deployment, the authentication service started returning 401 errors for all users. Users cannot log in. The service was working fine before the deployment. Logs show NullPointerException in AuthService.java:142. Rollback attempted but did not resolve the issue.",
+        "labels": ["bug", "critical", "backend"]
+      },
+      "classification": {
+        "type": "bug",
+        "severity": "critical",
+        "component": "backend",
+        "summary": "Auth service returning 401 for all users post-deployment",
+        "reasoning": "Production-breaking auth failure affecting all users with no working workaround; NullPointerException in backend service after deployment."
+      },
+      "_rationale": "Canonical critical bug example: production-breaking, backend, auth failure — matches the mission-brief's primary severity=critical use case."
+    },
+    {
+      "issue": {
+        "title": "Add rate limiting to REST API endpoints",
+        "body": "We need to add rate limiting to our REST API to prevent abuse. Endpoints should be limited to 100 requests per minute per API key. This is needed to protect the service from denial-of-service attacks and ensure fair usage among clients.",
+        "labels": ["feature", "backend", "security"]
+      },
+      "classification": {
+        "type": "feature",
+        "severity": "medium",
+        "component": "backend",
+        "summary": "Implement API rate limiting at 100 req/min per API key",
+        "reasoning": "New functionality request for security hardening; existing features are unaffected, so severity is medium rather than critical."
+      },
+      "_rationale": "Fallback index 1: feature/medium/backend. Ensures fallback top-3 covers the feature type."
+    },
+    {
+      "issue": {
+        "title": "How do I reset my password through the API?",
+        "body": "I am trying to reset my password programmatically via the API but I cannot find any endpoint for this in the documentation. Is there a password reset endpoint? What parameters does it accept? I checked the docs but nothing covers this case.",
+        "labels": ["question", "documentation"]
+      },
+      "classification": {
+        "type": "question",
+        "severity": "low",
+        "component": "unknown",
+        "summary": "User asking how to reset password via the API",
+        "reasoning": "Interrogative phrasing, seeking clarification on API usage; no defect reported, component cannot be determined from context."
+      },
+      "_rationale": "Fallback index 2: question/low/unknown. Ensures fallback top-3 covers the question type."
+    },
+    {
+      "issue": {
+        "title": "Dashboard charts not rendering on Safari browsers",
+        "body": "The analytics dashboard charts fail to render on Safari 16 and above on macOS. Users on Chrome and Firefox see the charts correctly. The browser console shows a TypeError related to the chart library canvas API usage. Approximately 25% of our user base uses Safari, so this is impacting a significant portion of users.",
+        "labels": ["bug", "frontend", "browser-compatibility"]
+      },
+      "classification": {
+        "type": "bug",
+        "severity": "medium",
+        "component": "frontend",
+        "summary": "Charts fail to render on Safari due to canvas API TypeError",
+        "reasoning": "Significant functionality impaired for Safari users (~25%); workaround exists (use Chrome or Firefox), so severity is medium."
+      },
+      "_rationale": "Bug/medium/frontend example with a concrete workaround — contrasts with the critical bug to show severity differentiation."
+    },
+    {
+      "issue": {
+        "title": "Add dark mode support to the settings page",
+        "body": "Users have been requesting dark mode for some time. The settings page should have a toggle to switch between light and dark themes. The theme preference should be persisted in localStorage so it survives page refreshes.",
+        "labels": ["feature", "frontend", "ux"]
+      },
+      "classification": {
+        "type": "feature",
+        "severity": "low",
+        "component": "frontend",
+        "summary": "Add dark mode toggle with localStorage persistence to settings page",
+        "reasoning": "Nice-to-have UI enhancement; no existing functionality broken, making it a low-severity feature request."
+      },
+      "_rationale": "Feature/low/frontend — common feature request pattern, good contrast against the medium-severity backend feature."
+    },
+    {
+      "issue": {
+        "title": "Button tooltip shows incorrect text on hover",
+        "body": "The Save button in the user profile form shows Delete as its tooltip text when hovering. This appears to be a copy-paste error in the HTML template. The button itself works correctly and saves data as expected, so only the tooltip label is wrong.",
+        "labels": ["bug", "frontend"]
+      },
+      "classification": {
+        "type": "bug",
+        "severity": "low",
+        "component": "frontend",
+        "summary": "Save button displays incorrect Delete tooltip text due to copy-paste error",
+        "reasoning": "Cosmetic bug with no functional impact; button operates correctly, minor UI inconsistency."
+      },
+      "_rationale": "Bug/low/frontend — cosmetic-only bug to show the full severity spectrum for bugs."
+    },
+    {
+      "issue": {
+        "title": "What format does the API return dates in?",
+        "body": "I am building an integration with the API and noticed that some endpoints return dates as Unix timestamps while others return ISO 8601 strings. Is there a documented standard format across all endpoints? Should I expect this to be consistent, or do I need to handle both formats in my client?",
+        "labels": ["question", "api"]
+      },
+      "classification": {
+        "type": "question",
+        "severity": "low",
+        "component": "backend",
+        "summary": "User asking about date format inconsistency across API endpoints",
+        "reasoning": "Question about API behavior; no defect reported, user is seeking clarification on integration specifics."
+      },
+      "_rationale": "Second question example with backend component — contrasts with the unknown-component question at index 2."
+    }
+  ]
+}
