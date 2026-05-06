@@ -1,0 +1,334 @@
+{
+  "name": "IssueTriageBot - Solution C (Multi-Step Validation + Retry)",
+  "nodes": [
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000001",
+      "name": "GitHub Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "c3d4e5f6-0003-4000-8000-000000000099",
+      "parameters": {
+        "path": "github-issues",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "responseData": "firstEntryJson"
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000002",
+      "name": "Build Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "parameters": {
+        "jsCode": "// Only process 'opened' events\n// GitHub payload arrives nested under .body in n8n webhook node\nconst payload = $input.first().json.body;\nconst action = payload.action;\nif (action && action !== 'opened') {\n  return [];\n}\n\nconst issue = payload.issue || {};\nconst repo = payload.repository || {};\n\nconst title = (issue.title || '').trim();\nconst body = issue.body || '';\nconst labels = (issue.labels || []).map(l => l.name || l).filter(Boolean).join(', ');\nconst repoName = repo.name || '';\nconst issueUrl = issue.html_url || issue.url || '';\nconst issueNumber = issue.number || 0;\n\nif (!title) {\n  return [{\n    json: {\n      issue: { title: '', body: '', labels: '', repoName, issueUrl, issueNumber },\n      prompt: null,\n      gemini_body_str: null,\n      invalid_input: true\n    }\n  }];\n}\n\nconst prompt = `You are an issue classifier for a software project. Analyze the following GitHub issue and return a JSON classification.\n\nIssue Title: ${title}\nIssue Body: ${body || '(no body provided)'}\nLabels: ${labels || '(none)'}\nRepository: ${repoName || '(unknown)'}\n\nReturn ONLY a valid JSON object with this exact structure:\n{\n  \"type\": \"bug | feature | question\",\n  \"severity\": \"critical | medium | low\",\n  \"component\": \"frontend | backend | infra | unknown\",\n  \"confidence\": <float between 0.0 and 1.0>,\n  \"low_confidence\": <boolean, true if confidence < 0.7>,\n  \"summary\": \"<one-line summary of the issue>\",\n  \"reasoning\": \"<brief explanation of the classification>\"\n}\n\nClassification rules:\n- type=bug: reports something broken or not working as expected\n- type=feature: requests new functionality or enhancement\n- type=question: asks how something works or seeks clarification\n- severity=critical: production-breaking, data loss, security vulnerability, auth failure in production\n- severity=medium: significant functionality impaired but a workaround exists\n- severity=low: minor issue, cosmetic problem, or nice-to-have improvement\n- component=frontend: UI, CSS, JavaScript, browser-side behavior\n- component=backend: API, database, server-side logic, authentication\n- component=infra: deployment, CI/CD, Docker, cloud services, networking\n- component=unknown: cannot determine from available context\n\nReturn ONLY the JSON object. No markdown code blocks, no prose outside the JSON.`;\n\nconst geminiBodyStr = JSON.stringify({\n  contents: [{ parts: [{ text: prompt }] }],\n  generationConfig: { temperature: 0.1, maxOutputTokens: 512 }\n});\n\nreturn [{\n  json: {\n    issue: { title, body, labels, repoName, issueUrl, issueNumber },\n    prompt,\n    gemini_body_str: geminiBodyStr,\n    invalid_input: false\n  }\n}];"
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000003",
+      "name": "Call Gemini API (Attempt 1)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [680, 300],
+      "continueOnFail": true,
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "={{ $env.GEMINI_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $('Build Prompt').first().json.gemini_body_str }}",
+        "options": {
+          "timeout": 25000
+        }
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000004",
+      "name": "Validate Schema (Attempt 1)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300],
+      "parameters": {
+        "jsCode": "const geminiData = $input.first().json;\nconst buildData = $('Build Prompt').first().json;\nconst issue = buildData.issue;\nconst geminiBodyStr = buildData.gemini_body_str;\n\n// Extract text from Gemini response\nconst candidates = geminiData.candidates || [];\nconst responseText = candidates[0]?.content?.parts?.[0]?.text || '';\n\n// Constants\nconst VALID_TYPES = ['bug', 'feature', 'question'];\nconst VALID_SEVERITIES = ['critical', 'medium', 'low'];\nconst VALID_COMPONENTS = ['frontend', 'backend', 'infra', 'unknown'];\n\n// Parse and normalize response\nlet jsonText = responseText.trim();\nconst codeBlockMatch = jsonText.match(/```(?:json)?\\s*([\\s\\S]*?)```/);\nif (codeBlockMatch) jsonText = codeBlockMatch[1].trim();\n\nlet classification;\nlet parseError = false;\ntry {\n  const parsed = JSON.parse(jsonText);\n  const type = VALID_TYPES.includes(parsed.type) ? parsed.type : 'unknown';\n  const severity = VALID_SEVERITIES.includes(parsed.severity) ? parsed.severity : 'unknown';\n  const component = VALID_COMPONENTS.includes(parsed.component) ? parsed.component : 'unknown';\n  const confidence = typeof parsed.confidence === 'number'\n    ? Math.min(1.0, Math.max(0.0, parsed.confidence))\n    : 0.0;\n  classification = {\n    type, severity, component, confidence,\n    low_confidence: confidence < 0.7,\n    summary: typeof parsed.summary === 'string' ? parsed.summary : '',\n    reasoning: typeof parsed.reasoning === 'string' ? parsed.reasoning : ''\n  };\n} catch (err) {\n  classification = {\n    type: 'unknown', severity: 'unknown', component: 'unknown',\n    confidence: 0.0, low_confidence: true,\n    summary: 'Failed to parse AI response',\n    reasoning: `JSON parse error: ${err.message}`,\n    parse_error: true\n  };\n  parseError = true;\n}\n\n// Strict schema validation: type and severity must not be 'unknown'\nconst schemaValid = !parseError &&\n  VALID_TYPES.includes(classification.type) &&\n  VALID_SEVERITIES.includes(classification.severity) &&\n  VALID_COMPONENTS.includes(classification.component) &&\n  typeof classification.confidence === 'number' &&\n  typeof classification.low_confidence === 'boolean' &&\n  typeof classification.summary === 'string' &&\n  classification.summary.trim().length > 0 &&\n  typeof classification.reasoning === 'string';\n\n// Format Slack + Sheets (used only when schema_valid=true; passed along regardless)\nconst severityEmoji = { critical: '\\uD83D\\uDD34', medium: '\\uD83D\\uDFE1', low: '\\uD83D\\uDFE2', unknown: '\\u26AA' };\nconst typeLabel = { bug: 'Bug', feature: 'Feature Request', question: 'Question', unknown: 'Unknown' };\nconst emoji = severityEmoji[classification.severity] || '\\u26AA';\nconst typeStr = typeLabel[classification.type] || classification.type;\nconst confidenceNote = classification.low_confidence ? '\\n\\u26A0\\uFE0F _Low confidence \\u2014 manual review recommended_' : '';\n\nlet slackChannel;\nif (classification.type === 'question') slackChannel = 'questions';\nelse if (classification.type === 'bug' && classification.severity === 'critical') slackChannel = 'incidents';\nelse slackChannel = 'backlog';\n\nconst slackBodyStr = JSON.stringify({\n  channel: slackChannel,\n  text: `${emoji} [${typeStr}] ${issue.title}`,\n  blocks: [\n    { type: 'section', text: { type: 'mrkdwn', text: `${emoji} *[${typeStr}]* <${issue.issueUrl}|${issue.title}>` } },\n    { type: 'section', fields: [\n      { type: 'mrkdwn', text: `*Type:* ${classification.type}` },\n      { type: 'mrkdwn', text: `*Severity:* ${classification.severity}` },\n      { type: 'mrkdwn', text: `*Component:* ${classification.component}` },\n      { type: 'mrkdwn', text: `*Confidence:* ${(classification.confidence * 100).toFixed(0)}%` }\n    ]},\n    { type: 'section', text: { type: 'mrkdwn', text: `*Summary:* ${classification.summary}${confidenceNote}` } }\n  ]\n});\n\nconst processedAt = new Date().toISOString();\nconst sheetsRow = {\n  timestamp: processedAt,\n  issue_number: issue.issueNumber,\n  title: issue.title,\n  url: issue.issueUrl,\n  type: classification.type,\n  severity: classification.severity,\n  component: classification.component,\n  confidence: `${(classification.confidence * 100).toFixed(0)}%`,\n  low_confidence: classification.low_confidence,\n  ai_flagged: false,\n  summary: classification.summary,\n  reasoning: classification.reasoning\n};\n\nreturn [{ json: {\n  issue,\n  classification,\n  schema_valid: schemaValid,\n  ai_flagged: false,\n  gemini_body_str: geminiBodyStr,\n  slack_channel: slackChannel,\n  slack_body_str: slackBodyStr,\n  sheets_row: sheetsRow\n} }];"
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000005",
+      "name": "IF: Schema Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 300],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "schema-valid-check",
+              "leftValue": "={{ $json.schema_valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000006",
+      "name": "Call Gemini API (Retry)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1340, 500],
+      "continueOnFail": true,
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "={{ $env.GEMINI_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.gemini_body_str }}",
+        "options": {
+          "timeout": 25000
+        }
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000007",
+      "name": "Validate Schema (Retry)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 500],
+      "parameters": {
+        "jsCode": "const geminiData = $input.first().json;\nconst issue = $('Build Prompt').first().json.issue;\n\n// Extract text from Gemini response\nconst candidates = geminiData.candidates || [];\nconst responseText = candidates[0]?.content?.parts?.[0]?.text || '';\n\n// Constants\nconst VALID_TYPES = ['bug', 'feature', 'question'];\nconst VALID_SEVERITIES = ['critical', 'medium', 'low'];\nconst VALID_COMPONENTS = ['frontend', 'backend', 'infra', 'unknown'];\n\n// Parse and normalize response\nlet jsonText = responseText.trim();\nconst codeBlockMatch = jsonText.match(/```(?:json)?\\s*([\\s\\S]*?)```/);\nif (codeBlockMatch) jsonText = codeBlockMatch[1].trim();\n\nlet classification;\nlet parseError = false;\ntry {\n  const parsed = JSON.parse(jsonText);\n  const type = VALID_TYPES.includes(parsed.type) ? parsed.type : 'unknown';\n  const severity = VALID_SEVERITIES.includes(parsed.severity) ? parsed.severity : 'unknown';\n  const component = VALID_COMPONENTS.includes(parsed.component) ? parsed.component : 'unknown';\n  const confidence = typeof parsed.confidence === 'number'\n    ? Math.min(1.0, Math.max(0.0, parsed.confidence))\n    : 0.0;\n  classification = {\n    type, severity, component, confidence,\n    low_confidence: confidence < 0.7,\n    summary: typeof parsed.summary === 'string' ? parsed.summary : '',\n    reasoning: typeof parsed.reasoning === 'string' ? parsed.reasoning : ''\n  };\n} catch (err) {\n  classification = {\n    type: 'unknown', severity: 'unknown', component: 'unknown',\n    confidence: 0.0, low_confidence: true,\n    summary: 'Failed to parse AI response on retry',\n    reasoning: `JSON parse error: ${err.message}`,\n    parse_error: true\n  };\n  parseError = true;\n}\n\n// Strict schema validation\nconst schemaValid = !parseError &&\n  VALID_TYPES.includes(classification.type) &&\n  VALID_SEVERITIES.includes(classification.severity) &&\n  VALID_COMPONENTS.includes(classification.component) &&\n  typeof classification.confidence === 'number' &&\n  typeof classification.low_confidence === 'boolean' &&\n  typeof classification.summary === 'string' &&\n  classification.summary.trim().length > 0 &&\n  typeof classification.reasoning === 'string';\n\n// Format Slack + Sheets (used only when schema_valid=true)\nconst severityEmoji = { critical: '\\uD83D\\uDD34', medium: '\\uD83D\\uDFE1', low: '\\uD83D\\uDFE2', unknown: '\\u26AA' };\nconst typeLabel = { bug: 'Bug', feature: 'Feature Request', question: 'Question', unknown: 'Unknown' };\nconst emoji = severityEmoji[classification.severity] || '\\u26AA';\nconst typeStr = typeLabel[classification.type] || classification.type;\nconst confidenceNote = classification.low_confidence ? '\\n\\u26A0\\uFE0F _Low confidence \\u2014 manual review recommended_' : '';\n\nlet slackChannel;\nif (classification.type === 'question') slackChannel = 'questions';\nelse if (classification.type === 'bug' && classification.severity === 'critical') slackChannel = 'incidents';\nelse slackChannel = 'backlog';\n\nconst slackBodyStr = JSON.stringify({\n  channel: slackChannel,\n  text: `${emoji} [${typeStr}] ${issue.title}`,\n  blocks: [\n    { type: 'section', text: { type: 'mrkdwn', text: `${emoji} *[${typeStr}]* <${issue.issueUrl}|${issue.title}>` } },\n    { type: 'section', fields: [\n      { type: 'mrkdwn', text: `*Type:* ${classification.type}` },\n      { type: 'mrkdwn', text: `*Severity:* ${classification.severity}` },\n      { type: 'mrkdwn', text: `*Component:* ${classification.component}` },\n      { type: 'mrkdwn', text: `*Confidence:* ${(classification.confidence * 100).toFixed(0)}%` }\n    ]},\n    { type: 'section', text: { type: 'mrkdwn', text: `*Summary:* ${classification.summary}${confidenceNote}` } }\n  ]\n});\n\nconst processedAt = new Date().toISOString();\nconst sheetsRow = {\n  timestamp: processedAt,\n  issue_number: issue.issueNumber,\n  title: issue.title,\n  url: issue.issueUrl,\n  type: classification.type,\n  severity: classification.severity,\n  component: classification.component,\n  confidence: `${(classification.confidence * 100).toFixed(0)}%`,\n  low_confidence: classification.low_confidence,\n  ai_flagged: false,\n  summary: classification.summary,\n  reasoning: classification.reasoning\n};\n\nreturn [{ json: {\n  issue,\n  classification,\n  schema_valid: schemaValid,\n  ai_flagged: false,\n  slack_channel: slackChannel,\n  slack_body_str: slackBodyStr,\n  sheets_row: sheetsRow\n} }];"
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000008",
+      "name": "IF: Retry Schema Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1780, 500],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "retry-schema-valid-check",
+              "leftValue": "={{ $json.schema_valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000009",
+      "name": "Build Fallback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 700],
+      "parameters": {
+        "jsCode": "const issue = $('Build Prompt').first().json.issue;\n\n// Fallback classification: both Gemini attempts failed\nconst classification = {\n  type: 'unknown',\n  severity: 'unknown',\n  component: 'unknown',\n  confidence: 0.0,\n  low_confidence: true,\n  summary: 'AI classification failed \\u2014 manual review required',\n  reasoning: 'Both Gemini API attempts returned invalid or unparseable output'\n};\n\n// Route fallback to #backlog\nconst slackChannel = 'backlog';\n\nconst slackBodyStr = JSON.stringify({\n  channel: slackChannel,\n  text: `\\u26AA [Unknown] ${issue.title}`,\n  blocks: [\n    { type: 'section', text: { type: 'mrkdwn', text: `\\u26AA *[Unknown]* <${issue.issueUrl}|${issue.title}>` } },\n    { type: 'section', fields: [\n      { type: 'mrkdwn', text: `*Type:* unknown` },\n      { type: 'mrkdwn', text: `*Severity:* unknown` },\n      { type: 'mrkdwn', text: `*Component:* unknown` },\n      { type: 'mrkdwn', text: `*Confidence:* 0%` }\n    ]},\n    { type: 'section', text: { type: 'mrkdwn', text: `*Summary:* ${classification.summary}\\n\\uD83D\\uDEA8 _AI classification failed \\u2014 manual review required_` } }\n  ]\n});\n\nconst processedAt = new Date().toISOString();\nconst sheetsRow = {\n  timestamp: processedAt,\n  issue_number: issue.issueNumber,\n  title: issue.title,\n  url: issue.issueUrl,\n  type: 'unknown',\n  severity: 'unknown',\n  component: 'unknown',\n  confidence: '0%',\n  low_confidence: true,\n  ai_flagged: true,\n  summary: classification.summary,\n  reasoning: classification.reasoning\n};\n\nreturn [{ json: {\n  issue,\n  classification,\n  schema_valid: false,\n  ai_flagged: true,\n  slack_channel: slackChannel,\n  slack_body_str: slackBodyStr,\n  sheets_row: sheetsRow\n} }];"
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000010",
+      "name": "Merge Valid Paths",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [2000, 380],
+      "parameters": {
+        "mode": "append"
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000011",
+      "name": "Merge With Fallback",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [2220, 500],
+      "parameters": {
+        "mode": "append"
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000012",
+      "name": "Send to Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [2440, 380],
+      "parameters": {
+        "method": "POST",
+        "url": "https://slack.com/api/chat.postMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.SLACK_BOT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.slack_body_str }}",
+        "options": {
+          "timeout": 10000
+        }
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000013",
+      "name": "Prepare Sheets Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2440, 560],
+      "parameters": {
+        "jsCode": "const row = $input.first().json.sheets_row;\nreturn [{ json: row }];"
+      }
+    },
+    {
+      "id": "c3d4e5f6-0003-4000-8000-000000000014",
+      "name": "Log to Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [2660, 560],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CONFIGURE_ME",
+          "name": "Google Sheets OAuth"
+        }
+      },
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEETS_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        }
+      }
+    }
+  ],
+  "connections": {
+    "GitHub Webhook": {
+      "main": [
+        [{ "node": "Build Prompt", "type": "main", "index": 0 }]
+      ]
+    },
+    "Build Prompt": {
+      "main": [
+        [{ "node": "Call Gemini API (Attempt 1)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Call Gemini API (Attempt 1)": {
+      "main": [
+        [{ "node": "Validate Schema (Attempt 1)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Validate Schema (Attempt 1)": {
+      "main": [
+        [{ "node": "IF: Schema Valid?", "type": "main", "index": 0 }]
+      ]
+    },
+    "IF: Schema Valid?": {
+      "main": [
+        [{ "node": "Merge Valid Paths", "type": "main", "index": 0 }],
+        [{ "node": "Call Gemini API (Retry)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Call Gemini API (Retry)": {
+      "main": [
+        [{ "node": "Validate Schema (Retry)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Validate Schema (Retry)": {
+      "main": [
+        [{ "node": "IF: Retry Schema Valid?", "type": "main", "index": 0 }]
+      ]
+    },
+    "IF: Retry Schema Valid?": {
+      "main": [
+        [{ "node": "Merge Valid Paths", "type": "main", "index": 1 }],
+        [{ "node": "Build Fallback", "type": "main", "index": 0 }]
+      ]
+    },
+    "Merge Valid Paths": {
+      "main": [
+        [{ "node": "Merge With Fallback", "type": "main", "index": 0 }]
+      ]
+    },
+    "Build Fallback": {
+      "main": [
+        [{ "node": "Merge With Fallback", "type": "main", "index": 1 }]
+      ]
+    },
+    "Merge With Fallback": {
+      "main": [
+        [
+          { "node": "Send to Slack", "type": "main", "index": 0 },
+          { "node": "Prepare Sheets Row", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Prepare Sheets Row": {
+      "main": [
+        [{ "node": "Log to Sheets", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "tags": [],
+  "pinData": {}
+}
