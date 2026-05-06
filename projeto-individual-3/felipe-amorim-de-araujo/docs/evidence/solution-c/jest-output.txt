@@ -1,4 +1,0 @@
-
-> issuetriagebot@1.0.0 test:solution-c
-> jest tests/solution-c/ --verbose
-
