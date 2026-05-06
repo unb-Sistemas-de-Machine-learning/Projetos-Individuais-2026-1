@@ -87,4 +87,4 @@ Nesta proposta, o envio final ainda depende de aprovação humana. A solução s
 
 ## 9. Status
 
-Proposta inicial. Deve ser implementada como baseline para comparação com as demais soluções.
+Implementada. Workflow exportado em `automation-invoice-complete-ngrok.json`. Fluxo testado com dados reais do Productive.io: Invoice #018, período 16–30 de abril de 2026, 24 entradas, 65 horas totais. Serve como baseline para comparação com a Solution C.

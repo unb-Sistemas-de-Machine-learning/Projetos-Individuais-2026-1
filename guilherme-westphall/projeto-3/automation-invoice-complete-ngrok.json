@@ -1,0 +1,1408 @@
+{
+  "name": "automation-invoice-complete-ngrok",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const approval = $('Approve: Prepare Gmail Payload').first().json;\nconst gmail = $json;\nconst registry = { ...approval.registry, status: 'sent', invoice_status: 'sent', gmail_message_id: gmail.id || gmail.messageId || gmail.threadId || null, sent_at: new Date().toISOString(), updated_at: new Date().toISOString() };\nconst registryText = JSON.stringify(registry, null, 2);\nreturn { json: { ...approval, registry, registry_file_id: approval.registry_file_id }, binary: { registry_json: { data: Buffer.from(registryText, 'utf8').toString('base64'), fileName: 'current-invoice-state.json', fileExtension: 'json', mimeType: 'application/json' } } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12944,
+        6208
+      ],
+      "id": "f3a78032-0b2c-4139-9f1a-f4f12e7c28e2",
+      "name": "Approve: Build Sent Registry JSON"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.registry_file_id }}",
+          "mode": "id"
+        },
+        "changeFileContent": true,
+        "inputDataFieldName": "registry_json",
+        "newUpdatedFileName": "current-invoice-state.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        13168,
+        6208
+      ],
+      "id": "fc16c746-d887-468e-973d-3138e3ff3f9f",
+      "name": "Approve: Update Registry",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "yESEGUv8xXGOwC2c",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Approve: Build Sent Registry JSON').item.json.chat_id }}",
+        "text": "={{ \n'Invoice #' + $('Approve: Build Sent Registry JSON').item.json.registry.invoice_number + ' was sent successfully by Gmail.' \n}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        13392,
+        6208
+      ],
+      "id": "748fca6c-f09b-496f-89ab-e46490e223fd",
+      "name": "Telegram: Confirm Sent",
+      "webhookId": "d7a33d4c-dfdd-426b-bb7a-333e2abcce34",
+      "credentials": {
+        "telegramApi": {
+          "id": "1zgSJaOd7LmrWoRq",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ ($json.error || 'Command not recognized.') + ' Available commands: approve <run_id> reject <run_id> edit <run_id> <requested changes>' }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        12048,
+        6880
+      ],
+      "id": "53a71c5b-d8ab-439d-9eaa-8b36bb114890",
+      "name": "Telegram: Send Command Help",
+      "webhookId": "a1ad06b0-018d-4481-8a77-547cd078a55d",
+      "credentials": {
+        "telegramApi": {
+          "id": "1zgSJaOd7LmrWoRq",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Edit: Normalize Revised Email').item.json.chat_id }}",
+        "text": "={{\n[\n  'Invoice #' + $('Edit: Normalize Revised Email').first().json.registry.invoice_number + ' email was revised and is ready for review.',\n  '',\n  'Change summary: ' + ($('Edit: Normalize Revised Email').first().json.edit_entry.change_summary || 'updated email draft'),\n  'Blocked changes: ' + (\n    (($('Edit: Normalize Revised Email').first().json.edit_entry.blocked_changes || []).length)\n      ? $('Edit: Normalize Revised Email').first().json.edit_entry.blocked_changes.join('; ')\n      : 'none'\n  ),\n  '',\n  'Recipients: ' + (\n    Array.isArray($('Edit: Normalize Revised Email').first().json.registry.email_to)\n      ? $('Edit: Normalize Revised Email').first().json.registry.email_to.join(', ')\n      : String($('Edit: Normalize Revised Email').first().json.registry.email_to || '')\n  ),\n  'Subject: ' + ($('Edit: Normalize Revised Email').first().json.registry.email_subject || ''),\n  '',\n  $('Edit: Normalize Revised Email').first().json.registry.email_body || '',\n  '',\n  'Reply with:',\n  'approve ' + $('Edit: Normalize Revised Email').first().json.registry.run_id,\n  'reject ' + $('Edit: Normalize Revised Email').first().json.registry.run_id,\n  'edit ' + $('Edit: Normalize Revised Email').first().json.registry.run_id + ' <requested changes>'\n].join('\\n')\n}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        12816,
+        6672
+      ],
+      "id": "7f2df7fe-754c-42ea-80ab-102c81246c1d",
+      "name": "Telegram: Send Revised Review",
+      "webhookId": "211f2ae5-ad1c-47b5-af81-8d2404a2e424",
+      "credentials": {
+        "telegramApi": {
+          "id": "1zgSJaOd7LmrWoRq",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.registry_file_id }}",
+          "mode": "id"
+        },
+        "changeFileContent": true,
+        "inputDataFieldName": "registry_json",
+        "newUpdatedFileName": "current-invoice-state.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        12544,
+        6656
+      ],
+      "id": "abb9add0-6e0b-4f6b-9638-6699ec181e30",
+      "name": "Edit: Update Registry",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "yESEGUv8xXGOwC2c",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const command = $('Load Registry JSON').first().json;\nconst registry = command.registry || {};\n\nfunction pickRaw(value) {\n  if (value === undefined || value === null) return '';\n  if (typeof value === 'string') return value;\n  if (typeof value.content === 'string') return value.content;\n  if (typeof value.text === 'string') return value.text;\n  if (typeof value.response === 'string') return value.response;\n  if (typeof value.output === 'string') return value.output;\n  if (typeof value.message?.content === 'string') return value.message.content;\n  if (Array.isArray(value.choices) && typeof value.choices[0]?.message?.content === 'string') return value.choices[0].message.content;\n  if (Array.isArray(value.generations) && typeof value.generations[0]?.text === 'string') return value.generations[0].text;\n  return JSON.stringify(value);\n}\n\nfunction stripCodeFence(value) {\n  return String(value || '')\n    .trim()\n    .replace(/^```(?:json)?\\s*/i, '')\n    .replace(/```$/i, '')\n    .trim();\n}\n\nfunction extractJsonObject(text) {\n  const value = stripCodeFence(text);\n\n  try {\n    return JSON.parse(value);\n  } catch (_) {}\n\n  const first = value.indexOf('{');\n  const last = value.lastIndexOf('}');\n  if (first !== -1 && last > first) {\n    try {\n      return JSON.parse(value.slice(first, last + 1));\n    } catch (_) {}\n  }\n\n  return null;\n}\n\nfunction normalizeEmailList(value) {\n  if (value === undefined || value === null || value === '') return [];\n\n  const values = Array.isArray(value) ? value : [value];\n\n  return values\n    .flatMap((item) => {\n      if (item === undefined || item === null || item === '') return [];\n\n      if (typeof item === 'string') {\n        return item.split(',');\n      }\n\n      if (typeof item === 'object') {\n        return [\n          item.email,\n          item.address,\n          item.value,\n          item.text,\n        ];\n      }\n\n      return [String(item)];\n    })\n    .map((v) => String(v || '').trim())\n    .filter((v) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(v));\n}\n\nfunction normalizeBlockedChanges(value) {\n  if (!value) return [];\n  if (Array.isArray(value)) {\n    return value.map(String).map((v) => v.trim()).filter(Boolean);\n  }\n  return [String(value).trim()].filter(Boolean);\n}\n\nfunction normalizeNewlines(value) {\n  return String(value || '')\n    .replace(/\\\\r\\\\n/g, '\\n')\n    .replace(/\\\\n/g, '\\n')\n    .replace(/\\r\\n/g, '\\n')\n    .replace(/\\n{3,}/g, '\\n\\n')\n    .trim();\n}\n\nfunction ensureSignature(body) {\n  let value = normalizeNewlines(body);\n\n  value = value\n    .replace(/\\n*Best Regards,?\\s*(Guilherme)?\\s*$/i, '')\n    .trim();\n\n  return `${value}\\n\\nBest Regards,\\nGuilherme`;\n}\n\nfunction fallbackBodyFromFeedback() {\n  const current = normalizeNewlines(registry.email_body);\n  const feedback = normalizeNewlines(command.feedback);\n  if (!feedback) return current;\n\n  return ensureSignature(`${current}\\n\\n${feedback}`);\n}\n\nconst raw = pickRaw($json);\nconst parsed = extractJsonObject(raw) || {};\nconst usedFallback = !Object.keys(parsed).length;\nconst invoiceToken = 'Invoice #' + registry.invoice_number;\n\nlet emailSubject = normalizeNewlines(parsed.email_subject || registry.email_subject || invoiceToken);\nlet emailBody = normalizeNewlines(\n  parsed.email_body || (usedFallback ? fallbackBodyFromFeedback() : registry.email_body)\n);\n\nif (!emailSubject.includes(invoiceToken)) {\n  emailSubject = registry.email_subject || invoiceToken;\n}\n\nif (!emailBody.includes(invoiceToken)) {\n  const originalBody = normalizeNewlines(registry.email_body || '');\n  if (originalBody.includes(invoiceToken)) {\n    emailBody = originalBody;\n  }\n}\n\nemailBody = ensureSignature(emailBody);\n\nconst parsedEmailTo = normalizeEmailList(parsed.email_to);\nconst registryEmailTo = normalizeEmailList(registry.email_to);\n\nconst nextEmailTo = parsedEmailTo.length ? parsedEmailTo : registryEmailTo;\n\nconst nextEmailCc = parsed.email_cc !== undefined\n  ? normalizeEmailList(parsed.email_cc)\n  : normalizeEmailList(registry.email_cc);\n\nconst nextEmailBcc = parsed.email_bcc !== undefined\n  ? normalizeEmailList(parsed.email_bcc)\n  : normalizeEmailList(registry.email_bcc);\n\nconst editEntry = {\n  requested_at: new Date().toISOString(),\n  feedback: command.feedback,\n  change_summary: normalizeNewlines(\n    parsed.change_summary ||\n    (usedFallback ? 'Used deterministic fallback because AI response was not valid JSON.' : 'Updated email draft.')\n  ),\n  blocked_changes: normalizeBlockedChanges(parsed.blocked_changes),\n  ai_response_was_json: !usedFallback,\n};\n\nconst updated = {\n  ...registry,\n  status: 'pending_review',\n  invoice_status: 'pending_review',\n  email_to: nextEmailTo,\n  email_cc: nextEmailCc,\n  email_bcc: nextEmailBcc,\n  email_subject: emailSubject,\n  email_body: emailBody,\n  edit_history: [...(registry.edit_history || []), editEntry],\n  updated_at: new Date().toISOString(),\n};\n\nconst registryText = JSON.stringify(updated, null, 2);\n\nreturn {\n  json: {\n    ...command,\n    registry: updated,\n    edit_entry: editEntry,\n    ai_raw_edit_response: raw,\n  },\n  binary: {\n    registry_json: {\n      data: Buffer.from(registryText, 'utf8').toString('base64'),\n      fileName: 'current-invoice-state.json',\n      fileExtension: 'json',\n      mimeType: 'application/json',\n    },\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12336,
+        6656
+      ],
+      "id": "c32ad5da-1d18-4b1d-a7da-9934d9e36b89",
+      "name": "Edit: Normalize Revised Email"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "llama3.2:3b",
+          "mode": "list",
+          "cachedResultName": "llama3.2:3b"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You revise invoice email drafts for Guilherme inside an n8n workflow.\n\nReturn only valid minified JSON. Do not use Markdown.\n\nCurrent invoice registry:\n{{ JSON.stringify($json.registry, null, 2) }}\n\nUser feedback:\n{{ $json.feedback }}\n\nRules:\n- Follow the user's requested edit when safe.\n- You may change recipients, tone, subject, and email body.\n- Keep the email professional and concise.\n- Preserve the invoice number exactly.\n- Do not change amount, hours, rate, period, draft file, PDF file, or invoice number.\n- Do not mention AI, automation, validation, confidence, approval, Productive.io, or internal workflow details.\n- Do not invent links or attachment names.\n- If the user asks to change financial values, invoice number, or PDF content, add that request to blocked_changes and keep the email safe.\n- The revised email is not sent automatically; it will be sent back to Guilherme for another review.\n\nReturn exactly this JSON shape:\n{\"action\":\"send_review\",\"email_to\":[\"recipient@example.com\"],\"email_cc\":[],\"email_bcc\":[],\"email_subject\":\"Invoice #000\",\"email_body\":\"email body\",\"change_summary\":\"short summary\",\"blocked_changes\":[]}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        12048,
+        6656
+      ],
+      "id": "01523865-eb56-47aa-9f2d-e51f48b99813",
+      "name": "Edit: Ollama Rewrite Email",
+      "credentials": {
+        "ollamaApi": {
+          "id": "yKgICLm9wk5ERgN2",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Reject: Build Rejected Registry JSON').item.json.chat_id }}",
+        "text": "={{ \n'Invoice #' + $('Reject: Build Rejected Registry JSON').item.json.registry.invoice_number + 'was rejected. No email was sent'\n}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        12496,
+        6432
+      ],
+      "id": "82dda135-89d9-40fe-9194-4497071b3c53",
+      "name": "Telegram: Confirm Rejected",
+      "webhookId": "1a57c3d6-7408-4a78-8014-960c311cb65d",
+      "credentials": {
+        "telegramApi": {
+          "id": "1zgSJaOd7LmrWoRq",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.registry_file_id }}",
+          "mode": "id"
+        },
+        "changeFileContent": true,
+        "inputDataFieldName": "registry_json",
+        "newUpdatedFileName": "current-invoice-state.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        12272,
+        6432
+      ],
+      "id": "c1c20141-e0d5-4878-95b3-51500a5ecf9b",
+      "name": "Reject: Update Registry",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "yESEGUv8xXGOwC2c",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const item = $json;\nconst registry = item.registry || {};\nif (item.run_id !== registry.run_id) throw new Error('Run ID mismatch. Command was ' + item.run_id + ', current registry is ' + (registry.run_id || 'empty') + '.');\nconst updated = { ...registry, status: 'rejected', invoice_status: 'rejected', rejected_at: new Date().toISOString(), updated_at: new Date().toISOString() };\nconst registryText = JSON.stringify(updated, null, 2);\nreturn { json: { ...item, registry: updated }, binary: { registry_json: { data: Buffer.from(registryText, 'utf8').toString('base64'), fileName: 'current-invoice-state.json', fileExtension: 'json', mimeType: 'application/json' } } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12048,
+        6432
+      ],
+      "id": "1bcdcd39-a236-4362-9eee-0624b3a82bf2",
+      "name": "Reject: Build Rejected Registry JSON"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email_to }}",
+        "subject": "={{ $json.email_subject }}",
+        "emailType": "text",
+        "message": "={{ $json.email_body }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          },
+          "bccList": "={{ $json.email_bcc }}",
+          "ccList": "={{ $json.email_cc }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        12720,
+        6208
+      ],
+      "id": "8a9377d1-a406-4ce9-b816-bda900694e63",
+      "name": "Gmail: Send Invoice",
+      "webhookId": "f7f85c27-62c5-4f71-bb89-266c65b2722a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "X4VfDBMZggo5KRNQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const approval = $('Approve: Validate Current Invoice').first().json;\nconst registry = approval.registry;\nconst binary = $input.first().binary;\nbinary.data.fileName = String(registry.draft_drive_file_name || 'invoice') + '.pdf';\nbinary.data.fileExtension = 'pdf';\nbinary.data.mimeType = 'application/pdf';\nreturn { json: { ...approval, email_to: (registry.email_to || []).join(', '), email_cc: (registry.email_cc || []).join(', '), email_bcc: (registry.email_bcc || []).join(', '), email_subject: registry.email_subject, email_body: registry.email_body }, binary };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12496,
+        6208
+      ],
+      "id": "a7806390-851c-448c-a78f-c72575da232a",
+      "name": "Approve: Prepare Gmail Payload"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.draft_drive_file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf",
+              "sheetsToFormat": "application/pdf"
+            }
+          },
+          "fileName": "={{ $json.registry.draft_drive_file_name }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        12272,
+        6208
+      ],
+      "id": "85defb5d-7a8f-44f6-91d3-c24872fc0b41",
+      "name": "Approve: Download PDF",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "yESEGUv8xXGOwC2c",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const item = $json;\nconst registry = item.registry || {};\nif (item.run_id !== registry.run_id) throw new Error('Run ID mismatch. Command was ' + item.run_id + ', current registry is ' + (registry.run_id || 'empty') + '.');\nif (registry.status !== 'pending_review') throw new Error('Invoice ' + (registry.invoice_number || '') + ' is not pending review. Current status: ' + (registry.status || 'unknown') + '.');\nreturn { json: { ...item, registry, draft_drive_file_id: registry.draft_drive_file_id } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12048,
+        6208
+      ],
+      "id": "d72d62e9-5849-4aa0-9673-c40e04b78d8d",
+      "name": "Approve: Validate Current Invoice"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "approve-rule",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "approve",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "approve"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "reject-rule",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "reject",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "reject"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "edit-rule",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "help-rule",
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "help",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "help"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        11792,
+        6400
+      ],
+      "id": "fc016201-250e-402f-9965-27119543ddac",
+      "name": "Route Command"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst item = $input.first();\nconst inputJson = item.json || {};\nconst command = inputJson.command ? inputJson : staticData.latest_telegram_command;\n\nif (!command) {\n  throw new Error('Missing Telegram command context. Run this path from Telegram Trigger -> Config -> Parse Telegram Commands.');\n}\n\nconst binary = item.binary || {};\nconst binaryPropertyName = binary.registry_json ? 'registry_json' : (binary.data ? 'data' : null);\nlet registry = {};\n\nif (!binaryPropertyName) {\n  throw new Error(`Missing registry binary file. Available binary fields: ${Object.keys(binary).join(', ') || '(none)'}`);\n}\n\nconst buffer = await this.helpers.getBinaryDataBuffer(0, binaryPropertyName);\nconst text = buffer.toString('utf8').trim();\n\nif (text) {\n  try {\n    registry = JSON.parse(text);\n  } catch (error) {\n    throw new Error(`Current invoice registry file is not valid JSON. Confirm that current_invoice_registry_file_id points to a plain .json file, not the invoice spreadsheet/template. Parser error: ${error.message}. File starts with: ${text.slice(0, 80)}`);\n  }\n}\n\nreturn [{\n  json: {\n    ...command,\n    registry,\n    registry_file_id: command.registry_file_id,\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11568,
+        6400
+      ],
+      "id": "7b89e637-cdbd-4a16-864c-aeb3064f0555",
+      "name": "Load Registry JSON"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $(\"Config\").first().json.current_invoice_registry_file_id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        11344,
+        6400
+      ],
+      "id": "c14760b7-ce06-467f-a4fb-82f32f5a5637",
+      "name": "Drive: Download Current Registry",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "yESEGUv8xXGOwC2c",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst staticData = $getWorkflowStaticData('global');\nconst allowedChatId = String(input.telegram_chat_id || '');\nconst registryFileId = input.current_invoice_registry_file_id;\nlet latestCommand = null;\n\nif (!allowedChatId) {\n  throw new Error('Missing telegram_chat_id. Fill it in Config.telegram_chat_id.');\n}\n\nif (!registryFileId || String(registryFileId).includes('REPLACE_WITH')) {\n  throw new Error('Missing current_invoice_registry_file_id. Fill it in Config.current_invoice_registry_file_id.');\n}\n\nfunction parseMessage(message) {\n  if (!message || !message.text) return null;\n  if (String(message.chat?.id) !== allowedChatId) return null;\n\n  const text = String(message.text || '').trim();\n  const match = text.match(/^\\/?(approve|reject|edit)\\s+(\\S+)(?:\\s+([\\s\\S]+))?$/i);\n\n  if (!match) {\n    return {\n      command: 'help',\n      valid: false,\n      registry_file_id: registryFileId,\n      chat_id: message.chat.id,\n      message_id: message.message_id,\n      original_text: text,\n      error: 'Use approve <run_id>, reject <run_id>, or edit <run_id> <requested changes>.',\n    };\n  }\n\n  const command = match[1].toLowerCase();\n  const feedback = (match[3] || '').trim();\n\n  if (command === 'edit' && !feedback) {\n    return {\n      command: 'help',\n      valid: false,\n      registry_file_id: registryFileId,\n      chat_id: message.chat.id,\n      message_id: message.message_id,\n      original_text: text,\n      error: 'Edit requires feedback: edit <run_id> <requested changes>.',\n    };\n  }\n\n  return {\n    command,\n    valid: true,\n    run_id: match[2],\n    feedback,\n    registry_file_id: registryFileId,\n    chat_id: message.chat.id,\n    message_id: message.message_id,\n    original_text: text,\n  };\n}\n\n// Telegram Trigger usually emits the full update object: { update_id, message: {...} }.\nif (input.message) {\n  latestCommand = parseMessage(input.message);\n}\n\n// Compatibility for old polling output: { result: [{ update_id, message: {...} }] }.\nif (!latestCommand && Array.isArray(input.result)) {\n  for (const update of input.result) {\n    const parsed = parseMessage(update.message);\n    if (parsed) latestCommand = parsed;\n  }\n}\n\n// Fallback if a future node emits the message directly.\nif (!latestCommand && input.chat && input.text) {\n  latestCommand = parseMessage(input);\n}\n\nstaticData.latest_telegram_command = latestCommand || null;\nreturn latestCommand ? [{ json: latestCommand }] : [];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11120,
+        6400
+      ],
+      "id": "09a2fef7-7c3e-4b93-a78a-7b0b034b0175",
+      "name": "Parse Telegram Commands"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"telegram_chat_id\": "TELEGRAM_CHAT_ID",\n  \"current_invoice_registry_file_id\": \"REGISTRY_FILE_ID\"\n}",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        10464,
+        6400
+      ],
+      "id": "b75d69eb-35d6-4caa-8da5-5c7bcd865045",
+      "name": "Config"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.registry_file_id }}",
+          "mode": "id"
+        },
+        "changeFileContent": true,
+        "inputDataFieldName": "registry_json",
+        "newUpdatedFileName": "current-invoice-state.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        13680,
+        5760
+      ],
+      "id": "9bbf7ce0-3563-450b-91b8-a6f9bdef36ec",
+      "name": "Drive: Update Current Invoice Registry",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "yESEGUv8xXGOwC2c",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const invoice = $('Recover invoice data and append PDF draft').first().json;\nconst telegramOutput = $json.result || $json;\nconst config = $('Edit Fields1').first().json;\nfunction asArray(value) {\n  if (Array.isArray(value)) return value.filter(Boolean).map(String);\n  if (value === undefined || value === null || value === '') return {};\n  return String(value).split(',').map((item) => item.trim()).filter(Boolean);\n}\nconst now = new Date().toISOString();\nconst registry = {\n  schema_version: 1,\n  status: 'pending_review',\n  run_id: invoice.run_id,\n  invoice_number: invoice.invoice_number,\n  invoice_status: 'pending_review',\n  draft_drive_file_id: invoice.draft_drive_file_id,\n  draft_drive_file_name: invoice.draft_drive_file_name,\n  period_label: invoice.invoice_sheet_data?.period_label,\n  invoice_date: invoice.invoice_sheet_data?.invoice_date,\n  due_date: invoice.invoice_sheet_data?.due_date,\n  entry_count: invoice.current_invoice_data?.entry_count,\n  total_minutes: invoice.current_invoice_data?.total_minutes,\n  total_hours: invoice.current_invoice_data?.total_hours,\n  hourly_rate: invoice.current_invoice_data?.hourly_rate,\n  currency: invoice.current_invoice_data?.currency,\n  amount: invoice.current_invoice_data?.amount,\n  confidence: invoice.current_invoice_data?.confidence,\n  recommended_action: invoice.current_invoice_data?.recommended_action,\n  detected_issues: invoice.current_invoice_data?.detected_issues || [],\n  email_to: asArray(config.email_to),\n  email_cc: asArray(config.email_cc),\n  email_bcc: asArray(config.email_bcc),\n  email_subject: invoice.current_invoice_data?.email_subject,\n  email_body: invoice.current_invoice_data?.email_body,\n  telegram_chat_id: config.telegram_chat_id,\n  telegram_message_id: telegramOutput.message_id,\n  edit_history: [],\n  created_at: now,\n  updated_at: now\n};\nconst registryText = JSON.stringify(registry, null, 2);\nreturn {\n  json: { ...invoice, registry_file_id: config.current_invoice_registry_file_id, registry },\n  binary: { registry_json: { data: Buffer.from(registryText, 'utf8').toString('base64'), fileName: 'current-invoice-state.json', fileExtension: 'json', mimeType: 'application/json' } }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        13456,
+        5760
+      ],
+      "id": "bf9edfee-2802-4816-a9d1-031ee3f535fd",
+      "name": "Build Current Invoice Registry JSON"
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $('Edit Fields1').item.json.telegram_chat_id }}",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "={{\n'Invoice #' + $json.invoice_number + ' is ready for review.\\n\\n' +\n\n'Invoice details\\n' +\n'Period: ' + $json.invoice_sheet_data.period_label + '\\n' +\n'Hours: ' + $json.current_invoice_data.total_hours + '\\n' +\n'Rate: ' + $json.current_invoice_data.currency + ' ' +\n$json.current_invoice_data.hourly_rate + '/h\\n' +\n'Amount: ' + $json.current_invoice_data.currency + ' ' +\n$json.current_invoice_data.amount + '\\n\\n' +\n\n'Email draft\\n' +\n'Subject: ' + $json.current_invoice_data.email_subject + '\\n\\n' +\n$json.current_invoice_data.email_body + '\\n\\n' +\n\n'Reply later with:\\n' +\n'approve ' + $json.run_id + '\\n' +\n'reject ' + $json.run_id + '\\n' +\n'edit ' + $json.run_id + ' <requested changes>'\n}}\n"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        13248,
+        5760
+      ],
+      "id": "7493ed38-0ebb-42a9-a9c7-3fac464f5a24",
+      "name": "Telegram: Send Draft",
+      "webhookId": "9a86abeb-611c-4f53-a4da-bc7a310bd342",
+      "credentials": {
+        "telegramApi": {
+          "id": "1zgSJaOd7LmrWoRq",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const invoice = $('Append JSON and Invoice data').first().json;\nconst binary = $input.first().binary;\n\nconst fileName = `${invoice.draft_drive_file_name}.pdf`\n\nbinary.data.fileName = fileName;\nbinary.data.fileExtension = 'pdf';\nbinary.data.mimeType = 'application/pdf';\n\nreturn {\n  json:invoice,\n  binary\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        13040,
+        5760
+      ],
+      "id": "df3fcbd8-dc11-4d2c-a319-310d0208f741",
+      "name": "Recover invoice data and append PDF draft"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.draft_drive_file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf",
+              "sheetsToFormat": "application/pdf"
+            }
+          },
+          "fileName": "={{ $json.current_invoice_data.draft_drive_file_name }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        12832,
+        5760
+      ],
+      "id": "5503c6c1-5c81-4db8-97c6-6fb1282a6c56",
+      "name": "Download Invoice",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "yESEGUv8xXGOwC2c",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.draft_drive_file_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1129729323,
+          "mode": "list",
+          "cachedResultName": "data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/INVOICE_SHEET_ID/edit#gid=1129729323"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "key": "={{ $json.key }}",
+            "value": "={{ $json.value }}"
+          },
+          "matchingColumns": [
+            "key"
+          ],
+          "schema": [
+            {
+              "id": "key",
+              "displayName": "key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "value",
+              "displayName": "value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        12432,
+        5760
+      ],
+      "id": "ebfe1230-8435-42cc-bead-022d2b9f2667",
+      "name": "Update Data rows",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "I8DvipTF7nf7kAd8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const invoice = $('Append JSON and Invoice data').first().json\n\nreturn {\n  json: invoice\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12640,
+        5760
+      ],
+      "id": "159b088f-1723-48f5-a191-b1f8cafeada8",
+      "name": "Recover Invoice Data"
+    },
+    {
+      "parameters": {
+        "jsCode": "const invoice = $input.first().json;\n\nconst rows = [\n  ['invoice_number', invoice.invoice_sheet_data.invoice_number],\n  ['invoice_date', invoice.invoice_sheet_data.invoice_date],\n  ['due_date', invoice.invoice_sheet_data.due_date],\n  ['period_label', invoice.invoice_sheet_data.period_label],\n  ['hourly_rate', invoice.invoice_sheet_data.hourly_rate],\n  ['quantity', invoice.invoice_sheet_data.quantity],\n  ['amount', invoice.invoice_sheet_data.amount],\n  ['balance_due', invoice.invoice_sheet_data.balance_due],\n];\n\nreturn rows.map(([key, value]) => ({\n  json: {\n    draft_drive_file_id: invoice.draft_drive_file_id,\n    run_id: invoice.run_id,\n    invoice_number: invoice.invoice_number,\n    key,\n    value,\n  },\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12224,
+        5760
+      ],
+      "id": "f6ba8924-2092-4dce-8b09-3109ff5c4283",
+      "name": "Generate Data rows entries"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const invoice = $('Normalize AI JSON').first().json;\nconst copiedFile = $json;\n\nfunction formatDate(date) {\n  return date.toISOString().slice(0, 10);\n}\n\nconst today = new Date();\nconst invoiceDate = formatDate(today);\n\nconst due = new Date(today);\ndue.setDate(due.getDate() + 15);\nconst dueDate = formatDate(due);\n\nconst periodStart = invoice.period_start;\nconst periodEnd = invoice.period_end;\n\nconst periodStartDate = new Date(`${periodStart}T00:00:00`);\nconst periodEndDate = new Date(`${periodEnd}T00:00:00`);\n\nconst monthName = periodEndDate.toLocaleString('en-US', {\n  month: 'long',\n  timeZone: 'UTC',\n});\n\nconst periodLabel = `${periodStartDate.getUTCDate()} to ${periodEndDate.getUTCDate()} ${monthName}`;\n\nconst currentInvoiceData = {\n  run_id: invoice.run_id,\n  invoice_number: invoice.invoice_number,\n  invoice_status: invoice.invoice_status,\n  period_label: periodLabel,\n  entry_count: invoice.entry_count,\n  total_minutes: invoice.total_minutes,\n  total_hours: invoice.total_hours,\n  hourly_rate: invoice.hourly_rate,\n  currency: invoice.currency,\n  amount: invoice.amount,\n  confidence: invoice.confidence,\n  recommended_action: invoice.recommended_action,\n  detected_issues: invoice.detected_issues || [],\n  email_subject: invoice.email_subject,\n  email_body: invoice.email_body,\n  telegram_message: invoice.telegram_message,\n  draft_drive_file_id: copiedFile.id,\n  draft_drive_file_name: copiedFile.name,\n  invoice_date: invoiceDate,\n  due_date: dueDate,\n};\n\nreturn {\n  json: {\n    current_invoice_data: currentInvoiceData,\n\n    draft_drive_file_id: copiedFile.id,\n    draft_drive_file_name: copiedFile.name,\n\n    run_id: invoice.run_id,\n    invoice_number: invoice.invoice_number,\n\n    invoice_sheet_data: {\n      invoice_number: invoice.invoice_number,\n      invoice_date: invoiceDate,\n      due_date: dueDate,\n      period_label: periodLabel,\n      hourly_rate: invoice.hourly_rate,\n      quantity: invoice.total_hours,\n      amount: invoice.amount,\n      balance_due: invoice.amount,\n    },\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12016,
+        5760
+      ],
+      "id": "26579689-e771-4067-86c4-f63e4a59616c",
+      "name": "Append JSON and Invoice data"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $('Reserve Invoice Number1').first().json;\nconst raw = $json.content ?? $json.text ?? $json.message?.content ?? $json.response ?? JSON.stringify($json);\n\nfunction extractJsonObject(text) {\n  const value = String(text || '').trim();\n  try {\n    return JSON.parse(value);\n  } catch (_) {}\n\n  const fenced = value.match(/```(?:json)?\\s*([\\s\\S]*?)```/i);\n  if (fenced) {\n    try {\n      return JSON.parse(fenced[1].trim());\n    } catch (_) {}\n  }\n\n  const first = value.indexOf('{');\n  const last = value.lastIndexOf('}');\n  if (first !== -1 && last !== -1 && last > first) {\n    return JSON.parse(value.slice(first, last + 1));\n  }\n\n  throw new Error('AI response did not contain valid JSON.');\n}\n\nfunction asArray(value) {\n  if (Array.isArray(value)) return value.map(String).filter(Boolean);\n  if (value === undefined || value === null || value === '') return [];\n  return [String(value)];\n}\n\nfunction cleanEnum(value, allowed, fallback) {\n  return allowed.includes(value) ? value : fallback;\n}\n\nfunction normalizeNewlines(value) {\n  return String(value || '')\n    .replace(/\\\\r\\\\n/g, '\\n')\n    .replace(/\\\\n/g, '\\n')\n    .replace(/\\r\\n/g, '\\n')\n    .replace(/\\n{3,}/g, '\\n\\n')\n    .trim();\n}\n\nfunction defaultEmail(invoiceNumber, hasAttachment) {\n  const action = hasAttachment\n    ? `Please find attached Invoice #${invoiceNumber} for the services provided. Thank you for your time.`\n    : `I am sending Invoice #${invoiceNumber} for the services provided. Thank you for your time.`;\n\n  return `Hi X and Y,\\n\\nI hope this email finds you well.\\n\\n${action}\\n\\nBest Regards,\\nGuilherme`;\n}\n\nfunction containsForbiddenExternalContent(value) {\n  const text = String(value || '');\n  const forbiddenPatterns = [\n    /\\[[^\\]]+\\]/,\n    /unknown/i,\n    /invoice draft/i,\n    /automation/i,\n    /\\bAI\\b/i,\n    /validation/i,\n    /approval/i,\n    /confidence/i,\n    /detected issues/i,\n    /Productive\\.io/i,\n    /time entries/i,\n    /\\bhours?\\b/i,\n    /\\brate\\b/i,\n    /\\bamount\\b/i,\n    /billing period/i,\n    /services provided\\s+from/i,\n    /\\bfrom\\s+\\d{1,2}\\s+[A-Za-z]{3,9}\\s+\\d{4}\\s+to\\s+\\d{1,2}\\s+[A-Za-z]{3,9}\\s+\\d{4}\\b/i,\n    /\\b\\d{4}-\\d{2}-\\d{2}\\b/,\n    /\\b\\d{1,2}\\s+(Jan|January|Feb|February|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|September|Oct|October|Nov|November|Dec|December)\\s+\\d{4}\\b/i,\n    /\\$\\s*\\d/\n  ];\n\n  return forbiddenPatterns.some((pattern) => pattern.test(text));\n}\n\nfunction defaultTelegramMessage(source, confidence, issues) {\n  const issueText = issues.length ? issues.join('; ') : 'none';\n  return `Guilherme, please review Invoice #${source.invoice_number}. Period: ${source.period_start} to ${source.period_end}. Hours: ${source.total_hours}. Amount: ${source.currency} ${source.amount}. Confidence: ${confidence}. Issues: ${issueText}. Reply approve, reject, or edit.`;\n}\n\nlet parsed;\nlet parserWarning = null;\ntry {\n  parsed = extractJsonObject(raw);\n} catch (error) {\n  parserWarning = error.message;\n  parsed = {};\n}\n\nconst invoiceNumber = source.invoice_number;\nconst hasAttachment = Boolean(source.invoice_file_name || source.attachment_file_name);\nlet emailBody = normalizeNewlines(parsed.email_body);\n\nif (!emailBody || !emailBody.includes(`Invoice #${invoiceNumber}`) || containsForbiddenExternalContent(emailBody)) {\n  emailBody = defaultEmail(invoiceNumber, hasAttachment);\n}\n\nlet emailSubject = normalizeNewlines(parsed.email_subject);\nif (!emailSubject || !emailSubject.includes(`Invoice #${invoiceNumber}`) || containsForbiddenExternalContent(emailSubject)) {\n  emailSubject = `Invoice #${invoiceNumber}`;\n}\n\nlet recommendedAction = cleanEnum(parsed.recommended_action, ['request_approval', 'needs_manual_review', 'stop'], 'needs_manual_review');\nlet confidence = cleanEnum(parsed.confidence, ['high', 'medium', 'low'], 'low');\nconst detectedIssues = asArray(parsed.detected_issues);\n\nif (parserWarning) {\n  recommendedAction = 'needs_manual_review';\n  confidence = 'low';\n  detectedIssues.push(parserWarning);\n}\n\nif (!source.period_start || !source.period_end || source.amount === undefined || source.amount === null || !invoiceNumber) {\n  recommendedAction = 'stop';\n  confidence = 'low';\n  detectedIssues.push('Essential invoice data is missing.');\n}\n\nif ((source.warnings || []).length > 0 || Number(source.entry_count || 0) === 0 || Number(source.total_hours || 0) === 0) {\n  if (recommendedAction === 'request_approval') recommendedAction = 'needs_manual_review';\n  if (confidence === 'high') confidence = 'medium';\n}\n\nconst normalizedIssues = [...new Set(detectedIssues)];\nconst telegramMessage = normalizeNewlines(parsed.telegram_message) || defaultTelegramMessage(source, confidence, normalizedIssues);\n\nconst normalized = {\n  confidence,\n  recommended_action: recommendedAction,\n  summary: normalizeNewlines(parsed.summary) || 'The invoice data was normalized for manual review.',\n  detected_issues: normalizedIssues,\n  work_summary: asArray(parsed.work_summary),\n  telegram_message: telegramMessage,\n  email_subject: emailSubject,\n  email_body: emailBody\n};\n\nreturn {\n  json: {\n    ...source,\n    current_invoice_data: {\n      run_id: source.run_id,\n      invoice_number: source.invoice_number,\n      invoice_status: source.invoice_status,\n      period_start: source.period_start,\n      period_end: source.period_end,\n      entry_count: source.entry_count,\n      total_minutes: source.total_minutes,\n      total_hours: source.total_hours,\n      hourly_rate: source.hourly_rate,\n      currency: source.currency,\n      amount: source.amount,\n      confidence: normalized.confidence,\n      recommended_action: normalized.recommended_action,\n      detected_issues: normalized.detected_issues,\n      email_subject: normalized.email_subject,\n      email_body: normalized.email_body,\n      telegram_message: normalized.telegram_message\n    },\n    ai_raw_response: raw,\n    ai: normalized,\n    confidence: normalized.confidence,\n    recommended_action: normalized.recommended_action,\n    summary: normalized.summary,\n    detected_issues: normalized.detected_issues,\n    work_summary: normalized.work_summary,\n    telegram_message: normalized.telegram_message,\n    email_subject: normalized.email_subject,\n    email_body: normalized.email_body\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11616,
+        5760
+      ],
+      "id": "304e0d91-2dfa-41ab-a2b8-c70cf6d7b900",
+      "name": "Normalize AI JSON"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "INVOICE_TEMPLATE_FILE_ID",
+          "mode": "list",
+          "cachedResultName": "INVOICE_TEMPLATE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/INVOICE_TEMPLATE_FILE_ID/edit?usp=drivesdk"
+        },
+        "name": "={{ 'Invoice-' + $json.invoice_number + '-DRAFT-' + $json.period_start + '-to-' + $json.period_end + '-GuilhermeWestphall'}}",
+        "sameFolder": false,
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "DRAFT_FOLDER_ID",
+          "mode": "list",
+          "cachedResultName": "Draft",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/DRAFT_FOLDER_ID"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        11808,
+        5760
+      ],
+      "id": "27c9deec-ca1d-437b-aaf9-e3f3c578e2f6",
+      "name": "Copy file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "yESEGUv8xXGOwC2c",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const input = $json;\nconst config = $('Edit Fields1').first().json;\nconst staticData = $getWorkflowStaticData('global');\n\nconst initialInvoiceNumber = Number(config.initial_invoice_number || 0);\nconst lastInvoiceNumber = Number(staticData.last_invoice_number || initialInvoiceNumber);\nconst nextInvoiceNumber = lastInvoiceNumber + 1;\n\n// Reserve immediately so approval, PDF generation, Gmail, and logs all refer to the same invoice number.\nstaticData.last_invoice_number = nextInvoiceNumber;\n\nconst invoiceNumber = String(nextInvoiceNumber).padStart(3, '0');\nconst runId = `${Date.now()}-${invoiceNumber}`;\n\nreturn {\n  json: {\n    ...input,\n    invoice_number: invoiceNumber,\n    run_id: runId,\n    invoice_status: 'pending_approval',\n    client_names: config.client_names || 'X and Y'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11088,
+        5760
+      ],
+      "id": "08c8d84d-55b2-493c-b621-90313acc938c",
+      "name": "Reserve Invoice Number1"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"productive_person_id\": \"ID\",\n  \"hourly_rate\": N,\n  \"currency\": \"USD\",\n  \"initial_invoice_number\": 17,\n  \"telegram_chat_id\": "TELEGRAM_CHAT_ID",\n  \"current_invoice_registry_file_id\": \"REGISTRY_FILE_ID\",\n  \"email_to\": [\n    \"guilhermewestphall@gmail.com\",\n  ],\n  \"email_cc\": [],\n  \"email_bcc\": []\n}\n",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        10448,
+        5760
+      ],
+      "id": "ddc0253b-76f4-4dd2-b1b8-2afef73e16e7",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "llama3.2:3b",
+          "mode": "list",
+          "cachedResultName": "llama3.2:3b"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a strict JSON generator inside an n8n invoice workflow.\n\nYou are not a chat assistant. Do not explain your reasoning. Do not include Markdown. Do not wrap the output in ```json. Return exactly one valid JSON object and nothing else.\n\nContext:\nGuilherme Westphall is a contractor. The workflow receives Productive.io time entries, calculates invoice values deterministically, assigns the invoice number deterministically, asks you to validate the invoice draft, and then asks Guilherme for approval through Telegram before anything is sent.\n\nYour role:\n- Validate whether the invoice draft is ready for Guilherme to review.\n- Detect practical issues.\n- Produce an internal Telegram approval/review message.\n- Produce a short external email to X and Y.\n\nHard rules:\n- Do not recalculate total_hours, hourly_rate, amount, or any financial value.\n- Do not modify financial values.\n- Do not invent invoice numbers, file names, attachment names, links, clients, dates, amounts, or work performed.\n- Use invoice_number exactly as provided when it exists.\n- Do not use Productive internal fields such as approved, invoiced, or rejected for confidence or decision-making.\n- If required invoice data is missing, recommend \"needs_manual_review\" or \"stop\".\n- Never include placeholders such as [unknown], [project], [task], TODO, N/A, or similar.\n- Never mention automation, AI, validation, approval, confidence, detected issues, invoice draft, Productive.io, time entries, hours, rate, amount, dates, months, years, or billing period in the external email or email subject.\n- The external email must be simple, polite, and close to the examples below.\n\nDecision rules:\n- Use \"request_approval\" only when period_start, period_end, entry_count, total_hours, hourly_rate, currency, amount, and invoice_number are present, and there are no relevant warnings or anomalies.\n- Use \"needs_manual_review\" when data exists but has warnings, zero entries, zero hours, suspicious totals, missing optional invoice fields, or unclear work notes.\n- Use \"stop\" only when essential data is missing or invalid enough that the workflow should not continue.\n\nEmail rules:\n- email_subject must be exactly \"Invoice #<invoice_number>\" when invoice_number exists.\n- Address the email to \"X and Y\".\n- Sign as \"Guilherme\".\n- Keep it short and simple.\n- Do not describe activities performed.\n- Do not include period, dates, months, years, hours, rate, amount, or internal workflow details.\n- If invoice_number is present, mention it as \"Invoice #<invoice_number>\".\n- If invoice_file_name or attachment_file_name is present, you may say \"Please find attached\".\n- If no invoice_file_name or attachment_file_name is present, say \"I am sending Invoice #<invoice_number>\" instead of \"Please find attached\".\n- Do not say \"invoice draft\".\n- Prefer \"Hi X and Y,\".\n- Use \"Best Regards,\" as the closing.\n\nGood email examples:\nHi X and Y,\n\nI hope this email finds you well.\n\nPlease find attached Invoice #016 for the services provided. Thank you for your time.\n\nBest Regards,\nGuilherme\n\nHi X and Y,\n\nI hope this email finds you well.\n\nI am sending Invoice #016 for the services provided. Thank you for your time.\n\nBest Regards,\nGuilherme\n\nInvoice data:\n{{ JSON.stringify($json, null, 2) }}\n\nReturn exactly this JSON shape:\n{\"confidence\":\"high|medium|low\",\"recommended_action\":\"request_approval|needs_manual_review|stop\",\"summary\":\"short internal summary for Guilherme\",\"detected_issues\":[\"issue\"],\"work_summary\":[\"short internal work summary item\"],\"telegram_message\":\"internal message to Guilherme with period, hours, amount, invoice number, confidence, issues, and instructions to approve/reject/edit\",\"email_subject\":\"Invoice #<invoice_number>\",\"email_body\":\"short external email body\"}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [
+        11280,
+        5760
+      ],
+      "id": "fbc45ac6-45b3-49bc-ab55-d2348f3a7aa7",
+      "name": "Message a model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "yKgICLm9wk5ERgN2",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const raw = $json.data;\nconst body = typeof raw === \"string\" ? JSON.parse(raw) : $json;\n\nconst period = $(\"Set Billing Period1\").first().json;\nconst entries = body.data || [];\n\nconst hourlyRate = $('Edit Fields1').item.json.hourly_rate; \nconst currency = $('Edit Fields1').item.json.currency;\n\nfunction stripHtml(html) {\n  return String(html || \"\")\n    .replace(/<[^>]+>/g, \" \")\n    .replace(/\\s+/g, \" \")\n    .trim();\n}\n\nlet totalMinutes = 0;\n\nconst cleanEntries = entries.map((entry) => {\n  const attrs = entry.attributes || {};\n  const minutes = attrs.time || 0;\n  totalMinutes += minutes;\n\n  return {\n    id: entry.id,\n    date: attrs.date,\n    minutes,\n    hours: Number((minutes / 60).toFixed(2)),\n    note: stripHtml(attrs.note),\n  };\n});\n\nconst totalHours = Number((totalMinutes / 60).toFixed(2));\nconst amount = Number((totalHours * hourlyRate).toFixed(2));\n\nconst warnings = [];\n\nif (entries.length === 0) {\n  warnings.push(\"No time entries found for this period.\");\n}\n\nif (body.meta?.total_pages > 1) {\n  warnings.push(`Productive returned ${body.meta.total_pages} pages. Pagination is not implemented yet.`);\n}\n\nreturn {\n    json: {\n      period_start: period.period_start,\n      period_end: period.period_end,\n      period_source: period.period_source,\n      entry_count: cleanEntries.length,\n      total_minutes: totalMinutes,\n      total_hours: totalHours,\n      hourly_rate: hourlyRate,\n      currency,\n      amount,\n      warnings\n    },\n  }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10880,
+        5760
+      ],
+      "id": "371f3596-a9bc-4ed6-87b5-b3235fb94031",
+      "name": "Parse Entries and Calculate Amount 1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const input = $json;\n\nif (input.period_start && input.period_end) {\n  return {\n    json: {\n      ...input,\n      period_start: input.period_start,\n      period_end: input.period_end,\n      period_source: \"manual\"\n    }\n  }\n}\n\nconst now = new Date(input.timestamp ?? Date.now())\nconst year = now.getFullYear();\nconst month = now.getMonth();\nconst day = now.getDate();\n\nfunction yyyyMmDd(date) {\n  return date.toISOString().slice(0, 10);\n}\n\nlet periodStart;\nlet periodEnd;\nlet periodSource;\n\nif (day >= 16) {\n  // On the 16th, invoice days 1-15 of the current month\n  periodStart = new Date(year, month, 1);\n  periodEnd = new Date(year, month, 15);\n  periodSource = day === 16 ? \"scheduled-day-16\" : \"manual\";\n} else {\n  // On the 1st, invoice day 16 through last day of previous month\n  periodStart = new Date(year, month - 1, 16);\n  periodEnd = new Date(year, month, 0);\n  periodSource = day === 1 ? \"scheduled-day-1\" : \"manual\";\n} \n\n  const time = {\n    json: {\n      period_start: yyyyMmDd(periodStart),\n      period_end: yyyyMmDd(periodEnd),\n      period_source: periodSource\n    }\n  }\n\nreturn time;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10256,
+        5760
+      ],
+      "id": "f2cc5be2-cb5b-4cb5-a411-fe604cb5fc51",
+      "name": "Set Billing Period1",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "url": "https://api.productive.io/api/v2/time_entries",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "filter[person_id]",
+              "value": "={{ $json.productive_person_id }}"
+            },
+            {
+              "name": "filter[date][gt_eq]",
+              "value": "={{ $json.period_start }}"
+            },
+            {
+              "name": "filter[date][lt_eq]",
+              "value": "={{ $json.period_end }}"
+            },
+            {
+              "name": "page[size]",
+              "value": "200"
+            },
+            {
+              "name": "sort",
+              "value": "date"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        10672,
+        5760
+      ],
+      "id": "44dd5aaa-974d-42ef-bf3b-a3d97ffb9c74",
+      "name": "Fetch time entries 1",
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "OjSWZ30T2AoRtQed",
+          "name": "Custom Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtHour": 12
+            },
+            {
+              "field": "months",
+              "triggerAtDayOfMonth": 16,
+              "triggerAtHour": 12
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        10064,
+        5760
+      ],
+      "id": "27ae1a78-d4e7-4bb5-a862-1b77f81ba179",
+      "name": "Schedule Trigger1",
+      "retryOnFail": true,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": false
+        }
+      },
+      "id": "51d05334-2b36-4c53-aedd-e049c68a8362",
+      "name": "Telegram Trigger: Invoice Commands",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        10256,
+        6400
+      ],
+      "webhookId": "bc892bfb-60d1-4d5b-b911-1f35b42a0bcc",
+      "credentials": {
+        "telegramApi": {
+          "id": "1zgSJaOd7LmrWoRq",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Approve: Build Sent Registry JSON": {
+      "main": [
+        [
+          {
+            "node": "Approve: Update Registry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve: Update Registry": {
+      "main": [
+        [
+          {
+            "node": "Telegram: Confirm Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit: Update Registry": {
+      "main": [
+        [
+          {
+            "node": "Telegram: Send Revised Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit: Normalize Revised Email": {
+      "main": [
+        [
+          {
+            "node": "Edit: Update Registry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit: Ollama Rewrite Email": {
+      "main": [
+        [
+          {
+            "node": "Edit: Normalize Revised Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reject: Update Registry": {
+      "main": [
+        [
+          {
+            "node": "Telegram: Confirm Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reject: Build Rejected Registry JSON": {
+      "main": [
+        [
+          {
+            "node": "Reject: Update Registry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail: Send Invoice": {
+      "main": [
+        [
+          {
+            "node": "Approve: Build Sent Registry JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve: Prepare Gmail Payload": {
+      "main": [
+        [
+          {
+            "node": "Gmail: Send Invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve: Download PDF": {
+      "main": [
+        [
+          {
+            "node": "Approve: Prepare Gmail Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve: Validate Current Invoice": {
+      "main": [
+        [
+          {
+            "node": "Approve: Download PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Command": {
+      "main": [
+        [
+          {
+            "node": "Approve: Validate Current Invoice",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject: Build Rejected Registry JSON",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit: Ollama Rewrite Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram: Send Command Help",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Registry JSON": {
+      "main": [
+        [
+          {
+            "node": "Route Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive: Download Current Registry": {
+      "main": [
+        [
+          {
+            "node": "Load Registry JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Telegram Commands": {
+      "main": [
+        [
+          {
+            "node": "Drive: Download Current Registry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Parse Telegram Commands",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Current Invoice Registry JSON": {
+      "main": [
+        [
+          {
+            "node": "Drive: Update Current Invoice Registry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram: Send Draft": {
+      "main": [
+        [
+          {
+            "node": "Build Current Invoice Registry JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recover invoice data and append PDF draft": {
+      "main": [
+        [
+          {
+            "node": "Telegram: Send Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Invoice": {
+      "main": [
+        [
+          {
+            "node": "Recover invoice data and append PDF draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Data rows": {
+      "main": [
+        [
+          {
+            "node": "Recover Invoice Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recover Invoice Data": {
+      "main": [
+        [
+          {
+            "node": "Download Invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Data rows entries": {
+      "main": [
+        [
+          {
+            "node": "Update Data rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append JSON and Invoice data": {
+      "main": [
+        [
+          {
+            "node": "Generate Data rows entries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize AI JSON": {
+      "main": [
+        [
+          {
+            "node": "Copy file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file": {
+      "main": [
+        [
+          {
+            "node": "Append JSON and Invoice data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reserve Invoice Number1": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Fetch time entries 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Normalize AI JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Entries and Calculate Amount 1": {
+      "main": [
+        [
+          {
+            "node": "Reserve Invoice Number1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Billing Period1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch time entries 1": {
+      "main": [
+        [
+          {
+            "node": "Parse Entries and Calculate Amount 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Set Billing Period1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger: Invoice Commands": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "82413706-e47a-42aa-aea1-d188098990ea",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "10014be684e9825c4d56d2fab4ae819ea97f0d22eb1efbb03b11f2eac630c8cc"
+  },
+  "id": "Vl2hMQhqvF5Bvpnk",
+  "tags": []
+}
