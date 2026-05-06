@@ -37,10 +37,9 @@ a interpretação da intenção de pesquisa e a classificação inicial — entr
 
 ## 4. Contexto de Uso
 
-O agente é acionado quando um pesquisador tem uma **intenção de busca em linguagem natural** mas ainda não sabe exatamente quais termos técnicos usar na API. Ele opera de forma assíncrona: o usuário submete o objetivo, o agente processa e entrega os resultados classificados na aba **Registros** do Google Sheets e, quando relevante (ação = `revisar` ou `relevancia_score >= 0.8`), insere um registro adicional na aba **Alertas** do Google Sheets.
+O agente é acionado quando um pesquisador tem uma **intenção de busca em linguagem natural** mas ainda não sabe exatamente quais termos técnicos usar na API. Ele opera de forma assíncrona via n8n: o usuário preenche o campo `objetivo_pesquisa` no nó **Edit Fields**, o **Agente 1** (Google Gemini 2.5 Flash) converte o objetivo em uma query booleana em inglês (formato `("termo1" OR "termo2") +campo`), a **Semantic Scholar Bulk Search API** retorna até 5 artigos, um nó **Filter** elimina artigos sem abstract, e o **Agente 2** (Google Gemini 2.5 Flash) classifica cada artigo retornando um JSON estruturado. Os resultados são gravados na aba **Registros** do Google Sheets; artigos com `acao = revisar` ou `relevancia_score >= 0.8` recebem também um registro na aba **Alertas**.
 
-O agente **não substitui** a leitura crítica dos artigos — ele reduz o 
-esforço da triagem inicial para que o pesquisador foque onde importa.
+O agente **não substitui** a leitura crítica dos artigos — ele reduz o esforço da triagem inicial para que o pesquisador foque onde importa.
 
 ---
 
@@ -49,34 +48,41 @@ esforço da triagem inicial para que o pesquisador foque onde importa.
 ### Entrada
 | Campo | Tipo | Exemplo |
 |---|---|---|
-| `objetivo_pesquisa` | Texto livre (linguagem natural) | "quero entender como LLMs são usados para geração automática de código" |
+| `objetivo_pesquisa` | Texto livre (linguagem natural) | "Como os celulares impactam nas escolas" |
 
-### Saídas
+### Saídas — Agente 1 (Query Builder)
 | Campo | Tipo | Descrição |
 |---|---|---|
-| `query_gerada` | string | Query otimizada enviada à Semantic Scholar |
-| `titulo` | string | Título do artigo encontrado |
-| `ano` | número | Ano de publicação |
-| `citacoes` | número | Número de citações na Semantic Scholar |
-| `classificacao` | enum | `alta_relevancia`, `media_relevancia`, `baixa_relevancia`, `neutro` |
-| `relevancia_score` | float (0–1) | Score numérico de relevância ao objetivo |
-| `keywords_extraidas` | lista | Mínimo 3 keywords identificadas no abstract |
-| `resumo` | string | Resumo do artigo em até 50 palavras |
-| `justificativa` | string | 1 frase explicando a classificação atribuída |
-| `confianca` | float (0–1) | Confiança do agente na classificação |
-| `acao` | enum | `arquivar`, `revisar`, `descartar` |
-| `status` | string | `processado`, `revisao_humana` |
+| `query_gerada` | string | Query booleana em inglês gerada pelo Agente 1; ex: `("smartphone" OR "mobile phone") +school +learning` |
+
+### Saídas — Agente 2 (Classifier), por artigo
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `titulo` | string | Título do artigo retornado pela Semantic Scholar |
+| `ano` | integer \| null | Ano de publicação |
+| `relevancia` | float (0–1) | Score numérico de relevância ao objetivo (`relevancia_score`) |
+| `resumo_pt` | string | Resumo do artigo em até 30 palavras, em português |
+| `decisao` | enum | `arquivar` ou `descartar` |
+
+### Saídas — Google Sheets
+| Aba | Conteúdo |
+|---|---|
+| **Registros** | Todos os artigos processados com todos os campos acima |
+| **Alertas** | Artigos com `decisao = revisar` ou `relevancia >= 0.8`; campos: `timestamp`, `titulo`, `relevancia`, `resumo_pt`, `justificativa`, `status = aguardando_revisao` |
 
 ---
 
 ## 6. Limites do Agente
 
-- Processa no máximo **10 artigos por execução** (limite da busca na API)
+- Processa no máximo **5 artigos por execução** (parâmetro `limit=5` no nó HTTP Request, imposto pelo rate limit da Semantic Scholar sem chave de API)
+- Artigos com **abstract nulo** são eliminados antes da classificação pelo nó Filter — não são registrados no Sheets
 - Classifica com base **apenas em título e abstract** — não acessa o PDF
-- Depende da disponibilidade da **Semantic Scholar API** (externa, sem SLA garantido)
+- Depende da disponibilidade da **Semantic Scholar Bulk Search API** (gratuita, sem SLA garantido)
+- Abstract nulo aciona classificação com `confianca = 0.3` e `decisao = revisar` quando o filtro não elimina o artigo
 - Não realiza buscas em **múltiplas fontes simultâneas**
 - Não suporta entrada em **outros idiomas** além do português e inglês
 - Não possui **memória entre execuções** — cada busca é independente
+- Modelo **Gemini 2.0 Flash foi depreciado** durante o desenvolvimento; implementação migrada para **Gemini 2.5 Flash**
 
 ---
 
@@ -121,11 +127,10 @@ esforço da triagem inicial para que o pesquisador foque onde importa.
 
 ## 10. Evidências para Considerar a Missão Concluída
 
-- [ ] Print do fluxo completo no n8n com todos os nós conectados
-- [ ] Print de execução real mostrando query gerada pelo Agente 1
-- [ ] Print do retorno da Semantic Scholar com artigos encontrados
-- [ ] Print do JSON de classificação gerado pelo Agente 2
-- [ ] Print da planilha Google Sheets com ao menos 5 artigos registrados
-- [ ] Print da aba **Alertas** no Google Sheets com ao menos 1 artigo com `status = aguardando_revisao`
-- [ ] Print de execução com artigo `neutro` mostrando fallback para `revisao_humana`
-- [ ] Arquivo `workflow-solution-b.json` exportado do n8n no repositório
+- [x] Print do fluxo completo no n8n com todos os nós conectados (Manual Trigger → Edit Fields → Agente 1 → HTTP Request → Split Out → Filter → Limit → Agente 2 → Code → IF → Switch → Google Sheets Registros / Alertas)
+- [x] Print de execução real mostrando query booleana gerada pelo Agente 1
+- [x] Print do retorno da Semantic Scholar Bulk Search API com artigos encontrados
+- [x] Print do JSON de classificação gerado pelo Agente 2 (campos: `titulo`, `ano`, `relevancia`, `resumo_pt`, `decisao`)
+- [x] Print da aba **Registros** no Google Sheets com artigos processados
+- [x] Print da aba **Alertas** no Google Sheets com ao menos 1 artigo com `status = aguardando_revisao`
+- [x] Arquivo `workflow-solution-b.json` exportado do n8n no repositório (`src/workflow-solution-b.json`)

@@ -1,79 +1,118 @@
-# Solution B — Classificação com RAG via Semantic Scholar
+# Solution B — Pipeline de Curadoria com Gemini 2.5 Flash + Semantic Scholar
 
 ## Descrição
 
-Abordagem com **Retrieval-Augmented Generation (RAG)**: antes de classificar, o agente busca até **5 artigos relacionados** na Semantic Scholar API e os inclui como contexto no prompt. A IA decide com mais informação — não apenas sobre o artigo em si, mas sobre o espaço de literatura ao redor dele.
-
-O pipeline usa **dois agentes** em sequência: o primeiro gera a query de busca; o segundo classifica com base no abstract original + os abstracts dos artigos relacionados encontrados.
+Implementação de um pipeline de dois agentes no **n8n** para curadoria automatizada de artigos científicos. O usuário fornece um objetivo em linguagem natural; o pipeline gera uma query booleana em inglês, busca artigos na Semantic Scholar Bulk Search API, filtra resultados sem abstract, classifica cada artigo via LLM e grava os resultados no Google Sheets (abas **Registros** e **Alertas**).
 
 ---
 
-## Fluxo
+## Fluxo Implementado
 
 ```
-[Usuário fornece objetivo de pesquisa]
-          │
-          ▼
-  [Agente 1 → Google Gemini]
-  Gera query técnica em inglês
-          │
-          ▼
-  [Semantic Scholar API]
-  Retorna até 10 artigos
-          │
-          ▼
-  [Para cada artigo:]
-  [Agente 2 → Google Gemini]
-  Recebe abstract + 5 artigos relacionados como contexto
-          │
-          ▼
-  [JSON com classificação enriquecida]
-          │
-          ▼
-  [Google Sheets — aba Registros (todos os artigos)]
-  [Google Sheets — aba Alertas (acao=revisar ou score>=0.8)]
+[Manual Trigger]
+       │
+       ▼
+[Edit Fields]
+ Define objetivo_pesquisa
+       │
+       ▼
+[Agente 1 — Google Gemini 2.5 Flash]
+ Converte objetivo em português
+ → query booleana em inglês
+ ex: ("smartphone" OR "mobile phone") +school
+       │
+       ▼
+[HTTP Request — Semantic Scholar Bulk Search API]
+ GET graph/v1/paper/search/bulk
+ ?query=<query_gerada>
+ &fields=title,abstract,year,citationCount
+ &limit=5
+       │
+       ▼
+[Split Out]  →  [Filter: remove abstract=null]  →  [Limit: máx 5]
+       │
+       ▼
+[Agente 2 — Google Gemini 2.5 Flash]
+ Classifica artigo → JSON: titulo, ano,
+ relevancia, resumo_pt, decisao
+       │
+       ▼
+[Code in JavaScript]
+ JSON.parse da resposta do Agente 2
+       │
+       ▼
+[IF — confianca >= 0.6?]
+       │
+       ▼
+[Switch — decisao: arquivar | revisar | descartar]
+       │
+       ▼
+[Google Sheets — aba Registros]  (todos os artigos)
+       │
+       Se decisao=revisar OU relevancia>=0.8:
+       ▼
+[Google Sheets — aba Alertas]
+ status = aguardando_revisao
 ```
+
+---
 
 ## Tecnologias
 
 | Componente | Tecnologia |
 |---|---|
-| IA | Google Gemini (gemini-2.0-flash) |
-| Busca | Semantic Scholar API |
-| Registro | Google Sheets (aba **Registros**) |
-| Alertas | Google Sheets (aba **Alertas**) |
+| IA | Google Gemini 2.5 Flash (`models/gemini-2.5-flash`) |
+| Busca | Semantic Scholar Bulk Search API (gratuita) |
+| Registro | Google Sheets — aba **Registros** |
+| Alertas | Google Sheets — aba **Alertas** |
 | Orquestração | n8n |
+| Credenciais | Google PaLM API (Gemini) + Google Sheets OAuth2 |
+
+---
+
+## Decisões de Design
+
+| Decisão | Alternativa descartada | Motivo |
+|---|---|---|
+| Endpoint `/bulk` da Semantic Scholar | Endpoint `/search` padrão | O endpoint padrão sofre rate limit severo sem chave API |
+| `limit=5` por execução | `limit=10` | Rate limit da API gratuita impede volumes maiores de forma confiável |
+| Nó **Filter** antes do Agente 2 | Deixar o LLM tratar abstract nulo | Evita desperdício de tokens e respostas inconsistentes |
+| Nó **Split Out** separando itens individualmente | Agente 2 receber array inteiro | Rastreabilidade individual por artigo no histórico do n8n |
+| **Gemini 2.5 Flash** | Gemini 2.0 Flash | Gemini 2.0 Flash foi depreciado durante o desenvolvimento |
+| Credencial **Google PaLM API** no n8n | API key direta | Exigência do nó `@n8n/n8n-nodes-langchain.googleGemini` |
+
+---
+
+## Limitações Encontradas e Soluções
+
+| Limitação | Causa | Solução Aplicada |
+|---|---|---|
+| Artigos com `abstract = null` quebravam o Agente 2 | Semantic Scholar retorna abstract nulo para alguns artigos | Nó **Filter** elimina esses artigos antes da classificação |
+| Rate limit sem chave API | API pública tem cota baixa no endpoint `/search` | Migração para `/bulk` + `limit=5` |
+| Gemini 2.0 Flash depreciado | Google encerrou suporte ao modelo durante o desenvolvimento | Migração para `models/gemini-2.5-flash` |
+| Resposta do Agente 2 com markdown | LLM pode incluir ` ```json ` na resposta | Nó **Code** com `JSON.parse` e strip de backticks antes do parse |
 
 ---
 
 ## Vantagens
 
-- ✅ **Melhor qualidade de classificação** — a IA decide com contexto de literatura real
-- ✅ **Menor taxa de `neutro`** — contexto reduz ambiguidade em abstracts curtos
-- ✅ **Artigos relacionados como subproduto** — o pesquisador recebe sugestões de leitura
-- ✅ **Score de confiança mais calibrado** — o modelo tem mais base para estimar certeza
-- ✅ **Rastreabilidade completa** via n8n (histórico visual de execução)
+- ✅ Pipeline rastreável — cada artigo passa por nós individuais com log visual no n8n
+- ✅ Filtro preventivo — artigos sem abstract removidos antes de consumir tokens
+- ✅ Duas abas no Sheets — separação entre todos os registros e os prioritários
+- ✅ Sem dependência de chave API paga — funciona com Semantic Scholar gratuita
 
 ## Desvantagens
 
-- ❌ **Dependência da Semantic Scholar API** — falha externa impacta o pipeline
-- ❌ **Maior latência** — chamada à API de busca antes de cada classificação
-- ❌ **Maior consumo de tokens** — contexto de 5 artigos aumenta o tamanho do prompt
-- ❌ **Rate limit** — uso intenso pode atingir limites da API gratuita
+- ❌ Volume limitado — máximo de 5 artigos por execução pelo rate limit
+- ❌ Latência por chamada sequencial ao LLM por artigo
+- ❌ Dependência externa — falha na Semantic Scholar interrompe o pipeline
+- ❌ Sem memória — cada execução é independente
 
 ---
 
-## Quando usar
+## Resultado Esperado
 
-Esta é a **solução recomendada** para o caso de uso principal:
-- Pesquisadores que querem descobrir artigos relevantes a partir de um objetivo
-- Contextos em que a qualidade da classificação supera a preocupação com latência
-- Uso com acesso estável à internet e à Semantic Scholar API
-
----
-
-## Resultado esperado
-
-**Score de confiança médio:** entre 0.70 e 0.90  
-**Taxa estimada de `revisao_humana`:** ~15% (dentro da meta de < 20%)  
-**Artigos relacionados retornados por execução:** 5 a 10
+**Artigos processados por execução:** até 5 (após filtro de abstract nulo)  
+**Campos gravados (aba Registros):** `titulo`, `ano`, `relevancia`, `resumo_pt`, `decisao`  
+**Campos gravados (aba Alertas):** `timestamp`, `titulo`, `relevancia`, `resumo_pt`, `justificativa`, `status`  
+**Arquivo de workflow:** `src/workflow-solution-b.json`

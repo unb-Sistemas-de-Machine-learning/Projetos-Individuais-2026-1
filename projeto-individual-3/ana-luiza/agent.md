@@ -26,9 +26,9 @@
 
 | Ferramenta | Finalidade | Restrições |
 |---|---|---|
-| **Semantic Scholar API** | Busca de artigos científicos por query textual | Máximo 10 resultados por chamada; somente artigos com acesso público |
-| **Google Gemini (gemini-2.0-flash)** | Geração de query (Agente 1) e classificação/extração (Agente 2) | Abstracts truncados a 500 caracteres; temperatura = 0.2 para respostas determinísticas |
-| **Google Sheets** | Registro persistente de todos os artigos processados (aba **Registros**) e alerta de artigos que requerem atenção (aba **Alertas**) | Somente escrita — o agente não lê histórico de execuções anteriores. Na aba **Alertas**, insere apenas artigos com `acao = revisar` ou `relevancia_score >= 0.8`, com os campos: `timestamp`, `titulo`, `relevancia_score`, `resumo`, `justificativa` e `status = aguardando_revisao` |
+| **Semantic Scholar Bulk Search API** | Busca de artigos científicos por query booleana (`graph/v1/paper/search/bulk`) | `limit=5` por chamada; campos solicitados: `title,abstract,year,citationCount`; API gratuita sem chave, sujeita a rate limit |
+| **Google Gemini 2.5 Flash** (`models/gemini-2.5-flash`) | Geração de query booleana em inglês (Agente 1) e classificação/extração em JSON (Agente 2) | Temperatura = 0.2; integrado via credencial **Google PaLM API** no n8n; modelo **Gemini 2.0 Flash foi depreciado** e migrado para 2.5 Flash durante o desenvolvimento |
+| **Google Sheets** (OAuth2) | Registro persistente de todos os artigos processados (aba **Registros**) e alertas de artigos prioritários (aba **Alertas**) | Somente escrita; integrado via credencial **Google Sheets OAuth2** no n8n. Aba **Alertas**: inserção apenas quando `decisao = revisar` ou `relevancia >= 0.8`, com campos: `timestamp`, `titulo`, `relevancia`, `resumo_pt`, `justificativa`, `status = aguardando_revisao` |
 
 ### Ferramentas Explicitamente Proibidas
 
@@ -53,42 +53,33 @@ O agente **nunca deve**:
 
 ## 4. Formato de Saída Obrigatório (Output Contract)
 
-Toda classificação de artigo deve ser emitida **exclusivamente** neste formato JSON. Qualquer campo ausente invalida a saída.
+O Agente 2 classifica os artigos e deve retornar um **array JSON** — um objeto por artigo — com os campos abaixo. O nó **Code in JavaScript** faz o `JSON.parse` da resposta antes de enviar ao Sheets.
 
 ```json
-{
-  "titulo": "string — título exato retornado pela Semantic Scholar",
-  "ano": "integer | null",
-  "doi": "string | null",
-  "citacoes": "integer | null",
-  "categoria": "alta_relevancia | media_relevancia | baixa_relevancia | neutro",
-  "relevancia_score": "float entre 0.0 e 1.0",
-  "keywords": ["string", "string", "string"],
-  "resumo_50_palavras": "string — máximo 50 palavras, em português",
-  "justificativa": "string — 1 frase explicando a classificação",
-  "acao_recomendada": "arquivar | revisar | descartar",
-  "confianca": "float entre 0.0 e 1.0",
-  "status": "processado | revisao_humana",
-  "fonte_abstract": "api | fallback_local | abstract_indisponivel"
-}
+[
+  {
+    "titulo": "string — título exato retornado pela Semantic Scholar",
+    "ano": "integer | null",
+    "relevancia": "float entre 0.0 e 1.0",
+    "resumo_pt": "string — máximo 30 palavras, em português",
+    "decisao": "arquivar | descartar"
+  }
+]
 ```
 
 ### Regras de preenchimento
 
 | Campo | Regra |
 |---|---|
-| `categoria` | Determinada pelo `relevancia_score`: ≥ 0.75 → `alta_relevancia`; 0.50–0.74 → `media_relevancia`; 0.25–0.49 → `baixa_relevancia`; < 0.25 ou inconclusivo → `neutro` |
-| `keywords` | Mínimo **3**, máximo 7; extraídas do título + abstract; em inglês |
-| `resumo_50_palavras` | Síntese do abstract em **até 50 palavras** em português; não pode ser cópia do abstract original |
-| `acao_recomendada` | Derivada de `categoria`: `alta_relevancia` → `arquivar`; `media_relevancia` → `revisar`; `baixa_relevancia` ou `neutro` → `descartar` |
-| `confianca` | Estimativa do modelo sobre a certeza da classificação atribuída; independente do `relevancia_score` |
-| `status` | `revisao_humana` quando `confianca < 0.6` **ou** `categoria = neutro`; caso contrário `processado` |
+| `relevancia` | Score de 0.0 a 1.0 representando o alinhamento do artigo ao objetivo informado |
+| `resumo_pt` | Síntese do abstract em **até 30 palavras** em português; não pode ser cópia do abstract original |
+| `decisao` | `arquivar` quando relevância alta e abstract disponível; `descartar` nos demais casos. Artigos com `decisao = revisar` ou `relevancia >= 0.8` são adicionalmente registrados na aba **Alertas** |
 
 ---
 
-## 5. Política de Erro — JSON Inválido
+## 5. Política de Erro
 
-Quando o LLM retornar uma resposta que **não seja JSON válido** ou que esteja **faltando campos obrigatórios**:
+### 5.1 JSON Inválido (resposta do Agente 2 não parseável)
 
 ```
 1. Detectar erro no nó Code do n8n (try/catch no JSON.parse)
@@ -96,22 +87,36 @@ Quando o LLM retornar uma resposta que **não seja JSON válido** ou que esteja 
 3. Construir objeto de fallback:
    {
      "titulo": "<título recebido da API>",
-     "categoria": "neutro",
-     "relevancia_score": 0.0,
-     "keywords": [],
-     "resumo_50_palavras": "Classificação indisponível — erro no retorno do modelo.",
-     "justificativa": "Falha ao processar resposta do LLM.",
-     "acao_recomendada": "descartar",
-     "confianca": 0.0,
-     "status": "revisao_humana",
-     "fonte_abstract": "fallback_local",
+     "ano": null,
+     "relevancia": 0.0,
+     "resumo_pt": "Classificação indisponível — erro no retorno do modelo.",
+     "decisao": "descartar",
      "erro": "json_parse_error"
    }
-4. Registrar objeto de fallback no Google Sheets com coluna `erro` preenchida
-5. Continuar processamento dos artigos restantes da fila
+4. Registrar objeto de fallback no Google Sheets aba Registros com campo `erro` preenchido
+5. Continuar processamento dos artigos restantes
 ```
 
-> ⚠️ Um JSON inválido nunca deve interromper o pipeline inteiro. O artigo é marcado como `revisao_humana` e o fluxo continua.
+> ⚠️ Um JSON inválido nunca deve interromper o pipeline inteiro.
+
+### 5.2 Abstract Nulo
+
+Artigos com `abstract = null` retornados pela Semantic Scholar são tratados em **duas etapas**:
+
+1. **Nó Filter** (antes do Agente 2): elimina o artigo do pipeline — ele **não é classificado nem registrado**
+2. Caso o artigo escape o filtro, o Agente 2 deve produzir:
+
+```json
+{
+  "titulo": "<título recebido da API>",
+  "ano": "<ano recebido>",
+  "relevancia": 0.3,
+  "resumo_pt": "Abstract não disponível — revisão manual necessária.",
+  "decisao": "revisar"
+}
+```
+
+> O valor `relevancia = 0.3` com `decisao = revisar` sinaliza ao pesquisador que o artigo requer atenção manual sem bloquear o fluxo.
 
 ---
 
