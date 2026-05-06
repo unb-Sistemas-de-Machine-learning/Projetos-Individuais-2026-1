@@ -22,7 +22,7 @@
       "typeVersion": 2,
       "position": [460, 300],
       "parameters": {
-        "jsCode": "// Only process 'opened' events\n// GitHub payload arrives nested under .body in n8n webhook node\nconst payload = $input.first().json.body;\nconst action = payload.action;\nif (action && action !== 'opened') {\n  return [];\n}\n\nconst issue = payload.issue || {};\nconst repo = payload.repository || {};\n\nconst title = (issue.title || '').trim();\nconst body = issue.body || '';\nconst labels = (issue.labels || []).map(l => l.name || l).filter(Boolean).join(', ');\nconst repoName = repo.name || '';\nconst issueUrl = issue.html_url || issue.url || '';\nconst issueNumber = issue.number || 0;\n\n// Return degraded result for missing title\nif (!title) {\n  return [{\n    json: {\n      issue: { title: '', body: '', labels: '', repoName, issueUrl, issueNumber },\n      prompt: null,\n      invalid_input: true\n    }\n  }];\n}\n\nconst prompt = `You are an issue classifier for a software project. Analyze the following GitHub issue and return a JSON classification.\n\nIssue Title: ${title}\nIssue Body: ${body || '(no body provided)'}\nLabels: ${labels || '(none)'}\nRepository: ${repoName || '(unknown)'}\n\nReturn ONLY a valid JSON object with this exact structure:\n{\n  \"type\": \"bug | feature | question\",\n  \"severity\": \"critical | medium | low\",\n  \"component\": \"frontend | backend | infra | unknown\",\n  \"confidence\": <float between 0.0 and 1.0>,\n  \"low_confidence\": <boolean, true if confidence < 0.7>,\n  \"summary\": \"<one-line summary of the issue>\",\n  \"reasoning\": \"<brief explanation of the classification>\"\n}\n\nClassification rules:\n- type=bug: reports something broken or not working as expected\n- type=feature: requests new functionality or enhancement\n- type=question: asks how something works or seeks clarification\n- severity=critical: production-breaking, data loss, security vulnerability, auth failure in production\n- severity=medium: significant functionality impaired but a workaround exists\n- severity=low: minor issue, cosmetic problem, or nice-to-have improvement\n- component=frontend: UI, CSS, JavaScript, browser-side behavior\n- component=backend: API, database, server-side logic, authentication\n- component=infra: deployment, CI/CD, Docker, cloud services, networking\n- component=unknown: cannot determine from available context\n\nReturn ONLY the JSON object. No markdown code blocks, no prose outside the JSON.`;\n\nreturn [{\n  json: {\n    issue: { title, body, labels, repoName, issueUrl, issueNumber },\n    prompt,\n    invalid_input: false\n  }\n}];"
+        "jsCode": "// Only process 'opened' events\n// GitHub payload arrives nested under .body in n8n webhook node\nconst payload = $input.first().json.body;\nconst action = payload.action;\nif (action && action !== 'opened') {\n  return [];\n}\n\nconst issue = payload.issue || {};\nconst repo = payload.repository || {};\n\nconst title = (issue.title || '').trim();\nconst body = issue.body || '';\nconst labels = (issue.labels || []).map(l => l.name || l).filter(Boolean).join(', ');\nconst repoName = repo.name || '';\nconst issueUrl = issue.html_url || issue.url || '';\nconst issueNumber = issue.number || 0;\n\nif (!title) {\n  return [{\n    json: {\n      issue: { title: '', body: '', labels: '', repoName, issueUrl, issueNumber },\n      prompt: null,\n      gemini_body_str: null,\n      invalid_input: true\n    }\n  }];\n}\n\nconst prompt = `You are an issue classifier for a software project. Analyze the following GitHub issue and return a JSON classification.\n\nIssue Title: ${title}\nIssue Body: ${body || '(no body provided)'}\nLabels: ${labels || '(none)'}\nRepository: ${repoName || '(unknown)'}\n\nReturn ONLY a valid JSON object with this exact structure:\n{\n  \"type\": \"bug | feature | question\",\n  \"severity\": \"critical | medium | low\",\n  \"component\": \"frontend | backend | infra | unknown\",\n  \"confidence\": <float between 0.0 and 1.0>,\n  \"low_confidence\": <boolean, true if confidence < 0.7>,\n  \"summary\": \"<one-line summary of the issue>\",\n  \"reasoning\": \"<brief explanation of the classification>\"\n}\n\nClassification rules:\n- type=bug: reports something broken or not working as expected\n- type=feature: requests new functionality or enhancement\n- type=question: asks how something works or seeks clarification\n- severity=critical: production-breaking, data loss, security vulnerability, auth failure in production\n- severity=medium: significant functionality impaired but a workaround exists\n- severity=low: minor issue, cosmetic problem, or nice-to-have improvement\n- component=frontend: UI, CSS, JavaScript, browser-side behavior\n- component=backend: API, database, server-side logic, authentication\n- component=infra: deployment, CI/CD, Docker, cloud services, networking\n- component=unknown: cannot determine from available context\n\nReturn ONLY the JSON object. No markdown code blocks, no prose outside the JSON.`;\n\nconst geminiBodyStr = JSON.stringify({\n  contents: [{ parts: [{ text: prompt }] }],\n  generationConfig: { temperature: 0.1, maxOutputTokens: 512 }\n});\n\nreturn [{\n  json: {\n    issue: { title, body, labels, repoName, issueUrl, issueNumber },\n    prompt,\n    gemini_body_str: geminiBodyStr,\n    invalid_input: false\n  }\n}];"
       }
     },
     {
@@ -33,7 +33,7 @@
       "position": [680, 300],
       "parameters": {
         "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -43,18 +43,10 @@
             }
           ]
         },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
         "sendBody": true,
-        "contentType": "json",
-        "body": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        { \"text\": {{ JSON.stringify($json.prompt) }} }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.1,\n    \"maxOutputTokens\": 512\n  }\n}",
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.gemini_body_str }}",
         "options": {
           "timeout": 25000
         }
@@ -67,102 +59,48 @@
       "typeVersion": 2,
       "position": [900, 300],
       "parameters": {
-        "jsCode": "const prevData = $input.first().json;\nconst issueData = $('Build Prompt').first().json;\nconst issue = issueData.issue;\n\n// Extract text from Gemini response\nconst candidates = (prevData.candidates || []);\nconst responseText = candidates[0]?.content?.parts?.[0]?.text || '';\n\n// Parse and validate JSON\nconst VALID_TYPES = ['bug', 'feature', 'question'];\nconst VALID_SEVERITIES = ['critical', 'medium', 'low'];\nconst VALID_COMPONENTS = ['frontend', 'backend', 'infra', 'unknown'];\n\nlet jsonText = responseText.trim();\nconst codeBlockMatch = jsonText.match(/```(?:json)?\\s*([\\s\\S]*?)```/);\nif (codeBlockMatch) jsonText = codeBlockMatch[1].trim();\n\nlet classification;\ntry {\n  const parsed = JSON.parse(jsonText);\n  const type = VALID_TYPES.includes(parsed.type) ? parsed.type : 'unknown';\n  const severity = VALID_SEVERITIES.includes(parsed.severity) ? parsed.severity : 'unknown';\n  const component = VALID_COMPONENTS.includes(parsed.component) ? parsed.component : 'unknown';\n  const confidence = typeof parsed.confidence === 'number'\n    ? Math.min(1.0, Math.max(0.0, parsed.confidence))\n    : 0.0;\n  classification = {\n    type, severity, component, confidence,\n    low_confidence: confidence < 0.7,\n    summary: typeof parsed.summary === 'string' ? parsed.summary : '',\n    reasoning: typeof parsed.reasoning === 'string' ? parsed.reasoning : ''\n  };\n} catch (err) {\n  classification = {\n    type: 'unknown', severity: 'unknown', component: 'unknown',\n    confidence: 0.0, low_confidence: true,\n    summary: 'Failed to parse AI response',\n    reasoning: `JSON parse error: ${err.message}`,\n    parse_error: true\n  };\n}\n\n// Determine Slack channel\nlet channel;\nif (classification.type === 'question') {\n  channel = '#questions';\n} else if (classification.type === 'bug' && classification.severity === 'critical') {\n  channel = '#incidents';\n} else {\n  channel = '#backlog';\n}\n\n// Format Slack message\nconst severityEmoji = { critical: '🔴', medium: '🟡', low: '🟢', unknown: '⚪' };\nconst typeLabel = { bug: 'Bug', feature: 'Feature Request', question: 'Question', unknown: 'Unknown' };\nconst emoji = severityEmoji[classification.severity] || '⚪';\nconst typeStr = typeLabel[classification.type] || classification.type;\nconst confidenceNote = classification.low_confidence\n  ? '\\n⚠️ _Low confidence — manual review recommended_' : '';\n\nconst slackMessage = {\n  channel,\n  text: `${emoji} [${typeStr}] ${issue.title}`,\n  blocks: [\n    {\n      type: 'section',\n      text: { type: 'mrkdwn', text: `${emoji} *[${typeStr}]* <${issue.issueUrl}|${issue.title}>` }\n    },\n    {\n      type: 'section',\n      fields: [\n        { type: 'mrkdwn', text: `*Type:* ${classification.type}` },\n        { type: 'mrkdwn', text: `*Severity:* ${classification.severity}` },\n        { type: 'mrkdwn', text: `*Component:* ${classification.component}` },\n        { type: 'mrkdwn', text: `*Confidence:* ${(classification.confidence * 100).toFixed(0)}%` }\n      ]\n    },\n    {\n      type: 'section',\n      text: { type: 'mrkdwn', text: `*Summary:* ${classification.summary}${confidenceNote}` }\n    }\n  ]\n};\n\n// Format Sheets row\nconst processedAt = new Date().toISOString();\nconst sheetsRow = {\n  timestamp: processedAt,\n  issue_number: issue.issueNumber,\n  title: issue.title,\n  url: issue.issueUrl,\n  type: classification.type,\n  severity: classification.severity,\n  component: classification.component,\n  confidence: `${(classification.confidence * 100).toFixed(0)}%`,\n  low_confidence: classification.low_confidence,\n  ai_flagged: false,\n  summary: classification.summary,\n  reasoning: classification.reasoning\n};\n\nreturn [{ json: { issue, classification, channel, slack_message: slackMessage, sheets_row: sheetsRow } }];"
+        "jsCode": "const prevData = $input.first().json;\nconst issueData = $('Build Prompt').first().json;\nconst issue = issueData.issue;\n\n// Extract text from Gemini response\nconst candidates = (prevData.candidates || []);\nconst responseText = candidates[0]?.content?.parts?.[0]?.text || '';\n\n// Parse and validate JSON\nconst VALID_TYPES = ['bug', 'feature', 'question'];\nconst VALID_SEVERITIES = ['critical', 'medium', 'low'];\nconst VALID_COMPONENTS = ['frontend', 'backend', 'infra', 'unknown'];\n\nlet jsonText = responseText.trim();\nconst codeBlockMatch = jsonText.match(/```(?:json)?\\s*([\\s\\S]*?)```/);\nif (codeBlockMatch) jsonText = codeBlockMatch[1].trim();\n\nlet classification;\ntry {\n  const parsed = JSON.parse(jsonText);\n  const type = VALID_TYPES.includes(parsed.type) ? parsed.type : 'unknown';\n  const severity = VALID_SEVERITIES.includes(parsed.severity) ? parsed.severity : 'unknown';\n  const component = VALID_COMPONENTS.includes(parsed.component) ? parsed.component : 'unknown';\n  const confidence = typeof parsed.confidence === 'number'\n    ? Math.min(1.0, Math.max(0.0, parsed.confidence))\n    : 0.0;\n  classification = {\n    type, severity, component, confidence,\n    low_confidence: confidence < 0.7,\n    summary: typeof parsed.summary === 'string' ? parsed.summary : '',\n    reasoning: typeof parsed.reasoning === 'string' ? parsed.reasoning : ''\n  };\n} catch (err) {\n  classification = {\n    type: 'unknown', severity: 'unknown', component: 'unknown',\n    confidence: 0.0, low_confidence: true,\n    summary: 'Failed to parse AI response',\n    reasoning: `JSON parse error: ${err.message}`,\n    parse_error: true\n  };\n}\n\n// Determine Slack channel (without # for Slack API)\nlet slackChannel;\nif (classification.type === 'question') {\n  slackChannel = 'questions';\n} else if (classification.type === 'bug' && classification.severity === 'critical') {\n  slackChannel = 'incidents';\n} else {\n  slackChannel = 'backlog';\n}\n\n// Format Slack blocks\nconst severityEmoji = { critical: '🔴', medium: '🟡', low: '🟢', unknown: '⚪' };\nconst typeLabel = { bug: 'Bug', feature: 'Feature Request', question: 'Question', unknown: 'Unknown' };\nconst emoji = severityEmoji[classification.severity] || '⚪';\nconst typeStr = typeLabel[classification.type] || classification.type;\nconst confidenceNote = classification.low_confidence\n  ? '\\n⚠️ _Low confidence — manual review recommended_' : '';\n\nconst slackBodyStr = JSON.stringify({\n  channel: slackChannel,\n  text: `${emoji} [${typeStr}] ${issue.title}`,\n  blocks: [\n    {\n      type: 'section',\n      text: { type: 'mrkdwn', text: `${emoji} *[${typeStr}]* <${issue.issueUrl}|${issue.title}>` }\n    },\n    {\n      type: 'section',\n      fields: [\n        { type: 'mrkdwn', text: `*Type:* ${classification.type}` },\n        { type: 'mrkdwn', text: `*Severity:* ${classification.severity}` },\n        { type: 'mrkdwn', text: `*Component:* ${classification.component}` },\n        { type: 'mrkdwn', text: `*Confidence:* ${(classification.confidence * 100).toFixed(0)}%` }\n      ]\n    },\n    {\n      type: 'section',\n      text: { type: 'mrkdwn', text: `*Summary:* ${classification.summary}${confidenceNote}` }\n    }\n  ]\n});\n\n// Format Sheets row\nconst processedAt = new Date().toISOString();\nconst sheetsRow = {\n  timestamp: processedAt,\n  issue_number: issue.issueNumber,\n  title: issue.title,\n  url: issue.issueUrl,\n  type: classification.type,\n  severity: classification.severity,\n  component: classification.component,\n  confidence: `${(classification.confidence * 100).toFixed(0)}%`,\n  low_confidence: classification.low_confidence,\n  ai_flagged: false,\n  summary: classification.summary,\n  reasoning: classification.reasoning\n};\n\nreturn [{ json: { issue, classification, slack_channel: slackChannel, slack_body_str: slackBodyStr, sheets_row: sheetsRow } }];"
       }
     },
     {
       "id": "a1b2c3d4-0001-4000-8000-000000000005",
-      "name": "Route by Channel",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 1,
+      "name": "Send to Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
       "position": [1120, 300],
       "parameters": {
-        "dataType": "string",
-        "value1": "={{ $json.channel }}",
-        "rules": {
-          "rules": [
-            { "value2": "#incidents" },
-            { "value2": "#backlog" },
-            { "value2": "#questions" }
+        "method": "POST",
+        "url": "https://slack.com/api/chat.postMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.SLACK_BOT_TOKEN }}"
+            }
           ]
         },
-        "fallbackOutput": 1
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.slack_body_str }}",
+        "options": {
+          "timeout": 10000
+        }
       }
     },
     {
       "id": "a1b2c3d4-0001-4000-8000-000000000006",
-      "name": "Slack #incidents",
-      "type": "n8n-nodes-base.slack",
-      "typeVersion": 2.1,
-      "position": [1340, 100],
-      "credentials": {
-        "slackApi": {
-          "id": "CONFIGURE_ME",
-          "name": "Slack API"
-        }
-      },
+      "name": "Prepare Sheets Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 300],
       "parameters": {
-        "operation": "post",
-        "select": "channel",
-        "channelId": {
-          "__rl": true,
-          "value": "incidents",
-          "mode": "name"
-        },
-        "text": "={{ $json.slack_message.text }}",
-        "blocksUi": "={{ JSON.stringify($json.slack_message.blocks) }}"
+        "jsCode": "const row = $input.first().json.sheets_row;\nreturn [{ json: row }];"
       }
     },
     {
       "id": "a1b2c3d4-0001-4000-8000-000000000007",
-      "name": "Slack #backlog",
-      "type": "n8n-nodes-base.slack",
-      "typeVersion": 2.1,
-      "position": [1340, 300],
-      "credentials": {
-        "slackApi": {
-          "id": "CONFIGURE_ME",
-          "name": "Slack API"
-        }
-      },
-      "parameters": {
-        "operation": "post",
-        "select": "channel",
-        "channelId": {
-          "__rl": true,
-          "value": "backlog",
-          "mode": "name"
-        },
-        "text": "={{ $json.slack_message.text }}",
-        "blocksUi": "={{ JSON.stringify($json.slack_message.blocks) }}"
-      }
-    },
-    {
-      "id": "a1b2c3d4-0001-4000-8000-000000000008",
-      "name": "Slack #questions",
-      "type": "n8n-nodes-base.slack",
-      "typeVersion": 2.1,
-      "position": [1340, 500],
-      "credentials": {
-        "slackApi": {
-          "id": "CONFIGURE_ME",
-          "name": "Slack API"
-        }
-      },
-      "parameters": {
-        "operation": "post",
-        "select": "channel",
-        "channelId": {
-          "__rl": true,
-          "value": "questions",
-          "mode": "name"
-        },
-        "text": "={{ $json.slack_message.text }}",
-        "blocksUi": "={{ JSON.stringify($json.slack_message.blocks) }}"
-      }
-    },
-    {
-      "id": "a1b2c3d4-0001-4000-8000-000000000009",
       "name": "Log to Sheets",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
@@ -186,21 +124,8 @@
           "mode": "name"
         },
         "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "timestamp": "={{ $json.sheets_row.timestamp }}",
-            "issue_number": "={{ $json.sheets_row.issue_number }}",
-            "title": "={{ $json.sheets_row.title }}",
-            "url": "={{ $json.sheets_row.url }}",
-            "type": "={{ $json.sheets_row.type }}",
-            "severity": "={{ $json.sheets_row.severity }}",
-            "component": "={{ $json.sheets_row.component }}",
-            "confidence": "={{ $json.sheets_row.confidence }}",
-            "low_confidence": "={{ $json.sheets_row.low_confidence }}",
-            "ai_flagged": "={{ $json.sheets_row.ai_flagged }}",
-            "summary": "={{ $json.sheets_row.summary }}",
-            "reasoning": "={{ $json.sheets_row.reasoning }}"
-          }
+          "mappingMode": "autoMapInputData",
+          "value": {}
         }
       }
     }
@@ -223,27 +148,13 @@
     },
     "Parse Response": {
       "main": [
-        [{ "node": "Route by Channel", "type": "main", "index": 0 }]
+        [
+          { "node": "Send to Slack", "type": "main", "index": 0 },
+          { "node": "Prepare Sheets Row", "type": "main", "index": 0 }
+        ]
       ]
     },
-    "Route by Channel": {
-      "main": [
-        [{ "node": "Slack #incidents", "type": "main", "index": 0 }],
-        [{ "node": "Slack #backlog", "type": "main", "index": 0 }],
-        [{ "node": "Slack #questions", "type": "main", "index": 0 }]
-      ]
-    },
-    "Slack #incidents": {
-      "main": [
-        [{ "node": "Log to Sheets", "type": "main", "index": 0 }]
-      ]
-    },
-    "Slack #backlog": {
-      "main": [
-        [{ "node": "Log to Sheets", "type": "main", "index": 0 }]
-      ]
-    },
-    "Slack #questions": {
+    "Prepare Sheets Row": {
       "main": [
         [{ "node": "Log to Sheets", "type": "main", "index": 0 }]
       ]
