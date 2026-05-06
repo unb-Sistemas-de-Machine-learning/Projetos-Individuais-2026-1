@@ -30,7 +30,8 @@ O pipeline usa **dois agentes** em sequência: o primeiro gera a query de busca;
   [JSON com classificação enriquecida]
           │
           ▼
-  [Google Sheets + Telegram (alta relevância)]
+  [Google Sheets — aba Registros (todos os artigos)]
+  [Google Sheets — aba Alertas (acao=revisar ou score>=0.8)]
 ```
 
 ## Tecnologias
@@ -39,8 +40,8 @@ O pipeline usa **dois agentes** em sequência: o primeiro gera a query de busca;
 |---|---|
 | IA | Google Gemini (gemini-2.0-flash) |
 | Busca | Semantic Scholar API |
-| Registro | Google Sheets |
-| Notificação | Telegram Bot |
+| Registro | Google Sheets (aba **Registros**) |
+| Alertas | Google Sheets (aba **Alertas**) |
 | Orquestração | n8n |
 
 ---

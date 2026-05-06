@@ -37,7 +37,7 @@ a interpretação da intenção de pesquisa e a classificação inicial — entr
 
 ## 4. Contexto de Uso
 
-O agente é acionado quando um pesquisador tem uma **intenção de busca em linguagem natural** mas ainda não sabe exatamente quais termos técnicos usar na API. Ele opera de forma assíncrona: o usuário submete o objetivo, o agente processa e entrega os resultados classificados em uma planilha e, quando relevante, notifica via Telegram.
+O agente é acionado quando um pesquisador tem uma **intenção de busca em linguagem natural** mas ainda não sabe exatamente quais termos técnicos usar na API. Ele opera de forma assíncrona: o usuário submete o objetivo, o agente processa e entrega os resultados classificados na aba **Registros** do Google Sheets e, quando relevante (ação = `revisar` ou `relevancia_score >= 0.8`), insere um registro adicional na aba **Alertas** do Google Sheets.
 
 O agente **não substitui** a leitura crítica dos artigos — ele reduz o 
 esforço da triagem inicial para que o pesquisador foque onde importa.
@@ -88,6 +88,7 @@ esforço da triagem inicial para que o pesquisador foque onde importa.
 - Não executa busca sem um objetivo de pesquisa explicitamente fornecido
 - Não armazena dados pessoais dos pesquisadores
 - Não envia notificação para artigos classificados como `baixa_relevancia` ou `descartar`
+- Não envia notificações externas por mensageiro (Telegram, WhatsApp, email)
 - Não re-executa automaticamente em caso de falha — aguarda nova submissão
 
 ---
@@ -100,7 +101,7 @@ esforço da triagem inicial para que o pesquisador foque onde importa.
 | CA-02 | A Semantic Scholar retorna ao menos 3 artigos por busca | Verificar output do nó HTTP Request |
 | CA-03 | Cada artigo recebe classificação, score, keywords e justificativa | Verificar JSON retornado pelo nó de classificação |
 | CA-04 | Artigos `neutro` ou confiança < 0.6 geram linha com status `revisao_humana` no Sheets | Verificar planilha após execução com artigo ambíguo |
-| CA-05 | Artigos `alta_relevancia` geram notificação no Telegram | Verificar mensagem recebida no bot |
+| CA-05 | Artigos com `acao = revisar` ou `relevancia_score >= 0.8` geram linha na aba **Alertas** com `status = aguardando_revisao` | Verificar aba Alertas no Google Sheets após execução |
 | CA-06 | Todos os artigos processados são registrados no Google Sheets | Conferir planilha após execução completa |
 | CA-07 | Falha na API Semantic Scholar não derruba o fluxo — aciona mensagem de erro no Sheets | Testar com query inválida |
 
@@ -125,6 +126,6 @@ esforço da triagem inicial para que o pesquisador foque onde importa.
 - [ ] Print do retorno da Semantic Scholar com artigos encontrados
 - [ ] Print do JSON de classificação gerado pelo Agente 2
 - [ ] Print da planilha Google Sheets com ao menos 5 artigos registrados
-- [ ] Print da notificação Telegram recebida para artigo de alta relevância
+- [ ] Print da aba **Alertas** no Google Sheets com ao menos 1 artigo com `status = aguardando_revisao`
 - [ ] Print de execução com artigo `neutro` mostrando fallback para `revisao_humana`
 - [ ] Arquivo `workflow-solution-b.json` exportado do n8n no repositório
