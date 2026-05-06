@@ -63,9 +63,9 @@ Siga as etapas abaixo na ordem indicada. Cada etapa deve gerar pelo menos um com
 
 ### Etapa 9: Gerar o Merge-Readiness Pack
 
-- [ ] Preencher `docs/merge-readiness-pack.md`
+- [x] Preencher `docs/merge-readiness-pack.md`
 
 ### Etapa 10: Fazer commits separados por etapa
 
-- [ ] Verificar que cada etapa tem pelo menos um commit
-- [ ] Verificar que cada commit contém racionalidade da decisão
+- [x] Verificar que cada etapa tem pelo menos um commit
+- [x] Verificar que cada commit contém racionalidade da decisão
