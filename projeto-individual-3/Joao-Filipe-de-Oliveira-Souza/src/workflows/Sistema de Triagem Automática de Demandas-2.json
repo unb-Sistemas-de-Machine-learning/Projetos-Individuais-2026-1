@@ -1,0 +1,673 @@
+{
+  "name": "Sistema de Triagem Automática de Demandas",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Sistema de Atendimento",
+        "formDescription": "<p>Descreva sua demanda e nossa IA irá classificá-la automaticamente para o time correto.</p>",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nome",
+              "fieldName": "nome",
+              "placeholder": "Seu nome completo",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "fieldName": "email",
+              "placeholder": "seu@email.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Assunto",
+              "fieldName": "assunto",
+              "placeholder": "Ex: Problema com acesso ao sistema",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Descrição da Demanda",
+              "fieldType": "textarea",
+              "fieldName": "descricao",
+              "placeholder": "Descreva detalhadamente sua solicitação ou problema...",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "✅ Sua demanda foi recebida e está sendo processada. Você receberá um retorno em breve!"
+            }
+          }
+        }
+      },
+      "id": "d71d3e12-676d-48ee-9420-ae2cf662fa21",
+      "name": "Formulário de Demanda",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        240,
+        384
+      ],
+      "webhookId": "2505c6af-36f3-4b39-ae3b-2389736965e1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "contexto_completo",
+              "type": "string",
+              "value": "=Assunto: {{ $json.assunto }}\n\nDescrição: {{ $json.descricao }}\n\nSolicitante: {{ $json.nome }} ({{ $json.email }})"
+            },
+            {
+              "id": "2",
+              "name": "timestamp",
+              "type": "string",
+              "value": "={{ $json.submittedAt }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "fe0dd6e2-126e-4354-af17-669b8d606b6a",
+      "name": "Preparar Contexto para IA",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.contexto_completo }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Você é um assistente especializado em triagem de demandas de atendimento.\n\nSua tarefa é analisar cada demanda e retornar uma classificação estruturada.\n\n**Categorias disponíveis:**\n- suporte_tecnico: problemas técnicos, erros, bugs, acesso\n- financeiro: cobranças, pagamentos, faturas, reembolsos\n- comercial: vendas, propostas, parcerias, novos negócios\n- outro: demandas que não se encaixam nas categorias acima\n\n**Níveis de urgência:**\n- baixa: pode aguardar 24-48h\n- media: deve ser respondido em até 8h\n- alta: requer atenção imediata (< 2h)\n\nAnalise o contexto, identifique palavras-chave que indicam urgência (urgente, imediato, crítico, parado, etc.) e forneça um resumo conciso da demanda.\n\nSeja preciso na classificação e sempre indique seu nível de confiança (0.0 a 1.0).",
+          "maxIterations": 3,
+          "returnIntermediateSteps": false
+        }
+      },
+      "id": "94b1520c-8e78-4ff6-b74c-f1832fca902c",
+      "name": "Agente Classificador",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        688,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "811d074f-2334-44be-870d-26d013d4ebd4",
+      "name": "OpenAI GPT-5 Mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        608
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "UuAEgfGpvW8leh7m",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"categoria\":\"suporte_tecnico\",\"urgencia\":\"alta\",\"confianca\":0.95,\"resumo\":\"Usuário sem acesso ao sistema com erro de autenticação\",\"palavras_chave\":[\"acesso\",\"autenticação\",\"urgente\"],\"acao_sugerida\":\"Verificar credenciais e resetar senha\"}"
+      },
+      "id": "907e1b67-24ee-4120-ad50-c0340369b150",
+      "name": "Parser de Classificação",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        832,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "classificacao_valida",
+              "type": "boolean",
+              "value": "={{ $json.output.confianca >= 0.7 }}"
+            },
+            {
+              "id": "2",
+              "name": "categoria_final",
+              "type": "string",
+              "value": "={{ $json.output.confianca >= 0.7 ? $json.output.categoria : \"outro\" }}"
+            },
+            {
+              "id": "3",
+              "name": "urgencia_final",
+              "type": "string",
+              "value": "={{ $json.output.confianca >= 0.7 ? $json.output.urgencia : \"media\" }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "ba0ed469-879b-4d7b-92cd-f42d2337cad8",
+      "name": "Verificar Confiança da IA",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "QcKs8SF3hgI2XfVb",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "categoria": "={{ $json.output.categoria }}",
+            "urgencia": "={{ $json.output.urgencia }}",
+            "confianca": "={{ $json.output.confianca }}",
+            "resumo": "={{ $json.output.resumo }}",
+            "categoria_final": "={{ $json.categoria_final }}",
+            "urgencia_final": "={{ $json.urgencia_final }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "categoria",
+              "displayName": "categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "urgencia",
+              "displayName": "urgencia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "confianca",
+              "displayName": "confianca",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "resumo",
+              "displayName": "resumo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "categoria_final",
+              "displayName": "categoria_final",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "urgencia_final",
+              "displayName": "urgencia_final",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "optimizeBulk": false
+        }
+      },
+      "id": "a041748a-f1eb-4021-adcc-5f35ea4de334",
+      "name": "Armazenar Demanda",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1264,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.urgencia_final }}",
+                    "rightValue": "alta",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "892158df-3941-4def-9441-6444b1d17628"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Alta Urgência"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.urgencia_final }}",
+                    "rightValue": "media",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "53a9af5c-551a-4d78-bade-90279aa8a890"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Média Urgência"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.urgencia_final }}",
+                    "rightValue": "baixa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "1b008355-d840-4348-91c2-d31e44b6c941"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Baixa Urgência"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "95df2985-fcb7-44fd-a969-0eef36fa21e4",
+      "name": "Rotear por Urgência",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1488,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "jfos151104@outlook.com",
+        "subject": "=⚠️ Nova Demanda [{{ $json.categoria_final }}] - {{ $(\"Preparar Contexto para IA\").item.json.assunto }}",
+        "message": "=<h2>⚠️ Nova Demanda Recebida</h2>\n\n<p><strong>Urgência:</strong> Média</p>\n<p><strong>Categoria:</strong> {{ $json.categoria_final }}</p>\n<p><strong>Confiança da IA:</strong> {{ ($json.output.confianca * 100).toFixed(0) }}%</p>\n\n<hr>\n\n<h3>Informações do Solicitante</h3>\n<ul>\n  <li><strong>Nome:</strong> {{ $(\"Preparar Contexto para IA\").item.json.nome }}</li>\n  <li><strong>Email:</strong> {{ $(\"Preparar Contexto para IA\").item.json.email }}</li>\n</ul>\n\n<h3>Assunto</h3>\n<p>{{ $(\"Preparar Contexto para IA\").item.json.assunto }}</p>\n\n<h3>Descrição</h3>\n<p>{{ $(\"Preparar Contexto para IA\").item.json.descricao }}</p>\n\n<hr>\n\n<h3>Análise da IA</h3>\n<p><strong>Resumo:</strong> {{ $json.output.resumo }}</p>\n<p><strong>Ação Sugerida:</strong> {{ $json.output.acao_sugerida }}</p>\n<p><strong>Palavras-chave:</strong> {{ $json.output.palavras_chave.join(\", \") }}</p>\n\n<hr>\n\n<p><small>ID da Demanda: #{{ $(\"Armazenar Demanda\").item.json.id }} | Recebido em {{ $now.toFormat(\"dd/MM/yyyy HH:mm\") }}</small></p>",
+        "options": {
+          "appendAttribution": true
+        }
+      },
+      "id": "7c411b43-4b57-4679-8880-ba7abef30e64",
+      "name": "Enviar Email - Média Urgência",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1760,
+        384
+      ],
+      "webhookId": "260c00d5-35ba-4950-99b7-a09738c94efb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ksImDYO3DDiZJoMK",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Sistema de Triagem Automática\n\nEste workflow recebe demandas via formulário, usa IA para classificar e extrair informações, armazena tudo em Data Table para auditoria, e roteia para ações apropriadas baseado na urgência.",
+        "height": 200,
+        "width": 400,
+        "color": 2
+      },
+      "id": "d8ac2e31-faab-4027-a7eb-2baf90aa2ba0",
+      "name": "Sticky Note edcade1e",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Agente de IA\n\nClassifica a demanda em categorias:\n- Suporte Técnico\n- Financeiro\n- Comercial\n- Outro\n\nExtrai: tipo, urgência (baixa/média/alta), resumo",
+        "height": 250,
+        "width": 350,
+        "color": 4
+      },
+      "id": "c44aaac7-057b-474a-a796-43fdaca5b8b6",
+      "name": "Sticky Note 471ab698",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        816,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Roteamento Inteligente\n\n**Alta urgência** → Email urgente + atualiza status\n**Média urgência** → Email equipe + atualiza status\n**Baixa urgência** → Apenas registrado (processamento em 48h)",
+        "height": 200,
+        "width": 350,
+        "color": 5
+      },
+      "id": "48234f11-3aa6-4d99-80bc-6ccf16411a81",
+      "name": "Sticky Note 4e380ea3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "equipe@email.com",
+        "subject": "=🚨 URGENTE [{{ $json.categoria_final }}] - {{ $(\"Preparar Contexto para IA\").item.json.assunto }}",
+        "message": "=<h2>🚨 Nova Demanda URGENTE Recebida</h2>  <p><strong>Urgência:</strong> ALTA</p> <p><strong>Categoria:</strong> {{ $json.categoria_final }}</p> <p><strong>Confiança da IA:</strong> {{ ($json.output.confianca * 100).toFixed(0) }}%</p>  <hr>  <h3>Informações do Solicitante</h3> <ul>   <li><strong>Nome:</strong> {{ $(\"Preparar Contexto para IA\").item.json.nome }}</li>   <li><strong>Email:</strong> {{ $(\"Preparar Contexto para IA\").item.json.email }}</li> </ul>  <h3>Assunto</h3> <p>{{ $(\"Preparar Contexto para IA\").item.json.assunto }}</p>  <h3>Descrição</h3> <p>{{ $(\"Preparar Contexto para IA\").item.json.descricao }}</p>  <hr>  <h3>Análise da IA</h3> <p><strong>Resumo:</strong> {{ $json.output.resumo }}</p> <p><strong>Ação Sugerida:</strong> {{ $json.output.acao_sugerida }}</p> <p><strong>Palavras-chave:</strong> {{ $json.output.palavras_chave.join(\", \") }}</p>  <hr>  <p><small>ID da Demanda: #{{ $(\"Armazenar Demanda\").item.json.id }} | Recebido em {{ $now.toFormat(\"dd/MM/yyyy HH:mm\") }}</small></p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1712,
+        192
+      ],
+      "id": "e201b002-a059-4184-a51e-c0c14cb22b1d",
+      "name": "Enviar email - alta prioridade",
+      "webhookId": "de38da64-48ff-47bc-84ff-6e8881b2bade",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LJFpNeVGSAHosodK",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "roteamento_executado",
+              "type": "boolean",
+              "value": "true"
+            },
+            {
+              "id": "2",
+              "name": "tipo_roteamento",
+              "type": "string",
+              "value": "baixa_urgencia"
+            },
+            {
+              "id": "3",
+              "name": "acao_tomada",
+              "type": "string",
+              "value": "Demanda registrada no sistema. Será processada em até 48h."
+            },
+            {
+              "id": "4",
+              "name": "demanda_id",
+              "type": "string",
+              "value": "={{ $(\"Armazenar Demanda\").item.json.id }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "31df64df-6418-46bd-a93a-56282d9f6977",
+      "name": "Baixa Urgência - Registrado",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1712,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "roteamento_executado",
+              "type": "boolean",
+              "value": "true"
+            },
+            {
+              "id": "2",
+              "name": "tipo_roteamento",
+              "type": "string",
+              "value": "baixa_urgencia"
+            },
+            {
+              "id": "3",
+              "name": "acao_tomada",
+              "type": "string",
+              "value": "Demanda registrada no sistema. Será processada em até 48h."
+            },
+            {
+              "id": "4",
+              "name": "demanda_id",
+              "type": "string",
+              "value": "={{ $(\"Armazenar Demanda\").item.json.id }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "31df64df-6418-46bd-a93a-56282d9f6977",
+      "name": "Baixa Urgência - Registrado2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1712,
+        592
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Formulário de Demanda": {
+      "main": [
+        [
+          {
+            "node": "Preparar Contexto para IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Contexto para IA": {
+      "main": [
+        [
+          {
+            "node": "Agente Classificador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Classificador": {
+      "main": [
+        [
+          {
+            "node": "Verificar Confiança da IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI GPT-5 Mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Classificador",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser de Classificação": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agente Classificador",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Confiança da IA": {
+      "main": [
+        [
+          {
+            "node": "Armazenar Demanda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armazenar Demanda": {
+      "main": [
+        [
+          {
+            "node": "Rotear por Urgência",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rotear por Urgência": {
+      "main": [
+        [
+          {
+            "node": "Enviar email - alta prioridade",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Email - Média Urgência",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Baixa Urgência - Registrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar email - alta prioridade": {
+      "main": [
+        []
+      ]
+    },
+    "Enviar Email - Média Urgência": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8dd3f131-7a58-4d4a-9e08-d13a5266e5d2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "623a214bc6cdceaa00cf92af37ff2009ade50e62b3b2d57538ef0a2c6476d47a"
+  },
+  "id": "ETWTXVBdvD3UG0v3",
+  "tags": []
+}
