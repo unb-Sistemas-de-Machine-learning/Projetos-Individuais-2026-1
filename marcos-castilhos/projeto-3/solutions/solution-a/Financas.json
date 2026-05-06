@@ -1,0 +1,133 @@
+{
+  "name": "Finanças",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c6640f56-9928-4a10-8054-2f1e9a1762ba",
+      "name": "Telegram Trigger",
+      "webhookId": "78b8f53e-2b7d-4d78-b451-ea45c11aee96",
+      "credentials": {
+        "telegramApi": {
+          "id": "5n8UCCW0noPedZW0",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extraia o valor e a categoria desta mensagem: {{ $json.message.text }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        208,
+        0
+      ],
+      "id": "66c8acd9-bc51-483b-95a2-d07f790730a6",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "5e7c0866-4768-44a6-a2cc-e5b6e98cddcb",
+      "name": "Send a text message",
+      "webhookId": "264727c2-0c29-4473-9a1e-c39efe47f1ac",
+      "credentials": {
+        "telegramApi": {
+          "id": "5n8UCCW0noPedZW0",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        224,
+        160
+      ],
+      "id": "afb8663d-8d33-4480-ad94-e5885a8ce655",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "1SE3XDLXJy2adgtO",
+          "name": "Groq account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f689626d-498c-4cb6-85a1-5fe854f9a316",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7c95d93583b042072cb0ae39065f2b4eb6dc9a38328b4e1da7555dc7fdf65239"
+  },
+  "id": "QKrBcmpyosAKcwhP",
+  "tags": []
+}

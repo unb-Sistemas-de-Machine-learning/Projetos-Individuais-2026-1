@@ -1,0 +1,177 @@
+{
+  "name": "Financasv2",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        -96
+      ],
+      "id": "c6640f56-9928-4a10-8054-2f1e9a1762ba",
+      "name": "Telegram Trigger",
+      "webhookId": "78b8f53e-2b7d-4d78-b451-ea45c11aee96",
+      "credentials": {
+        "telegramApi": {
+          "id": "5n8UCCW0noPedZW0",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Aqui está o histórico recente de gastos: {{ $json.descricao }} {{ $json.valor }} {{ $json.categoria }} {{ $json.categoria }}. Baseado nisso, classifique o novo gasto: {{ $('Telegram Trigger').item.json.message.text }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        320,
+        -96
+      ],
+      "id": "66c8acd9-bc51-483b-95a2-d07f790730a6",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        -96
+      ],
+      "id": "5e7c0866-4768-44a6-a2cc-e5b6e98cddcb",
+      "name": "Send a text message",
+      "webhookId": "264727c2-0c29-4473-9a1e-c39efe47f1ac",
+      "credentials": {
+        "telegramApi": {
+          "id": "5n8UCCW0noPedZW0",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        336,
+        160
+      ],
+      "id": "afb8663d-8d33-4480-ad94-e5885a8ce655",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "1SE3XDLXJy2adgtO",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1px1vAmDZHFRJzxcwBNC3vxss0zQ4wZwTJUkIDf9yXV0",
+          "mode": "list",
+          "cachedResultName": "Analise_Gastos_2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1px1vAmDZHFRJzxcwBNC3vxss0zQ4wZwTJUkIDf9yXV0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1409039348,
+          "mode": "list",
+          "cachedResultName": "Cópia de gastos_2025_categorizados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1px1vAmDZHFRJzxcwBNC3vxss0zQ4wZwTJUkIDf9yXV0/edit#gid=1409039348"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        96,
+        -96
+      ],
+      "id": "23774dd0-f56c-4308-8b51-5580a52e3e12",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eglOBHNQBGb4Sm9A",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "38bbc9b7-b469-4b43-b2e5-54ab660275c2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7c95d93583b042072cb0ae39065f2b4eb6dc9a38328b4e1da7555dc7fdf65239"
+  },
+  "id": "QKrBcmpyosAKcwhP",
+  "tags": []
+}
