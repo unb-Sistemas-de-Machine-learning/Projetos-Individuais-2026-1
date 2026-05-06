@@ -1,0 +1,343 @@
+{
+  "name": "Projeto 3 - Assistente de Monitoria Universitária Autônomo",
+  "nodes": [
+    {
+      "parameters": {
+        "text": "={{ $json.message.text }}\n\nINSTRUÇÃO OBRIGATÓRIA DE SISTEMA: \n1. Retorne APENAS o objeto JSON puro.\n2. NUNCA envolva a resposta em blocos de código markdown (```json). Comece diretamente com a chave { e termine com }.\n3. NUNCA use acentos ou caracteres especiais nos valores de categoria, route_to e confianca (use \"excecao\" e não \"exceção\", use \"media\" e não \"média\").",
+        "schemaType": "manual",
+        "inputSchema": "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"categoria\": {\n            \"type\": \"string\",\n            \"description\": \"Classifique estritamente como: 'tecnica' (se for erro de codigo ou logica), 'administrativa' (se for sobre datas, prazos, notas ou regras da disciplina) ou 'excecao' (se for atestado medico, acidentes ou quebra de equipamento). SEM ACENTOS.\"\n        },\n        \"assunto\": {\n            \"type\": \"string\",\n            \"description\": \"Um resumo de no máximo 5 palavras sobre o problema.\"\n        },\n        \"route_to\": {\n            \"type\": \"string\",\n            \"description\": \"O destino do roteamento. Responda APENAS com: 'tecnica', 'administrativa' ou 'excecao'. SEM ACENTOS.\"\n        },\n        \"confianca\": {\n            \"type\": \"string\",\n            \"description\": \"Nível de certeza. Responda apenas com: 'alta', 'media' ou 'baixa'. SEM ACENTOS.\"\n        }\n    },\n    \"required\": [\"categoria\", \"assunto\", \"route_to\", \"confianca\"]\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "880834e5-aec9-4b52-9163-57c533167028",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        208,
+        256
+      ],
+      "id": "7c0a5f9b-5864-4ead-b685-6ca5b2f989de",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "BEyOi7RXAVsW10UE",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output.route_to }}",
+                    "rightValue": "tecnica",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "3bb5b0f3-bd29-45d7-ad2c-30eb3bb1473e"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "7525b8fe-a030-4dc3-82ce-7033292d0eed",
+                    "leftValue": "={{ $json.output.route_to }}",
+                    "rightValue": "administrativa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "7e7e1b20-400c-4d8f-bebe-7a864699bc2c",
+                    "leftValue": "={{ $json.output.route_to }}",
+                    "rightValue": "excecao",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        -16
+      ],
+      "id": "5f55b794-4c79-4887-8037-e2b62abbc121",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é um monitor sênior de Engenharia de Software. O aluno enviou esta dúvida:\n\n{{ $('Telegram Trigger').item.json.message.text }}\n\nSUA MISSÃO: Usar o Método Socrático para guiar o aluno.\nREGRA 1: NUNCA escreva blocos de código com a solução.\nREGRA 2: Faça perguntas DIRETAMENTE relacionadas à lógica do erro. (Ex: se for um loop infinito, pergunte qual variável ele está usando na condição e se ela está sendo atualizada dentro do bloco). Seja direto e técnico, sem saudações longas.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        752,
+        -256
+      ],
+      "id": "c15c5d7a-d21e-4308-896a-a6d425dbd353",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        848,
+        -64
+      ],
+      "id": "cca9c27e-8850-47de-a790-a92323f6702d",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "BEyOi7RXAVsW10UE",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7bccafff-30cf-4af9-81ae-7ef62c93c97f",
+      "name": "Telegram Trigger",
+      "webhookId": "986afcc3-440b-4931-8b55-7cb0c63974c8",
+      "credentials": {
+        "telegramApi": {
+          "id": "ruveNYrwiTYQVjkB",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1104,
+        -256
+      ],
+      "id": "1ff5c5fc-e255-4e13-9ce3-e33ff7074da8",
+      "name": "Send a text message1",
+      "webhookId": "0e5a1f5a-fd7e-46eb-8c41-510a53d70d37",
+      "credentials": {
+        "telegramApi": {
+          "id": "ruveNYrwiTYQVjkB",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Sua dúvida administrativa foi recebida e registrada na planilha da disciplina. O professor responderá em breve com as informações de prazos.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        96
+      ],
+      "id": "b09e10c2-da64-4a6a-9070-95e6630479d4",
+      "name": "Send a text message",
+      "webhookId": "ae746c96-35bb-4ff3-a2ed-18f20ac55a28",
+      "credentials": {
+        "telegramApi": {
+          "id": "ruveNYrwiTYQVjkB",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "⚠️ ALERTA: Identificamos que sua mensagem trata de uma exceção crítica (saúde, atestado, etc). Esta mensagem foi escalada diretamente para o professor responsável. Estimo melhoras!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        784,
+        288
+      ],
+      "id": "e9e092dd-7095-4798-9a24-a2209e2f948d",
+      "name": "Send a text message2",
+      "webhookId": "20601436-516b-4af8-9341-6f84d648a351",
+      "credentials": {
+        "telegramApi": {
+          "id": "ruveNYrwiTYQVjkB",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c7894c0a-72a0-452f-9a6f-7ed195f9bbbb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "057741c2913b4b12964a9b815eddad4d493197b7aeaeb288c41c75aa6f4be392"
+  },
+  "id": "3dA2KBarLLoCIR2l",
+  "tags": []
+}
