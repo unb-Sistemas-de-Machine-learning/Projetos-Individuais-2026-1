@@ -1,0 +1,515 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "form_consumidor",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "nome_consumidor"
+            },
+            {
+              "fieldLabel": "relato_problema"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        208
+      ],
+      "id": "ce7ad8c1-1afb-4c9a-bd78-3e221bbe04db",
+      "name": "On form submission",
+      "webhookId": "3a1d827e-8f63-4dd8-a196-ea9b6bd88190"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analise o seguinte relato:\n{{ $json.relato_problema }}",
+        "options": {
+          "systemMessage": "Você é um agente de triagem de reclamações baseado no Código de Defesa do Consumidor (CDC).\n\nSua função é analisar o relato do consumidor e classificar a demanda com base em critérios jurídicos e operacionais.\n\nREGRAS IMPORTANTES:\n- Responda APENAS com JSON válido\n- NÃO escreva texto fora do JSON\n- NÃO use ```json ou qualquer formatação extra\n- Se não souber o artigo, use: \"artigo_nao_identificado\"\n\nCATEGORIAS:\n- URGENTE: serviços essenciais interrompidos (energia, água, saúde)\n- DUVIDA: perguntas sobre direitos\n- RECLAMACAO_PADRAO: problemas comuns sem risco imediato\n- INVALIDO: fora do contexto ou sem sentido\n\nFORMATO DE RESPOSTA:\n{\n  \"categoria\": \"URGENTE | DUVIDA | RECLAMACAO_PADRAO | INVALIDO\",\n  \"artigo_cdc\": \"string\",\n  \"urgencia_score\": 0,\n  \"resumo_juridico\": \"string\",\n  \"acao_sugerida\": \"notificar_imediato | responder_email | arquivar | revisao_humana\",\n  \"confianca\": 0.0,\n  \"justificativa\": \"string\"\n}\n\nREGRAS DE DECISÃO:\n- Se texto tiver menos de 10 palavras → INVALIDO\n- Se estiver incerto → confianca < 0.70\n- Se for ambíguo → revisao_humana"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        208
+      ],
+      "id": "d5666ed6-2b04-428d-8467-3184298b49ef",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        296,
+        432
+      ],
+      "id": "6f5fd56d-925a-44b0-b706-2ae318113f54",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "PFKeSJYUxXdKzLtH",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.categoria }}",
+                    "rightValue": "URGENTE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "singleValue": true
+                    },
+                    "id": "e59c15db-ef62-4e26-960a-1085afeb4a10"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.categoria }}",
+                    "rightValue": "DUVIDA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "singleValue": true
+                    },
+                    "id": "df07dbb2-1690-436e-85d0-7bee0dc8acc3"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.categoria }}",
+                    "rightValue": "RECLAMACAO_PADRAO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "singleValue": true
+                    },
+                    "id": "c9c080a6-9aae-426a-8a10-5f35d9806955"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.categoria }}",
+                    "rightValue": "INVALIDO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "singleValue": true
+                    },
+                    "id": "a3029b25-90e6-4142-80ae-7fb68a92c306"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9752b828-86b7-4faa-bf99-91de77d49098",
+      "name": "Route by Category",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "1617069306",
+        "text": "=🚨 URGENTE - CDC\n\nConsumidor: {{ $json.nome_consumidor }}\nCategoria: {{ $json.categoria }}\nArtigo CDC: {{ $json.artigo_cdc }}\n\nResumo: {{ $json.resumo_juridico }}\n\nAção: {{ $json.acao_sugerida }}",
+        "additionalFields": {}
+      },
+      "id": "04080270-c0ab-417c-a9d6-091febce963c",
+      "name": "Send Telegram - URGENTE",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1024,
+        -80
+      ],
+      "webhookId": "1254c7dd-36c3-4465-8ab6-190c6dc84f92",
+      "credentials": {
+        "telegramApi": {
+          "id": "oJu59KFHO2wWPxPZ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0",
+          "mode": "list",
+          "cachedResultName": "automacao_procon",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6feefb26-5e6f-438f-9f2f-3e91aa514543",
+      "name": "Log to Sheets - URGENTE",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        -80
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fm9io9NlGc99ZBoF",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.nome_consumidor }}@example.com",
+        "subject": "Resposta sobre sua dúvida - CDC",
+        "message": "=Olá {{ $json.nome_consumidor }},<br><br>Recebemos sua dúvida sobre o Código de Defesa do Consumidor.<br><br><strong>Resumo:</strong> {{ $json.resumo_juridico }}<br><br><strong>Artigo CDC:</strong> {{ $json.artigo_cdc }}<br><br>Em breve retornaremos com mais informações.<br><br>Atenciosamente,<br>Equipe de Atendimento",
+        "options": {}
+      },
+      "id": "3fd6bc01-f159-4ee4-a53a-cdf6ba58a1f7",
+      "name": "Send Email - DUVIDA",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        112
+      ],
+      "webhookId": "da54268b-6f2e-422c-9770-0685fe6426cc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "tQcTxXs78DmCst8t",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0",
+          "mode": "list",
+          "cachedResultName": "automacao_procon",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "7d58fe1c-baa0-4029-bd30-4f254d441deb",
+      "name": "Log to Sheets - DUVIDA",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fm9io9NlGc99ZBoF",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0",
+          "mode": "list",
+          "cachedResultName": "automacao_procon",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "1448d2f2-0cfd-43d0-af3b-b2147cc4ba29",
+      "name": "Log to Sheets - RECLAMACAO_PADRAO",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fm9io9NlGc99ZBoF",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0",
+          "mode": "list",
+          "cachedResultName": "automacao_procon",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HDTcLw-VIgqXBgFqALcu6c7LU7W-udWGB3Kt7eGE_G0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "7a6d5a3f-059d-4783-8776-c1dd5c70ede9",
+      "name": "Log to Sheets - INVALIDO",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        496
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Fm9io9NlGc99ZBoF",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const aiOutput = $input.item.json.output;\nconst parsed = JSON.parse(aiOutput);\nreturn { ...parsed, nome_consumidor: $('On form submission').item.json.nome_consumidor };"
+      },
+      "id": "370e26d1-456e-45ab-a677-77cc4b3af395",
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        208
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Category": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram - URGENTE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Email - DUVIDA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log to Sheets - RECLAMACAO_PADRAO",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log to Sheets - INVALIDO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram - URGENTE": {
+      "main": [
+        [
+          {
+            "node": "Log to Sheets - URGENTE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email - DUVIDA": {
+      "main": [
+        [
+          {
+            "node": "Log to Sheets - DUVIDA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "Route by Category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "dac2b1f2-6069-4ba2-b62b-17a4fb22c8a1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8d75e9fbfd2f8b045fc67546a884b4f5a37efafdb7e41d7ca287bbd4936111c6"
+  },
+  "id": "POl321Zt5JAEURso",
+  "tags": []
+}
