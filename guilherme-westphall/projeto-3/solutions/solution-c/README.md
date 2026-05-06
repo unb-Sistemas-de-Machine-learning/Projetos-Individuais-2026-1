@@ -1,129 +1,119 @@
-# Solution C: Fluxo Multi-etapas com Julgamento do Agente e Automação Condicional
+# Solution C: Fluxo com Dois Agentes — Rascunhador e Revisor
 
 ## 1. Resumo
 
-Esta solução propõe um workflow mais completo e automatizado. O n8n separa cálculo, validação, decisão, geração de nota fiscal, envio e registro de auditoria. A IA atua como agente de decisão: se os dados estiverem consistentes e a confiança for alta, o fluxo pode seguir automaticamente para geração e envio; se houver dúvida, baixa confiança ou inconsistência, o fluxo solicita revisão humana via Telegram.
-
-Esta alternativa é propositalmente mais automatizada para comparação arquitetural. Ela demonstra um desenho em que o agente tem maior autonomia operacional, mas ainda preserva mecanismos de fallback e rastreabilidade.
+Esta solução introduz dois agentes de IA independentes no fluxo de aprovação da nota fiscal. O primeiro agente, o **Rascunhador**, recebe os dados consolidados da nota e gera o rascunho do e-mail ao contratante e a mensagem interna de aprovação para o Telegram. O segundo agente, o **Revisor**, recebe o rascunho e valida seu conteúdo quanto a tom, profissionalismo, ausência de dados internos confidenciais e ausência de conteúdo inadequado ou ofensivo. A aprovação humana via Telegram permanece obrigatória antes do envio final.
 
 ## 2. Fluxo proposto
 
 ```text
-Schedule Trigger
--> Set Billing Period
--> Fetch Productive.io Time Entries
--> Parse Entries and Calculate Amount
--> AI Validation and Decision
--> Normalize AI JSON
--> Switch recommended_action
-   -> auto_send: gerar nota fiscal, exportar PDF, enviar Gmail e registrar log
-   -> needs_manual_review: solicitar revisão via Telegram
-   -> stop: registrar interrupção
+Schedule/Telegram Trigger
+→ Calcular período de faturamento (Code)
+→ Buscar entradas no Productive.io (HTTP Request)
+→ Consolidar horas e calcular valor (Code)
+→ Agente Rascunhador (Ollama LLM): gera rascunho do e-mail e mensagem de aprovação
+→ Agente Revisor (Ollama LLM): valida tom, conteúdo e conformidade
+→ Normalizar JSON da IA (Code)
+→ Switch: recommended_action
+   → request_approval: enviar rascunho revisado ao Telegram
+   → needs_manual_review: solicitar revisão manual via Telegram
+   → stop: registrar interrupção e encerrar
+→ Telegram: aprovação humana (approve / reject / edit)
+   → edit: Agente Revisor revisa e reapresenta no Telegram
+   → approve: enviar e-mail via Gmail + registrar no Google Drive
+   → reject: registrar rejeição e encerrar
 ```
 
-Versão com aprovação humana opcional:
+## 3. Papel de cada agente
 
-```text
-needs_manual_review
--> Telegram Approval Request
--> IF approved
-   -> gerar nota fiscal
-   -> exportar PDF
-   -> enviar Gmail
-   -> registrar log
--> IF rejected
-   -> registrar rejeição
-```
+### Agente Rascunhador
 
-## 3. Papel da IA
+Recebe o JSON consolidado com os dados da nota fiscal e é responsável por:
 
-A IA decide se o caso pode seguir automaticamente ou se precisa de intervenção humana.
+- Gerar o rascunho do e-mail externo ao contratante (breve, profissional, sem dados internos).
+- Gerar a mensagem de aprovação interna para o Telegram (com detalhes do período, horas, valor e confiança).
+- Indicar o nível de confiança e eventuais problemas detectados nos dados.
+- Recomendar a ação: `request_approval`, `needs_manual_review` ou `stop`.
 
-Ela deve avaliar:
-
-- Completude do período.
-- Existência de entradas.
-- Total de horas.
-- Valor total.
-- Avisos do fluxo.
-- Coerência geral do rascunho.
-- Risco de envio inadequado.
-- Adequação do e-mail externo.
-
-## 4. Ações recomendadas
-
-Esta proposta usa uma extensão do schema para permitir automação direta:
+Formato de saída esperado:
 
 ```json
 {
   "confidence": "high | medium | low",
-  "recommended_action": "auto_send | needs_manual_review | stop",
-  "summary": "Resumo da decisão.",
+  "recommended_action": "request_approval | needs_manual_review | stop",
+  "summary": "Resumo interno da validação.",
   "detected_issues": [],
-  "telegram_message": "Mensagem para revisão humana quando necessária.",
-  "email_subject": "Assunto do e-mail ao contratante.",
+  "telegram_message": "Mensagem para o prestador no Telegram.",
+  "email_subject": "Invoice #018",
   "email_body": "Corpo do e-mail ao contratante."
 }
 ```
 
-Regras:
+### Agente Revisor
 
-- `auto_send`: permitido apenas quando a confiança for alta, não houver problemas detectados e os dados essenciais estiverem presentes.
-- `needs_manual_review`: usado quando houver ambiguidade, aviso, confiança média/baixa ou e-mail potencialmente inadequado.
-- `stop`: usado quando faltarem dados essenciais ou houver risco crítico.
+Recebe o rascunho produzido pelo Agente Rascunhador e é responsável por:
 
-## 5. Decisão automatizada
+- Verificar se o e-mail tem tom profissional e adequado para comunicação externa.
+- Confirmar que o e-mail não contém dados internos (horas trabalhadas, valor, período, aprovação, automação, IA).
+- Verificar ausência de conteúdo ofensivo ou inadequado.
+- Avaliar se o e-mail é coerente com o estilo esperado para comunicação ao contratante.
+- Aprovar o rascunho ou solicitar revisões específicas com notas explicativas.
 
-Esta alternativa permite que o workflow envie a nota fiscal sem aprovação humana explícita quando a IA indicar `auto_send`.
+Formato de saída esperado:
 
-Critérios para `auto_send`:
+```json
+{
+  "review_status": "approved | needs_revision",
+  "review_notes": "Observações sobre alterações realizadas ou necessárias.",
+  "revised_email_body": "Corpo do e-mail revisado, quando aplicável."
+}
+```
 
-- `confidence` igual a `high`.
-- `detected_issues` vazio.
-- `entry_count` maior que zero.
-- `total_hours` maior que zero.
-- `amount` presente e numérico.
-- `period_start` e `period_end` presentes.
-- Sem avisos críticos em `warnings`.
-- E-mail externo sem detalhes internos proibidos.
+## 4. Decisão automatizada
 
-Se qualquer critério falhar, o fluxo não envia automaticamente e solicita revisão humana.
+A decisão de prosseguir para aprovação humana depende do resultado combinado dos dois agentes:
 
-## 6. Vantagens
+- Se o Agente Revisor aprovar (`review_status: approved`) e o Rascunhador recomendar `request_approval`: o fluxo envia o rascunho revisado ao Telegram para aprovação humana.
+- Se o Agente Revisor solicitar revisão (`needs_revision`): o fluxo pode iterar ou encaminhar para revisão manual dependendo do contexto.
+- Se o Rascunhador recomendar `needs_manual_review` ou `stop`: o fluxo segue esses caminhos independentemente do resultado da revisão.
 
-- Maior automação do processo.
-- Reduz intervenção humana em casos rotineiros.
-- Demonstra uso mais forte da IA como componente de decisão.
-- Expõe claramente o trade-off entre autonomia e segurança.
-- Mantém rastreabilidade se todos os inputs, outputs e decisões forem registrados.
+O usuário também pode solicitar revisão diretamente pelo Telegram com o comando `edit`. O fluxo encaminha o rascunho ao Agente Revisor com a solicitação explícita de melhoria e reapresenta o resultado no Telegram.
 
-## 7. Limitações
+## 5. Vantagens
 
-- Risco maior que as soluções com aprovação humana obrigatória.
-- Depende mais do julgamento da IA.
-- Exige validação forte da saída do modelo.
-- Pode ser inadequada para uso real sem critérios de confiança muito bem testados.
-- Requer logs detalhados para justificar envios automáticos.
+- Separação de responsabilidades: geração e revisão são etapas distintas com critérios diferentes.
+- Camada adicional de validação de conteúdo antes da aprovação humana.
+- Detecção de problemas de tom, adequação ou vazamento de dados que o Rascunhador pode introduzir inadvertidamente.
+- O loop de edição via Telegram dá mais controle ao usuário sem exigir intervenção técnica no fluxo.
+- Mais robusto que a Solution A para casos onde o e-mail pode conter problemas sutis.
 
-## 8. Riscos
+## 6. Limitações
+
+- Maior número de chamadas ao modelo de linguagem por execução.
+- Latência maior em comparação à Solution A.
+- Dependência de modelos com bom desempenho para a etapa de revisão.
+- Maior complexidade no workflow n8n.
+- O loop de edição não tem limite de iterações definido, podendo exigir saída manual em casos extremos.
+
+## 7. Riscos
 
 | Risco | Mitigação |
 |-------|-----------|
-| Envio automático incorreto. | Exigir confiança alta, zero problemas detectados e validações determinísticas antes do envio. |
-| IA classificar caso arriscado como seguro. | Aplicar guardrails determinísticos depois da IA. |
-| E-mail externo conter dados internos. | Validar termos proibidos antes de Gmail. |
-| Auditoria insuficiente. | Registrar input, decisão, output, e-mail, arquivo gerado e status do envio. |
-| Credenciais expostas. | Usar credenciais n8n e remover tokens do JSON exportado. |
+| Agente Revisor aprovar rascunho com problemas. | Aprovação humana obrigatória como última barreira antes do envio. |
+| Loop de revisão sem fim. | Limitar iterações e encaminhar para revisão manual após limite atingido. |
+| Modelos locais de menor capacidade. | Usar Ollama com modelo de melhor desempenho disponível; testar antes de ativar. |
+| Conflito entre decisões dos dois agentes. | Definir hierarquia: Revisor prevalece sobre Rascunhador no conteúdo do e-mail. |
 
-## 9. Evidência mínima esperada
+## 8. Evidências coletadas
 
-- Execução com `auto_send` em dados simulados válidos.
-- Execução com `needs_manual_review` em dados suspeitos.
-- Execução com `stop` em dados inválidos.
-- Log mostrando decisão da IA e validações determinísticas.
-- Evidência de envio ou simulação de envio.
-- Evidência de revisão humana quando a confiança não for alta.
+| Evidência | Arquivo | Descrição |
+|-----------|---------|-----------|
+| Mensagem de aprovação inicial | `docs/evidences/evidence1.png` | Telegram com rascunho da Invoice #018, período 16–30 de abril, 65 horas, com instruções de aprovação. |
+| Rascunho revisado após "edit" | `docs/evidences/evidence2.png` | Telegram com e-mail reformatado pelo Revisor: tom formal, notas de alteração e campos rastreados. |
+| Confirmação de envio | `docs/evidences/evidence3.png` | Telegram confirmando que o e-mail foi enviado com sucesso pelo Gmail. |
+| E-mail enviado (revisado) | `docs/evidences/evidence5.png` | Gmail mostrando o e-mail revisado entregue ao destinatário. |
+| Google Drive com rascunhos | `docs/evidences/evidence7.jpeg` | Pasta "Invoices/Draft" com histórico de rascunhos da Invoice-018 gerados pelo fluxo. |
 
-## 10. Status
+## 9. Status
 
-Proposta avançada. É útil para comparação porque maximiza automação e demonstra autonomia do agente, mas provavelmente exige mais testes e guardrails para ser considerada segura em uso real.
+Implementada. Workflow exportado em `automation-invoice-two-agent-review-ngrok.json`. Fluxo testado de ponta a ponta: geração pelo Rascunhador, revisão pelo Revisor, aprovação via Telegram com uso do comando `edit`, e envio por Gmail com registro no Google Drive.
