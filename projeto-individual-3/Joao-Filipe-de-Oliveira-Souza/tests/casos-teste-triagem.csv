@@ -1,0 +1,6 @@
+id,assunto,descricao,categoria_esperada,urgencia_esperada,resultado_esperado
+T1,Erro critico de acesso,"Nao consigo entrar no sistema desde cedo, preciso enviar atividade agora",suporte_tecnico,alta,Email de alta prioridade disparado
+T2,Duvida sobre taxa,"Gostaria de confirmar vencimento da taxa de matricula deste semestre",financeiro,media,Email de media urgencia disparado
+T3,Pedido de parceria,"Gostaria de propor parceria institucional para evento",comercial,baixa,Rota de baixa urgencia registrada
+T4,Mensagem ambigua,"Preciso de ajuda com um problema",outro,media,Fallback por baixa confianca acionado
+T5,Instabilidade intermitente,"Sistema oscila e cai em horarios de pico",suporte_tecnico,media,Registro persistido e encaminhamento medio
