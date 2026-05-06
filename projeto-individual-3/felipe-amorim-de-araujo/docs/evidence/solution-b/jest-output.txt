@@ -1,0 +1,107 @@
+
+> issuetriagebot@1.0.0 test:solution-b
+> jest tests/solution-b/ --verbose
+
+PASS tests/solution-b/utils.test.js
+  isValidIssue
+    ✓ returns true for issue with a title (3 ms)
+    ✓ returns false for missing title field (1 ms)
+    ✓ returns false for empty title string
+    ✓ returns false for null input (1 ms)
+    ✓ returns false for undefined input
+  buildPrompt
+    ✓ includes title in prompt (1 ms)
+    ✓ includes body in prompt
+    ✓ includes label names in prompt
+    ✓ includes repository name in prompt
+    ✓ handles missing body with placeholder
+    ✓ handles missing labels gracefully
+    ✓ handles string labels array (1 ms)
+    ✓ handles completely empty issue
+    ✓ prompt requests JSON-only response
+  buildPrompt with examples
+    ✓ with empty examples array, output matches calling with no examples argument (1 ms)
+    ✓ with examples, prompt contains "Examples of correctly classified issues:" header
+    ✓ each example block contains its title
+    ✓ each example block contains its classification JSON
+    ✓ example bodies are truncated at 300 chars with ellipsis
+    ✓ examples block appears before "Now classify this issue:" section (1 ms)
+    ✓ classification rules block is still present when examples are injected
+    ✓ prompt total length stays under 8000 chars with 3 max-truncated examples (1 ms)
+    ✓ examples are numbered Example 1, Example 2, Example 3
+  parseGeminiResponse
+    ✓ parses valid JSON string (1 ms)
+    ✓ strips markdown code block before parsing
+    ✓ strips markdown code block without language hint
+    ✓ returns parse_error result for invalid JSON
+    ✓ returns error result for empty string (1 ms)
+    ✓ returns error result for non-string input
+    ✓ feature type parsed correctly
+    ✓ question type parsed correctly
+    ✓ sets low_confidence=true when confidence below 0.7
+  validateClassification
+    ✓ accepts valid classification (1 ms)
+    ✓ rejects invalid type, falls back to unknown
+    ✓ rejects invalid severity, falls back to unknown
+    ✓ rejects invalid component, falls back to unknown (1 ms)
+    ✓ clamps confidence above 1.0
+    ✓ clamps confidence below 0.0 (3 ms)
+    ✓ handles null input gracefully
+    ✓ handles missing confidence field (1 ms)
+  routeToSlackChannel
+    ✓ routes critical bug to #incidents
+    ✓ routes medium bug to #backlog (1 ms)
+    ✓ routes low bug to #backlog
+    ✓ routes feature to #backlog
+    ✓ routes critical feature to #backlog (not #incidents)
+    ✓ routes question to #questions
+    ✓ routes unknown type to #backlog (1 ms)
+  formatSlackMessage
+    ✓ sets correct channel for critical bug
+    ✓ includes issue title in text
+    ✓ includes issue URL in blocks
+    ✓ adds low_confidence warning when applicable (1 ms)
+    ✓ no low_confidence warning for high confidence
+    ✓ routes question to #questions
+    ✓ uses 🔴 emoji for critical severity (1 ms)
+  formatSheetsRow
+    ✓ includes all required fields (1 ms)
+    ✓ ai_flagged is always false in solution-b
+    ✓ formats confidence as percentage string (1 ms)
+    ✓ uses current timestamp when not provided
+  selectExamples
+    ✓ returns [] when knowledge base is empty (1 ms)
+    ✓ returns [] when k is 0
+    ✓ returns first K curated entries when no token or label overlap exists (1 ms)
+    ✓ label intersection has higher weight than body overlap (1 ms)
+    ✓ title overlap has higher weight than body overlap
+    ✓ matching is case-insensitive (1 ms)
+    ✓ stop words do not contribute to score
+    ✓ ordering is deterministic on tied scores (ascending kbIndex)
+    ✓ respects k limit — returns exactly k entries (1 ms)
+    ✓ does not mutate the knowledge base array
+    ✓ handles issue with no body and no labels without throwing (1 ms)
+    ✓ handles labels as objects with .name property (1 ms)
+
+PASS tests/solution-b/knowledge-base.test.js
+  knowledge-base.json shape
+    ✓ loads as valid JSON with an examples array (1 ms)
+    ✓ has between 6 and 10 examples
+    ✓ every entry has issue.title as a non-empty string (1 ms)
+    ✓ every entry has classification with type, severity, component, summary, reasoning (2 ms)
+    ✓ every entry has a non-empty _rationale (1 ms)
+  knowledge-base.json enum validity
+    ✓ all classification.type values are valid
+    ✓ all classification.severity values are valid (1 ms)
+    ✓ all classification.component values are valid
+  knowledge-base.json coverage invariants
+    ✓ all 3 types appear across examples
+    ✓ all 3 severities appear across examples
+    ✓ at least 3 distinct components appear across examples
+    ✓ fallback safety: first 3 entries cover all 3 types
+
+Test Suites: 2 passed, 2 total
+Tests:       82 passed, 82 total
+Snapshots:   0 total
+Time:        0.332 s, estimated 1 s
+Ran all test suites matching /tests\/solution-b\//i.
