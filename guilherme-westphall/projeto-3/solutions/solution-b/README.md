@@ -1,99 +1,83 @@
-# Solution B: Validação com Regras Externas e Agente de IA
+# Solution B: Validação com Base de Conhecimento de Notas Anteriores
 
 ## 1. Resumo
 
-Esta solução combina cálculo determinístico, validações explícitas e agente de IA. Antes ou depois da chamada ao modelo, o n8n aplica regras objetivas para detectar problemas conhecidos, como ausência de período, zero entradas, zero horas, valor ausente, quantidade incomum de horas e resposta malformada da IA.
-
-A IA continua responsável por interpretar o rascunho, resumir a situação, recomendar ação e gerar mensagens, mas sua decisão é limitada por uma camada de regras.
+Esta solução acrescenta uma camada de memória histórica ao fluxo. Além dos dados calculados deterministicamente pelo n8n, o agente de IA recebe como contexto registros de notas fiscais e e-mails anteriores recuperados de uma base de conhecimento. Com essa referência, o agente pode comparar o rascunho atual com padrões históricos e identificar anomalias que uma análise isolada não detectaria, como uma queda brusca de horas em relação à média dos últimos ciclos ou uma variação incomum no valor faturado.
 
 ## 2. Fluxo proposto
 
 ```text
 Schedule Trigger
--> Set Billing Period
--> Fetch Productive.io Time Entries
--> Parse Entries and Calculate Amount
--> Rule-Based Prevalidation
--> AI Validation and Message Draft
--> Normalize AI JSON
--> Rule-Based Decision Guard
--> Switch recommended_action
-   -> request_approval: enviar mensagem no Telegram
-   -> needs_manual_review: solicitar revisão manual
-   -> stop: registrar interrupção
+→ Calcular período de faturamento
+→ Buscar entradas no Productive.io (HTTP Request)
+→ Consolidar horas e calcular valor (Code)
+→ Consultar base de conhecimento histórica (HTTP Request / Sheets)
+→ Agente de IA (com contexto histórico): validar, comparar e redigir rascunho
+→ Normalizar JSON da IA (Code)
+→ Switch: recommended_action
+   → request_approval: enviar rascunho ao Telegram para aprovação
+   → needs_manual_review: solicitar revisão manual
+   → stop: registrar interrupção
 ```
 
-## 3. Papel das regras
+## 3. Papel da base de conhecimento
 
-As regras funcionam como uma política explícita de segurança. Elas não substituem a IA, mas impedem que decisões inseguras avancem.
+A base de conhecimento armazena dados de execuções anteriores:
 
-Regras mínimas:
+- Número da nota fiscal, período, total de horas e valor de faturamentos anteriores.
+- Corpo e assunto dos e-mails aprovados e enviados em ciclos anteriores.
+- Registros de revisões manuais e motivos de rejeição.
 
-- Se `period_start` ou `period_end` estiver ausente, recomendar `stop`.
-- Se `amount` estiver ausente ou não numérico, recomendar `stop`.
-- Se `entry_count` for zero, recomendar `needs_manual_review`.
-- Se `total_hours` for zero, recomendar `needs_manual_review`.
-- Se houver avisos em `warnings`, recomendar no mínimo `needs_manual_review`, salvo exceção justificada.
-- Se a IA retornar JSON inválido, recomendar `needs_manual_review` ou `stop`.
-- Se o e-mail contiver termos proibidos, como IA, aprovação, validação, horas, período ou valor total, solicitar revisão manual.
+Antes de acionar o modelo, o n8n consulta essa base e recupera os registros mais relevantes para o período atual — por exemplo, os últimos dois ou três ciclos de faturamento. Esses dados são incluídos no prompt como contexto histórico.
 
 ## 4. Papel da IA
 
-A IA deve:
+Com o histórico disponível como contexto, o agente pode:
 
-- Validar a completude do rascunho.
-- Identificar anomalias práticas não cobertas pelas regras simples.
-- Gerar um resumo interno.
-- Gerar mensagem de Telegram.
-- Gerar e-mail externo simples.
+- Comparar o total de horas atual com a média histórica e sinalizar desvios relevantes.
+- Verificar se o valor calculado está dentro da faixa esperada para o contratante.
+- Usar os e-mails aprovados anteriormente como referência de estilo e tom.
+- Detectar inconsistências que só fazem sentido em comparação com o histórico, como queda brusca de horas sem registro de ausência ou aumento anormal do valor.
 
-A IA não deve:
+## 5. Implementação possível
 
-- Recalcular valores.
-- Ignorar as regras objetivas.
-- Aprovar envio externo por conta própria.
+A base de conhecimento poderia ser implementada de três formas:
 
-## 5. Decisão automatizada
-
-A decisão final resulta da combinação entre regras e IA:
-
-- Se regras críticas falharem, elas prevalecem sobre a IA.
-- Se a IA recomendar aprovação, mas uma regra detectar risco, o fluxo vai para revisão manual.
-- Se regras e IA indicarem segurança, o fluxo solicita aprovação via Telegram.
-
-Nesta solução, o envio final ainda depende de aprovação humana.
+| Abordagem | Descrição | Complexidade |
+|-----------|-----------|-------------|
+| Google Sheets | Registro estruturado de notas anteriores; consulta via HTTP Request | Baixa |
+| Google Drive (documentos) | Armazenamento de PDFs e e-mails aprovados; busca por nome ou data | Média |
+| Vector store (ex.: Chroma, Qdrant) | Busca semântica por similaridade; recuperação mais inteligente | Alta |
 
 ## 6. Vantagens
 
-- Mais robusta que uma solução baseada apenas em prompt.
-- Regras são auditáveis e fáceis de testar.
-- Reduz dependência de comportamento probabilístico da IA.
-- Facilita demonstrar tratamento de erros e limites.
-- Mantém arquitetura relativamente simples.
+- Detecção de anomalias que dependem de contexto histórico.
+- Estilo de e-mail mais consistente com o histórico aprovado.
+- Base para implementação de memória de longo prazo no agente.
+- Reduz dependência exclusiva do prompt para definir o comportamento esperado.
 
 ## 7. Limitações
 
-- Exige manutenção das regras.
-- Pode bloquear execuções válidas por excesso de cautela.
-- Ainda depende da IA para gerar mensagens e resumir casos ambíguos.
-- Não automatiza totalmente o envio, pois mantém aprovação humana obrigatória.
+- Exige estruturação e manutenção da base de conhecimento.
+- A consulta ao histórico adiciona latência ao fluxo.
+- A qualidade depende da completude e consistência dos registros anteriores.
+- Nos primeiros ciclos, a base está vazia e o benefício é mínimo.
 
 ## 8. Riscos
 
 | Risco | Mitigação |
 |-------|-----------|
-| Regra bloquear caso válido. | Registrar motivo e permitir aprovação manual. |
-| Regra não cobrir anomalia específica. | Registrar evidências e atualizar política. |
-| IA gerar e-mail inadequado. | Validar termos proibidos antes do envio. |
-| Aumento de complexidade. | Manter regras curtas, explícitas e documentadas. |
+| Base vazia nos primeiros ciclos. | Aceitar ausência de histórico e degradar para o comportamento da Solution A. |
+| Dados históricos inconsistentes. | Validar entradas antes de armazenar na base. |
+| Custo de consulta a vector store. | Preferir abordagem simples (Sheets) inicialmente. |
+| Privacidade dos dados históricos. | Armazenar apenas campos não sensíveis ou com acesso restrito. |
 
 ## 9. Evidência mínima esperada
 
-- Exemplo de execução com dados válidos.
-- Exemplo de execução com zero entradas.
-- Exemplo de resposta inválida da IA e fallback.
-- Print ou log das regras alterando ou confirmando a decisão da IA.
+- Exemplo de consulta à base retornando registros de ciclos anteriores.
+- Exemplo de resposta da IA com referência ao histórico.
+- Evidência de anomalia detectada via comparação histórica.
 
 ## 10. Status
 
-Proposta intermediária. Deve ser prototipada para comparar se a camada de regras aumenta a segurança sem deixar o workflow excessivamente complexo.
+Proposta não implementada. Representa uma evolução natural da Solution A, com ganho de auditabilidade e detecção de anomalias históricas. A implementação foi descartada para este ciclo por exigir infraestrutura adicional e por não ser necessária para o problema imediato. Pode ser adicionada como extensão futura usando o Google Sheets já integrado ao fluxo como destino de log.
