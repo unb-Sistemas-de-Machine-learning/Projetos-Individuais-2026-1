@@ -1,0 +1,602 @@
+{
+  "name": "FinaceiroLog",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f9a9b28f-7b2b-44ef-86e3-ee17ac50d628",
+      "name": "Telegram Trigger",
+      "webhookId": "fe55c845-384e-4d6e-b0f1-f9faf80dc239",
+      "credentials": {
+        "telegramApi": {
+          "id": "tUBGZU316r9MEaTP",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        -304
+      ],
+      "id": "c53f29be-c306-4813-990f-371289135e54",
+      "name": "Get Audio",
+      "webhookId": "09baa609-4f4f-4073-b107-4ea4ca80eff0",
+      "credentials": {
+        "telegramApi": {
+          "id": "tUBGZU316r9MEaTP",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "270ab9b2-b221-4e5a-bba7-6077dcf5f5bd",
+              "leftValue": "={{ $json.message.voice }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9bf8d4a4-e56c-4fa7-9b29-32409cfa4595",
+      "name": "If audio"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "47ad73df-dba5-465b-b042-c43f11c205c5",
+              "name": "Valor",
+              "value": "={{ $json.text.parseJson($json.text).valor }}",
+              "type": "number"
+            },
+            {
+              "id": "215b81ec-3125-4033-9d64-eed7aa8b0e01",
+              "name": "Categoria",
+              "value": "={{ $json.text.parseJson($json.text).categoria }}",
+              "type": "string"
+            },
+            {
+              "id": "392c5d6a-d01a-44bd-9306-bdc5cb9ba74e",
+              "name": "Data",
+              "value": "={{ $json.text.parseJson($json.text).data_compra }}",
+              "type": "string"
+            },
+            {
+              "id": "76c87e08-7d06-41db-a38b-ea9a8ebec101",
+              "name": "Status",
+              "value": "={{ $json.text.parseJson($json.text).status }}",
+              "type": "string"
+            },
+            {
+              "id": "b45c8e86-c3a8-442f-bbf7-d3073f430b12",
+              "name": "Descrição",
+              "value": "={{ $json.text.parseJson($json.text).descricao }}",
+              "type": "string"
+            },
+            {
+              "id": "1540dd44-d30e-40cb-8cc3-a42a3a5de757",
+              "name": "Mensagem erro",
+              "value": "={{ $json.text.parseJson($json.text).mensagem_erro }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1376,
+        -144
+      ],
+      "id": "0e8f1d44-f026-469b-9839-e9da2280cd46",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f90754b0-0f75-49b5-916e-7fca07becbd6",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "=sucesso",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1536,
+        -144
+      ],
+      "id": "5609a3f5-f859-47b7-b826-fa3525fd117c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1KEf2lThkC-NhTb_A7fo6ptCTK2TPzQAIwoMjBlXcL48",
+          "mode": "list",
+          "cachedResultName": "Controle Automatizado",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KEf2lThkC-NhTb_A7fo6ptCTK2TPzQAIwoMjBlXcL48/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KEf2lThkC-NhTb_A7fo6ptCTK2TPzQAIwoMjBlXcL48/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Data": "={{ $('Edit Fields').item.json.Data }}",
+            "Status": "={{ $('Edit Fields').item.json.Status }}",
+            "Valor": "={{ $('Edit Fields').item.json.Valor }}",
+            "Categoria": "={{ $('Edit Fields').item.json.Categoria }}",
+            "Descrição": "={{ $json['Descrição'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Data",
+              "displayName": "Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Valor",
+              "displayName": "Valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Descrição",
+              "displayName": "Descrição",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1792,
+        -272
+      ],
+      "id": "7188766a-f549-4bad-aa03-eafb660f33aa",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eglOBHNQBGb4Sm9A",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        208
+      ],
+      "id": "105ec4cc-78ed-4018-9e42-068d57767959",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "ZcRjSv7cnMfXMB29",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/audio/transcriptions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "groqApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "model",
+              "value": "whisper-large-v3"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        832,
+        -304
+      ],
+      "id": "e6859413-073c-4b50-99f1-af9210892d47",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "qHn87sAB4G0uCV4q",
+          "name": "Header Auth account 2"
+        },
+        "groqApi": {
+          "id": "1SE3XDLXJy2adgtO",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Itera sobre a entrada e acessa o buffer binário\nfor (let item of $input.all()) {\n  if (item.binary && item.binary.data) {\n    // Sobrescreve os metadados\n    item.binary.data.fileName = 'audio.ogg';\n    item.binary.data.mimeType = 'audio/ogg';\n  }\n}\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        -304
+      ],
+      "id": "52c53382-419c-4c64-a4df-f88d59310786",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        -112
+      ],
+      "id": "b2827fd7-3b49-41be-ad33-71c6f90da60e",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "ZcRjSv7cnMfXMB29",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é um parser financeiro estrito. A data de hoje é {{ $now.format('dd-MM-yyyy') }}.\nAnalise o texto a seguir: \"{{ $json.message.text }}\"\nOutput\nRegras Absolutas:\n\n    Você DEVE responder ÚNICA e EXCLUSIVAMENTE com um objeto JSON válido. Não adicione nenhum texto antes ou depois. Não use blocos de formatação como ```json.\n\n    Classifique a categoria estritamente em uma destas: [Mercado, Compras para casa, Alimentação, Transporte, Psicologia, Lazer, Outros].\nTextos que contém \"atacadão\", \"atacadista\", \"super\", \"feira\", geralmente indicam categoria Mercado.\n\nSe o texto não contiver um valor monetário claro, defina \"status\" como \"erro\".\n\nDeduza a data da compra usando a data de hoje como base (ex: se o texto diz \"ontem\", calcule a data correta). Se não houver indicativo de data, assuma a data de hoje.\n\nEstrutura Obrigatória do JSON de Saída:\n{\n\"status\": \"sucesso\" | \"erro\",\n\"valor\": 0.00,\n\"categoria\": \"Nome da Categoria\",\n\"data_compra\": \"DD/MM/YYYY\",\n\"descricao\": \"Resumo muito curto do gasto\",\n\"mensagem_erro\": \"Explique a falha ou retorne null\"\n}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1056,
+        16
+      ],
+      "id": "e73a3399-d9f6-4898-b85b-44f7c0d17040",
+      "name": "Processamento Msg Texto"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Você é um parser financeiro estrito. A data de hoje é {{ $now.format('dd-MM-yyyy') }}.\nAnalise o texto a seguir: \n{{ $json.text }}\nOutput\nRegras Absolutas:\n\n    Você DEVE responder ÚNICA, EXCLUSIVAMENTE e ESTRITAMENTE com um objeto JSON VÁLIDO. NÃO ADICIONE NENHUM TEXTO ANTES OU DEPOIS DA RESPOSTA EM JSON. Não use blocos de formatação como ```json.\n\n    Classifique a categoria estritamente em uma destas: [Mercado, Compras para casa, Alimentação, Transporte, Psicologia, Lazer, Outros].\n\nSe o texto não contiver um valor monetário claro, defina \"status\" como \"erro\".\n\nDeduza a data da compra usando a data de hoje como base (ex: se o texto diz \"ontem\", calcule a data correta). Se não houver indicativo de data, assuma a data de hoje.\n\nEstrutura Obrigatória do JSON de Saída:\n{\n\"status\": \"sucesso\" | \"erro\",\n\"valor\": 0.00,\n\"categoria\": \"Nome da Categoria\",\n\"data_compra\": \"DD/MM/YYYY\",\n\"descricao\": \"Resumo muito curto do gasto\",\n\"mensagem_erro\": \"Explique a falha ou retorne null\"\n}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "= Você DEVE responder ÚNICA, EXCLUSIVAMENTE e ESTRITAMENTE com um objeto JSON VÁLIDO. NÃO ADICIONE NENHUM TEXTO ANTES OU DEPOIS DA RESPOSTA EM JSON. Não use blocos de formatação como ```json."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1056,
+        -304
+      ],
+      "id": "92c5e167-1799-4dd1-a38a-1fc86dfb9a25",
+      "name": "Processamento Msg Áudio"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json['Mensagem erro'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1792,
+        16
+      ],
+      "id": "a63049cc-e806-49e8-8418-cea2af76f117",
+      "name": "Mensagem Erro",
+      "webhookId": "44a397fa-f266-4b0c-a005-7fc4ef68a3c5",
+      "credentials": {
+        "telegramApi": {
+          "id": "tUBGZU316r9MEaTP",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Despesa {{ $json['Descrição'] }} em {{ $json.Data }} com valor R${{ $json.Valor }} registrada com {{ $json.Status }} na categoria {{ $json.Categoria }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2000,
+        -272
+      ],
+      "id": "aee12b82-93ab-4c72-9863-2fde870c6977",
+      "name": "Mensagem Sucesso",
+      "webhookId": "1ba88266-fb60-4faf-b386-64032ef10301",
+      "credentials": {
+        "telegramApi": {
+          "id": "tUBGZU316r9MEaTP",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If audio": {
+      "main": [
+        [
+          {
+            "node": "Get Audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Processamento Msg Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Audio": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mensagem Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Mensagem Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Processamento Msg Texto",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Processamento Msg Áudio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Processamento Msg Áudio",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processamento Msg Texto": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processamento Msg Áudio": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e66e9e47-ab93-4631-bfe5-74f53e9271cb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7c95d93583b042072cb0ae39065f2b4eb6dc9a38328b4e1da7555dc7fdf65239"
+  },
+  "id": "Z310jdEPGok86QU1",
+  "tags": []
+}
