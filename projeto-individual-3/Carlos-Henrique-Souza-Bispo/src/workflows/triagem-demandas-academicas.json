@@ -1,0 +1,384 @@
+{
+  "name": "triagem-demandas-academicas",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "triagem-demandas-academicas",
+        "httpMethod": "POST",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook Entrada",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-640, 80],
+      "webhookId": "triagem-demandas-academicas"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst message = String(body.message ?? body.text ?? '').trim();\nif (!message) {\n  throw new Error('Entrada invalida: informe message ou text.');\n}\nreturn [{ json: { message, source: body.source ?? 'webhook', receivedAt: new Date().toISOString() } }];"
+      },
+      "id": "2",
+      "name": "Normalizar Entrada",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-420, 80]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4o-mini",
+        "messages": {
+          "values": [
+            {
+              "content": "Classifique a demanda academica e retorne JSON valido com campos: category, urgency, confidence, reason.\nCategorias: suporte_tecnico, financeiro, secretaria_academica, estagio_tcc, indefinido.\nUrgencia: baixa, media, alta.\nMensagem: {{$json.message}}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "3",
+      "name": "Classificar com IA",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [-180, 80],
+      "credentials": {
+        "openAiApi": {
+          "id": "OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.text ?? $json.output ?? $json.message ?? '{}';\nlet parsed;\ntry {\n  parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;\n} catch (error) {\n  parsed = { category: 'indefinido', urgency: 'media', confidence: 0, reason: 'falha_parse_json' };\n}\nreturn [{ json: { ...$json, ...parsed } }];"
+      },
+      "id": "4",
+      "name": "Parse da Resposta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [40, 80]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ Number($json.confidence || 0) }}",
+              "operation": "smaller",
+              "value2": 0.7
+            }
+          ]
+        }
+      },
+      "id": "5",
+      "name": "Baixa Confianca?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [260, 80]
+    },
+    {
+      "parameters": {
+        "channel": "#triagem-humanos",
+        "text": "={{`Escalonado para revisao humana | msg: ${$json.message} | confidence: ${$json.confidence}`}}"
+      },
+      "id": "6",
+      "name": "Notificar Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [500, -40]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": "TRIAGEM_PLANILHA_ID",
+        "sheetName": "triagem",
+        "columns": {
+          "mappingMode": "autoMapInputData"
+        }
+      },
+      "id": "7",
+      "name": "Persistir Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [500, 120]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{$json.category}}",
+                    "operation": "equal",
+                    "value2": "suporte_tecnico"
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{$json.category}}",
+                    "operation": "equal",
+                    "value2": "financeiro"
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{$json.category}}",
+                    "operation": "equal",
+                    "value2": "secretaria_academica"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "id": "8",
+      "name": "Rotear Categoria",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [740, 120]
+    },
+    {
+      "parameters": {
+        "toEmail": "suporte@universidade.edu.br",
+        "subject": "[Triagem] Suporte tecnico",
+        "message": "={{$json.message}}"
+      },
+      "id": "9",
+      "name": "Enviar Email Suporte",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [980, -40]
+    },
+    {
+      "parameters": {
+        "toEmail": "financeiro@universidade.edu.br",
+        "subject": "[Triagem] Financeiro",
+        "message": "={{$json.message}}"
+      },
+      "id": "10",
+      "name": "Enviar Email Financeiro",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [980, 100]
+    },
+    {
+      "parameters": {
+        "toEmail": "secretaria@universidade.edu.br",
+        "subject": "[Triagem] Secretaria Academica",
+        "message": "={{$json.message}}"
+      },
+      "id": "11",
+      "name": "Enviar Email Secretaria",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [980, 240]
+    },
+    {
+      "parameters": {
+        "toEmail": "triagem@universidade.edu.br",
+        "subject": "[Triagem] Categoria indefinida",
+        "message": "={{$json.message}}"
+      },
+      "id": "12",
+      "name": "Enviar Email Triagem",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [980, 380]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: 'ok', category: $json.category, urgency: $json.urgency, confidence: $json.confidence } }}"
+      },
+      "id": "13",
+      "name": "Responder Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1240, 120]
+    }
+  ],
+  "connections": {
+    "Webhook Entrada": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Entrada": {
+      "main": [
+        [
+          {
+            "node": "Classificar com IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classificar com IA": {
+      "main": [
+        [
+          {
+            "node": "Parse da Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse da Resposta": {
+      "main": [
+        [
+          {
+            "node": "Baixa Confianca?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixa Confianca?": {
+      "main": [
+        [
+          {
+            "node": "Notificar Slack",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Persistir Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notificar Slack": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persistir Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Rotear Categoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rotear Categoria": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email Suporte",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Email Financeiro",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Email Secretaria",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Email Triagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Email Suporte": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Email Financeiro": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Email Secretaria": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Email Triagem": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "active": false,
+  "versionId": "1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

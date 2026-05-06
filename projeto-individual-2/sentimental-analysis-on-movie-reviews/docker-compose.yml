@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    container_name: mlflow-db
+    environment:
+      POSTGRES_USER: mlflow
+      POSTGRES_PASSWORD: mlflow
+      POSTGRES_DB: mlflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: mlflow
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/mlflow/mlruns
+    command: >
+      mlflow server
+      --backend-store-uri postgresql://mlflow:mlflow@db:5432/mlflow
+      --default-artifact-root /mlflow/mlruns
+      --host 0.0.0.0
+      --port 5000
+      --allowed-hosts "localhost,127.0.0.1,0.0.0.0,localhost:5000,127.0.0.1:5000,mlflow,mlflow:5000"
+  pipeline:
+    build: .
+    container_name: imdb-pipeline
+    depends_on:
+      - mlflow
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    volumes:
+      - .:/app
+      - ./mlruns:/mlflow/mlruns
+    command: >
+      python -m src.pipeline
+      --data-dir data/raw/aclImdb
+      --sample-size 200
+      --track
+
+  api:
+    build: .
+    container_name: imdb-api
+    depends_on:
+      - mlflow
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - SENTIMENT_MODEL_URI=models:/sentiment-imdb/1
+      - SENTIMENT_MODEL_LOAD_RETRIES=3
+      - SENTIMENT_MODEL_LOAD_RETRY_SECONDS=1
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./mlruns:/mlflow/mlruns
+    command: >
+      uvicorn src.api:app
+      --host 0.0.0.0
+      --port 8000
+
+volumes:
+  postgres_data:

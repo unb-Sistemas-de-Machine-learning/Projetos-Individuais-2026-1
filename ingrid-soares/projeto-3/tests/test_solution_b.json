@@ -1,0 +1,24 @@
+# Teste da Solution B: Validação de Integração com Ferramentas
+
+Este arquivo contém o payload de exemplo que o Analista de IA receberá após as consultas às ferramentas de segurança (DNS e VirusTotal).
+
+## Payload de Teste (Contexto do Analista)
+```json
+{
+  "alvo": "staging.exemplo.com",
+  "ferramentas_executadas": {
+    "dns_lookup": {
+      "ip": "192.168.1.10",
+      "registros": ["A", "MX"]
+    },
+    "virustotal": {
+      "score": 0,
+      "categoria": "malicious",
+      "detalhes": "Associação detectada com campanha de malware X"
+    }
+  }
+}
+```
+
+## Objetivo do Teste
+Verificar se o Agente Analista (IA) consegue processar esses dados técnicos brutos, avaliar o risco e gerar a recomendação correta seguindo o padrão de JSON definido.

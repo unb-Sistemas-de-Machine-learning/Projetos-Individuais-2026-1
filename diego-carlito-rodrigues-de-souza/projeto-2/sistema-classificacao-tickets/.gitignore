@@ -1,0 +1,14 @@
+# Ambientes
+venv/
+env/
+__pycache__/
+*.pyc
+
+# MLflow
+mlruns/
+mlflow.db
+artifacts/
+
+# Logs
+logs/
+*.log

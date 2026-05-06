@@ -1,0 +1,6 @@
+text,label_real,label_predito,confianca,acertou
+Great cinematography and a script full of emotion.,positive,positive,0.9999,True
+"The movie is creative, warm, and genuinely entertaining.",positive,positive,0.9999,True
+The jokes did not work and the scenes dragged forever.,negative,negative,0.9998,True
+The pacing was terrible and the dialogue felt artificial.,negative,negative,0.9998,True
+"Too long, repetitive, and not worth the watch.",negative,negative,0.9998,True

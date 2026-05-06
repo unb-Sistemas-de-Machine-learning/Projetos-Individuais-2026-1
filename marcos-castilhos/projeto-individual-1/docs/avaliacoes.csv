@@ -1,0 +1,51 @@
+id_teste,relato,categoria_predita,urgencia_predita,explicacao_agente
+1,"Poste de iluminação queimado há semanas na quadra 5, a rua fica completamente escura à noite.",Iluminação,Alta,Falta de iluminação pública aumenta risco de acidentes e assaltos à noite
+2,"Bueiro aberto na calçada perto da escola, uma criança quase caiu hoje cedo.",Saneamento,Alta,"Risco iminente de queda e lesão para crianças que transitam pela área, conforme relato e parecer do Auditor."
+3,"Muito lixo acumulado atrás do mercado, cheiro forte e aparecendo ratos.",Saneamento,Alta,"Risco iminente de surto de doenças transmitidas por ratos, conforme Parecer do Auditor."
+4,"Semáforo da avenida central não está funcionando desde ontem, trânsito virou um caos.",Trânsito,Alta,Falta de controle de fluxo de veículos pode causar acidentes graves ou mortes.
+5,Árvore grande com galhos quebrados ameaçando cair sobre os carros estacionados.,Iluminação,Alta,Risco iminente de acidente grave devido a queda de galhos da árvore sobre veículos estacionados.
+6,"Fiação elétrica solta no poste depois da chuva, parece perigoso.",Iluminação,Alta,"Risco iminente de choque elétrico após chuva, conforme Parecer do Auditor."
+7,"Ponto de ônibus sem cobertura, idosos ficam expostos ao sol forte e chuva.",Infraestrutura,Alta,"Risco iminente de queimaduras solares e resfriados em idosos expostos ao sol forte e chuva, conforme Parecer do Auditor."
+8,"Vazamento constante de água limpa na rua há dias, desperdiçando muita água.",Saneamento,Média,"O vazamento de água limpa na rua é um desperdício de recursos hídricos e pode causar transtornos à rotina dos moradores, mas não há risco imediato à vida ou saúde pública."
+9,Motoqueiros passando em alta velocidade dentro da área residencial.,Trânsito,Alta,"Risco iminente de acidente grave ou morte de pedestres e moradores da área residencial, conforme Parecer do Auditor."
+10,Calçada totalmente destruída dificultando passagem de cadeirantes.,Infraestrutura,Média,"A calçada destruída dificulta a passagem de cadeirantes, afetando a rotina dos usuários."
+11,"Esgoto correndo a céu aberto próximo às casas, cheiro insuportável.",Saneamento,Alta,"Risco iminente de contaminação de água e solo, levando a doenças como hepatite e diarreia."
+12,Terreno abandonado virou ponto de descarte irregular de entulho.,Perturbação,Baixa,"O problema não apresenta risco imediato à vida ou saúde pública, mas afeta a estética urbana e o conforto da comunidade."
+13,Barulho excessivo todas as madrugadas vindo de um bar irregular na esquina.,Perturbação,Média,O barulho excessivo nas madrugadas é um transtorno à rotina dos moradores e não há risco iminente à vida ou saúde pública.
+14,Sinalização de faixa de pedestre apagada em frente à escola municipal.,Iluminação,Média,"A falta de sinalização de faixa de pedestre em frente à escola municipal pode causar transtornos à rotina dos pedestres e motoristas, especialmente durante a noite ou em condições de baixa visibilidade."
+15,Cachorros agressivos soltos na rua atacando pedestres.,Saúde,Alta,Risco iminente de acidente grave ou morte em pedestres
+16,"Acúmulo de água parada em obra abandonada, possível foco de mosquito.",Saneamento,Alta,"Risco iminente de surto de doenças transmitidas por mosquitos, conforme Parecer do Auditor."
+17,Buraco enorme na ciclovia causando risco para quem passa de bicicleta.,Infraestrutura,Alta,"Risco iminente de queda e lesão grave para ciclistas, conforme Parecer do Auditor."
+18,"Iluminação pública piscando constantemente, causando sensação de insegurança.",Iluminação,Média,"Causa sensação de insegurança, embora sem risco iminente."
+19,Carros estacionados em cima da calçada obrigando pessoas a andar na rua.,Trânsito,Alta,Risco de acidente grave ou morte de pedestres ao serem atropelados por veículos em movimento.
+20,"Cheiro forte de gás vindo de uma residência, moradores preocupados.",Saneamento,Alta,"Risco iminente de explosão ou incêndio devido ao vazamento de gás, conforme Parecer do Auditor."
+21,Parquinho infantil com brinquedos quebrados e ferrugem exposta.,Infraestrutura,Baixa,"O parquinho infantil apresenta brinquedos quebrados e ferrugem exposta, não representando risco imediato à vida ou saúde pública, apenas estética urbana e conforto."
+22,Queimada frequente em lote vazio causando muita fumaça.,Iluminação,Alta,Risco iminente de exposição a fumaça tóxica e possíveis surtos de doenças respiratórias.
+23,"Fila enorme no posto de saúde por falta de médicos, atendimento muito lento.",Saúde,Média,Falta de médicos e atendimento lento afeta rotina dos usuários
+24,"Escadaria pública sem corrimão, idosos têm dificuldade para subir.",Infraestrutura,Média,"A falta de corrimão na escadaria pública dificulta a subida para idosos, afetando a rotina e a segurança de pedestres."
+25,"Enxurrada sempre alaga essa rua quando chove, moradores ficam ilhados.",Saneamento,Alta,Risco iminente de isolamento e acidentes de trânsito ou quedas devido à enxurrada.
+26,"acho q tem um fio caido ali perto da praça mas n tenho certeza, alguém devia olhar",Iluminação,Média,"O fio caído pode causar transtornos à rotina e perda de infraestrutura, mas não há risco imediato à vida."
+27,não sei se é perigoso mas aquele prédio abandonado tá estranho à noite,Perturbação,Baixa,"O prédio abandonado não apresenta risco iminente, mas sua presença à noite pode causar desconforto ou perturbação à rotina da vizinhança."
+28,"a rua não tá ruim não, tá praticamente uma pista de rally de tanto buraco",Infraestrutura,Média,"A rua apresenta vários buracos, o que pode causar transtornos à rotina dos usuários, mas não há risco imediato à vida."
+29,"toda vez que chove vira um rio aqui, normal né prefeitura?",Saneamento,Média,"A infraestrutura de esgotos não consegue lidar com a quantidade de água após chuvas intensas, causando entupimento e inundações."
+30,tem gente usando o campinho pra soltar rojão de madrugada,Perturbação,Média,A atividade mencionada pode causar transtornos à rotina dos moradores e não há risco imediato à vida ou saúde pública.
+31,"cheiro muito forte vindo do bueiro, parece coisa podre",Saneamento,Média,"O cheiro forte pode ser um indicativo de problemas de saneamento, mas não há risco iminente à saúde pública."
+32,"o poste funciona às vezes sim às vezes não, fica piscando igual filme de terror",Iluminação,Média,"O poste apresenta funcionamento irregular, o que pode causar transtornos à rotina e perda de conforto para os usuários."
+33,um carro ficou abandonado faz meses ocupando vaga e juntando sujeira,Perturbação,Baixa,"O carro abandonado está ocupando vaga e acumulando sujeira, afetando a estética urbana e o conforto dos moradores."
+34,crianças brincando perto da avenida porque não tem área segura,Perturbação,Média,"A falta de área segura para as crianças brincar perto da avenida pode causar transtornos à rotina e perda de infraestrutura, mas não há risco imediato à vida."
+35,escutei estalos no transformador antes de acabar a energia ontem,Iluminação,Média,"Ouvir estalos no transformador pode indicar problemas de manutenção ou desgaste, que podem afetar a estabilidade da energia elétrica, mas não há risco imediato à vida ou saúde pública."
+36,o ônibus para no meio da rua porque não existe ponto sinalizado,Infraestrutura,Média,"A falta de um ponto sinalizado para o ônibus pode causar transtornos à rotina dos passageiros e motoristas, mas não representa risco imediato à vida ou saúde pública."
+37,não é reclamação mas acho que aquele muro pode cair qualquer hora,Infraestrutura,Alta,"Risco iminente de queda de muro, causando lesões ou morte, conforme Parecer do Auditor."
+38,tem um vazamento pequeno mas já está formando lama na calçada,Saneamento,Alta,Risco iminente de acidente grave devido ao vazamento de água que pode causar escorregões e quedas.
+39,pessoal atravessa correndo porque os carros nunca param ali,Trânsito,Alta,Risco iminente de acidente grave devido à falta de atenção dos motoristas e pedestres.
+40,a praça virou estacionamento improvisado durante a noite,Perturbação,Baixa,"A praça foi usada como estacionamento improvisado durante a noite, causando desconforto visual e estético."
+41,não vi acidente ainda mas alguém vai se machucar naquela curva sem placa,Trânsito,Média,"Risco de acidente futuro, mas sem risco iminente à vida, conforme Parecer do Auditor"
+42,a água da torneira está saindo com cor estranha hoje,Saneamento,Média,"A água com cor estranha pode indicar contaminação ou problemas no sistema de abastecimento, que precisam ser investigados e resolvidos para garantir a saúde pública."
+43,muita fumaça preta saindo de uma oficina durante o dia inteiro,Saneamento,Média,"A fumaça preta pode ser um sinal de queimadas de combustível ou materiais, causando incômodo à população e potencialmente afetando a qualidade do ar."
+44,"tem um buraco escondido pela água da chuva, impossível ver",Saneamento,Alta,"Risco iminente de queda e lesão grave, conforme Parecer do Auditor"
+45,parece brincadeira mas a tampa do bueiro simplesmente sumiu,Saneamento,Média,"A falta da tampa do bueiro pode causar transtornos à rotina e perda de infraestrutura, mas não há risco imediato à vida ou saúde pública."
+46,um cachorro ficou preso dentro do canal e ninguém consegue tirar,Saneamento,Alta,"Risco iminente de afogamento do cachorro, conforme Parecer do Auditor"
+47,luzes da quadra pública apagadas e pessoas evitando passar por lá,Iluminação,Média,"Pessoas evitam passar por lá devido à falta de iluminação, causando transtorno à rotina."
+48,barreira de obra caiu e ficou espalhada na pista,Infraestrutura,Alta,"Risco iminente de acidente grave devido a obstáculo na pista, conforme Parecer do Auditor."
+49,a sirene disparou várias vezes sem motivo aparente,Perturbação,Média,"A sirene disparou várias vezes sem motivo aparente, causando perturbação, mas não há risco iminente à vida ou saúde pública."
+50,o chão da passarela treme quando passa muita gente,Infraestrutura,Média,"A passarela pode estar com estrutura comprometida, causando desconforto e risco de acidentes, embora não seja iminente."

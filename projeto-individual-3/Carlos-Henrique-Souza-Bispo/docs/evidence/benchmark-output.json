@@ -1,0 +1,156 @@
+{
+  "records": [
+    {
+      "solution": "solution-a",
+      "input": "Nao consigo acessar o portal e preciso urgente para enviar atividade.",
+      "category": "suporte_tecnico",
+      "urgency": "alta",
+      "confidence": 0.65,
+      "route": "fila_suporte",
+      "elapsed_ms": 0.076
+    },
+    {
+      "solution": "solution-a",
+      "input": "Preciso da segunda via do boleto da mensalidade. Meu RA e 211061529.",
+      "category": "financeiro",
+      "urgency": "baixa",
+      "confidence": 0.65,
+      "route": "fila_financeiro",
+      "elapsed_ms": 0.022
+    },
+    {
+      "solution": "solution-a",
+      "input": "Quero emitir meu historico escolar para estagio.",
+      "category": "secretaria_academica",
+      "urgency": "baixa",
+      "confidence": 0.55,
+      "route": "fila_secretaria",
+      "elapsed_ms": 0.017
+    },
+    {
+      "solution": "solution-a",
+      "input": "Preciso de ajuda com meu orientador de TCC e data da banca.",
+      "category": "estagio_tcc",
+      "urgency": "baixa",
+      "confidence": 0.75,
+      "route": "fila_coordenacao",
+      "elapsed_ms": 0.015
+    },
+    {
+      "solution": "solution-a",
+      "input": "Oi, tudo bem?",
+      "category": "indefinido",
+      "urgency": "baixa",
+      "confidence": 0.4,
+      "route": "triagem_humana",
+      "elapsed_ms": 0.008
+    },
+    {
+      "solution": "solution-b",
+      "input": "Nao consigo acessar o portal e preciso urgente para enviar atividade.",
+      "category": "suporte_tecnico",
+      "urgency": "alta",
+      "confidence": 0.64,
+      "route": "revisao_humana",
+      "elapsed_ms": 0.14
+    },
+    {
+      "solution": "solution-b",
+      "input": "Preciso da segunda via do boleto da mensalidade. Meu RA e 211061529.",
+      "category": "financeiro",
+      "urgency": "media",
+      "confidence": 0.84,
+      "route": "resposta_automatica_com_base",
+      "elapsed_ms": 0.065
+    },
+    {
+      "solution": "solution-b",
+      "input": "Quero emitir meu historico escolar para estagio.",
+      "category": "secretaria_academica",
+      "urgency": "media",
+      "confidence": 0.65,
+      "route": "revisao_humana",
+      "elapsed_ms": 0.051
+    },
+    {
+      "solution": "solution-b",
+      "input": "Preciso de ajuda com meu orientador de TCC e data da banca.",
+      "category": "estagio_tcc",
+      "urgency": "media",
+      "confidence": 0.79,
+      "route": "resposta_automatica_com_base",
+      "elapsed_ms": 0.047
+    },
+    {
+      "solution": "solution-b",
+      "input": "Oi, tudo bem?",
+      "category": "indefinido",
+      "urgency": "media",
+      "confidence": 0.48,
+      "route": "revisao_humana",
+      "elapsed_ms": 0.042
+    },
+    {
+      "solution": "solution-c",
+      "input": "Nao consigo acessar o portal e preciso urgente para enviar atividade.",
+      "category": "suporte_tecnico",
+      "urgency": "alta",
+      "confidence": 0.78,
+      "route": "notificar_plantao",
+      "elapsed_ms": 0.171
+    },
+    {
+      "solution": "solution-c",
+      "input": "Preciso da segunda via do boleto da mensalidade. Meu RA e 211061529.",
+      "category": "financeiro",
+      "urgency": "baixa",
+      "confidence": 0.78,
+      "route": "executar_fluxo_padrao",
+      "elapsed_ms": 0.035
+    },
+    {
+      "solution": "solution-c",
+      "input": "Quero emitir meu historico escolar para estagio.",
+      "category": "secretaria_academica",
+      "urgency": "baixa",
+      "confidence": 0.54,
+      "route": "solicitar_dados",
+      "elapsed_ms": 0.025
+    },
+    {
+      "solution": "solution-c",
+      "input": "Preciso de ajuda com meu orientador de TCC e data da banca.",
+      "category": "estagio_tcc",
+      "urgency": "baixa",
+      "confidence": 0.87,
+      "route": "executar_fluxo_padrao",
+      "elapsed_ms": 0.022
+    },
+    {
+      "solution": "solution-c",
+      "input": "Oi, tudo bem?",
+      "category": "indefinido",
+      "urgency": "baixa",
+      "confidence": 0.45,
+      "route": "escalar_humano",
+      "elapsed_ms": 0.013
+    }
+  ],
+  "summary": {
+    "solution-a": {
+      "avg_confidence": 0.6,
+      "avg_elapsed_ms": 0.028,
+      "needs_human_intervention": 1
+    },
+    "solution-b": {
+      "avg_confidence": 0.68,
+      "avg_elapsed_ms": 0.069,
+      "needs_human_intervention": 3
+    },
+    "solution-c": {
+      "avg_confidence": 0.684,
+      "avg_elapsed_ms": 0.053,
+      "needs_human_intervention": 2
+    }
+  }
+}
