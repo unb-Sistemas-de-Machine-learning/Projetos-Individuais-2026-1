@@ -507,7 +507,7 @@
     {
       "parameters": {
         "mode": "raw",
-        "jsonOutput": "{\n  \"telegram_chat_id\": "TELEGRAM_CHAT_ID",\n  \"current_invoice_registry_file_id\": \"REGISTRY_FILE_ID\"\n}",
+        "jsonOutput": "{\n  \"telegram_chat_id\": \"TELEGRAM_CHAT_ID\",\n  \"current_invoice_registry_file_id\": \"REGISTRY_FILE_ID\"\n}",
         "includeOtherFields": true,
         "options": {}
       },
@@ -807,7 +807,7 @@
     {
       "parameters": {
         "mode": "raw",
-        "jsonOutput": "{\n  \"productive_person_id\": \"ID\",\n  \"hourly_rate\": N,\n  \"currency\": \"USD\",\n  \"initial_invoice_number\": 17,\n  \"telegram_chat_id\": "TELEGRAM_CHAT_ID",\n  \"current_invoice_registry_file_id\": \"REGISTRY_FILE_ID\",\n  \"email_to\": [\n    \"guilhermewestphall@gmail.com\"\n  ],\n  \"email_cc\": [],\n  \"email_bcc\": []\n}\n",
+        "jsonOutput": "{\n  \"productive_person_id\": \"ID\",\n  \"hourly_rate\": N,\n  \"currency\": \"USD\",\n  \"initial_invoice_number\": 17,\n  \"telegram_chat_id\": \"TELEGRAM_CHAT_ID\",\n  \"current_invoice_registry_file_id\": \"REGISTRY_FILE_ID\",\n  \"email_to\": [\n    \"guilhermewestphall@gmail.com\"\n  ],\n  \"email_cc\": [],\n  \"email_bcc\": []\n}\n",
         "includeOtherFields": true,
         "options": {}
       },
