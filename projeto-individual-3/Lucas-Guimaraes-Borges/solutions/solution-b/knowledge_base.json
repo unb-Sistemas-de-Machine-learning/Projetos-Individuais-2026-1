@@ -1,0 +1,20 @@
+[
+  {
+    "id": "KB-001",
+    "categoria": "suporte tecnico",
+    "keywords": ["erro", "api", "integracao", "webhook", "500", "login", "falha"],
+    "resposta_padrao": "Validar credenciais e logs de integracao antes de escalar para engenharia."
+  },
+  {
+    "id": "KB-002",
+    "categoria": "financeiro",
+    "keywords": ["cobranca", "fatura", "reembolso", "pagamento", "plano"],
+    "resposta_padrao": "Encaminhar para financeiro e anexar historico de cobranca."
+  },
+  {
+    "id": "KB-003",
+    "categoria": "cancelamento",
+    "keywords": ["cancelamento", "cancelar", "encerrar conta"],
+    "resposta_padrao": "Aplicar checklist de retencao e confirmar identidade do solicitante."
+  }
+]

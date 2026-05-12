@@ -1,0 +1,106 @@
+{
+  "runs": [
+    {
+      "solution": "solution-a",
+      "time_ms": 0.055,
+      "output": {
+        "categoria": "suporte tecnico",
+        "urgencia": 8,
+        "resumo": "nao consigo integrar webhook, retorna erro 500"
+      }
+    },
+    {
+      "solution": "solution-b",
+      "time_ms": 0.094,
+      "output": {
+        "categoria": "suporte tecnico",
+        "urgencia": 6,
+        "resumo": "Validar credenciais e logs de integracao antes de escalar para engenharia.",
+        "confidence": 0.84
+      }
+    },
+    {
+      "solution": "solution-c",
+      "time_ms": 0.018,
+      "output": {
+        "output": {
+          "categoria": "suporte tecnico",
+          "urgencia": 8,
+          "resumo": "nao consigo integrar webhook, retorna erro 500"
+        },
+        "meta": {
+          "confidence": 0.85,
+          "decision": "rotear_automaticamente"
+        }
+      }
+    },
+    {
+      "solution": "solution-a",
+      "time_ms": 0.015,
+      "output": {
+        "categoria": "financeiro",
+        "urgencia": 7,
+        "resumo": "foi cobrado duas vezes e preciso de reembolso"
+      }
+    },
+    {
+      "solution": "solution-b",
+      "time_ms": 0.041,
+      "output": {
+        "categoria": "financeiro",
+        "urgencia": 7,
+        "resumo": "Encaminhar para financeiro e anexar historico de cobranca.",
+        "confidence": 0.76
+      }
+    },
+    {
+      "solution": "solution-c",
+      "time_ms": 0.015,
+      "output": {
+        "output": {
+          "categoria": "financeiro",
+          "urgencia": 7,
+          "resumo": "foi cobrado duas vezes e preciso de reembolso"
+        },
+        "meta": {
+          "confidence": 0.76,
+          "decision": "rotear_automaticamente"
+        }
+      }
+    },
+    {
+      "solution": "solution-a",
+      "time_ms": 0.006,
+      "output": {
+        "categoria": "cancelamento",
+        "urgencia": 7,
+        "resumo": "quero cancelar minha conta por favor"
+      }
+    },
+    {
+      "solution": "solution-b",
+      "time_ms": 0.034,
+      "output": {
+        "categoria": "financeiro",
+        "urgencia": 7,
+        "resumo": "Encaminhar para financeiro e anexar historico de cobranca.",
+        "confidence": 0.68
+      }
+    },
+    {
+      "solution": "solution-c",
+      "time_ms": 0.006,
+      "output": {
+        "output": {
+          "categoria": "cancelamento",
+          "urgencia": 7,
+          "resumo": "quero cancelar minha conta por favor"
+        },
+        "meta": {
+          "confidence": 0.9,
+          "decision": "rotear_automaticamente"
+        }
+      }
+    }
+  ]
+}
